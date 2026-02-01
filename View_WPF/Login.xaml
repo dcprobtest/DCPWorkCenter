@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Login" Height="650" Width="850" MinHeight="550" MinWidth="450"
         WindowStartupLocation="CenterScreen"
-        Background="White">
+        Background="White"
+        ResizeMode="NoResize">
 
     <Window.Resources>
         <Style x:Key="PremiumAnimatedButton" TargetType="Button">
@@ -206,5 +207,31 @@
                 </Grid.Triggers>
             </Grid>
         </Border>
+        <Ellipse Fill="#1555FF0D" Width="400" Height="400" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="622,0,0,-181" RenderTransformOrigin="0.5,0.5">
+            <Ellipse.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="28.243"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Ellipse.RenderTransform>
+            <Ellipse.Effect>
+                <BlurEffect Radius="100"/>
+            </Ellipse.Effect>
+        </Ellipse>
+        <Ellipse Fill="#15E9FF00" Width="432" Height="491" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="-212,0,0,329" RenderTransformOrigin="0.5,0.5">
+            <Ellipse.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="1738.25"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Ellipse.RenderTransform>
+            <Ellipse.Effect>
+                <BlurEffect Radius="100"/>
+            </Ellipse.Effect>
+        </Ellipse>
     </Grid>
 </Window>

@@ -1,12 +1,129 @@
 ﻿<Window x:Class="View_WPF.frmClass_SubjectWiseClassAssign"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:View_WPF"
-        mc:Ignorable="d"
-        Title="frmClass_SubjectWiseClassAssign" Height="450" Width="800">
+        Title="Subject Wise Class Assignment" 
+        Height="600" Width="800"
+        WindowStartupLocation="CenterScreen" 
+        Background="White"
+        ResizeMode="NoResize">
+
+    <Window.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="#CCC"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="RainbowButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="BtnRoot">
+                            <Border CornerRadius="10" Padding="2">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <LinearGradientBrush.RelativeTransform>
+                                            <RotateTransform x:Name="BtnRotate" CenterX="0.5" CenterY="0.5" Angle="0" />
+                                        </LinearGradientBrush.RelativeTransform>
+                                        <GradientStop Color="#FF0000" Offset="0.0"/>
+                                        <GradientStop Color="#00FF00" Offset="0.5"/>
+                                        <GradientStop Color="#0000FF" Offset="1.0"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Border Background="#0B0B0D" CornerRadius="8">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="BtnRotate" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:3" RepeatBehavior="Forever" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
     <Grid>
-        
+        <Ellipse Fill="#15008080" Width="500" Height="500" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-150,-150,0,0">
+            <Ellipse.Effect>
+                <BlurEffect Radius="120"/>
+            </Ellipse.Effect>
+        </Ellipse>
+
+        <Grid Margin="40">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Subject-Wise Class Assign" FontSize="32" FontWeight="Bold" Foreground="#FF1A1A1C" Margin="0,0,0,30" HorizontalAlignment="Center"/>
+
+            <Border Grid.Row="1" Width="550" HorizontalAlignment="Center" VerticalAlignment="Top" CornerRadius="25" Padding="2">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <LinearGradientBrush.RelativeTransform>
+                            <RotateTransform x:Name="MainBorderRotate" CenterX="0.5" CenterY="0.5" Angle="0" />
+                        </LinearGradientBrush.RelativeTransform>
+                        <GradientStop Color="#FF0000" Offset="0.0"/>
+                        <GradientStop Color="#FFFF00" Offset="0.2"/>
+                        <GradientStop Color="#00FF00" Offset="0.4"/>
+                        <GradientStop Color="#00FFFF" Offset="0.6"/>
+                        <GradientStop Color="#0000FF" Offset="0.8"/>
+                        <GradientStop Color="#FF00FF" Offset="1.0"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+
+                <Border.Triggers>
+                    <EventTrigger RoutedEvent="Loaded">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="MainBorderRotate" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:10" RepeatBehavior="Forever" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Border.Triggers>
+
+                <Border Background="#FFEBEAE9" CornerRadius="23" Padding="40">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Text="User ID (UID)" Foreground="#666" Margin="10,0,10,5"/>
+                        <TextBox Grid.Row="1" Margin="10,0,10,20" FontWeight="SemiBold"/>
+
+                        <TextBlock Grid.Row="2" Text="Section ID" Foreground="#666" Margin="10,0,10,5"/>
+                        <TextBox Grid.Row="3" Margin="10,0,10,20"/>
+
+                        <CheckBox Grid.Row="4" Margin="10,10,0,30" VerticalAlignment="Center">
+                            <TextBlock Text="Activate Assignment" Foreground="Black" FontSize="16" Margin="10,0,0,0"/>
+                        </CheckBox>
+
+                        <Button Grid.Row="5" Height="50" Width="250" 
+                                Content="ASSIGN CLASS" 
+                                Style="{StaticResource RainbowButtonStyle}" 
+                                HorizontalAlignment="Center"/>
+                    </Grid>
+                </Border>
+            </Border>
+        </Grid>
     </Grid>
 </Window>
