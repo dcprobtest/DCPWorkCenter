@@ -115,34 +115,32 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="User ID (UID)" Foreground="#666" Margin="10,0,10,5"/>
-                        <TextBox Grid.Row="1" Grid.Column="0" Margin="10,0,10,15"/>
+                        <TextBox Text="{Binding UID}" Grid.Row="1" Grid.Column="0" Margin="10,0,10,15"/>
 
                         <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Password" Foreground="#666" Margin="10,0,10,5"/>
-                        <PasswordBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Padding="10,8" VerticalContentAlignment="Center" Background="White" Margin="10,0,10,15"/>
+                        <TextBox Text="{Binding Password}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="10,0,10,15"/>
 
                         <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Text="Phone Number" Foreground="#666" Margin="10,0,10,5"/>
-                        <TextBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="10,0,10,15"/>
+                        <TextBox Text="{Binding Phone}" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="10,0,10,15"/>
 
                         <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Text="Email Address" Foreground="#666" Margin="10,0,10,5"/>
-                        <TextBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Margin="10,0,10,15"/>
+                        <TextBox Text="{Binding Email}" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Margin="10,0,10,15"/>
 
                         <TextBlock Grid.Row="6" Grid.Column="0" Text="Entry Date" Foreground="#666" FontSize="12" Margin="10,5,10,2"/>
-                        <DatePicker Grid.Row="7" Grid.Column="0" Margin="10,0,10,15"/>
+                        <DatePicker SelectedDate="{Binding EntryDate}" Grid.Row="7" Grid.Column="0" Margin="10,0,10,15"/>
 
                         <TextBlock Grid.Row="6" Grid.Column="1" Text="Start Date" Foreground="#666" FontSize="12" Margin="10,5,10,2"/>
-                        <DatePicker Grid.Row="7" Grid.Column="1" Margin="10,0,10,15"/>
+                        <DatePicker SelectedDate="{Binding StartDate}" Grid.Row="7" Grid.Column="1" Margin="10,0,10,15"/>
 
                         <TextBlock Grid.Row="6" Grid.Column="2" Text="End Date" Foreground="#666" FontSize="12" Margin="10,5,10,2"/>
-                        <DatePicker Grid.Row="7" Grid.Column="2" Margin="10,0,10,15"/>
+                        <DatePicker SelectedDate="{Binding EndDate}" Grid.Row="7" Grid.Column="2" Margin="10,0,10,15"/>
 
-                        <CheckBox Grid.Row="8" Grid.ColumnSpan="3" Margin="10,10,0,20" VerticalAlignment="Center">
+                        <CheckBox IsChecked="{Binding IsActive}" Grid.Row="8" Grid.ColumnSpan="3" Margin="10,10,0,20" VerticalAlignment="Center">
                             <TextBlock Text="Activate User Account" Foreground="Black" FontSize="16" Margin="10,0,0,0"/>
                         </CheckBox>
 
-                        <Button Grid.Row="9" Grid.ColumnSpan="3" Height="50" Width="250" 
-                                Content="SAVE USER INFO" 
-                                Style="{StaticResource RainbowButtonStyle}" 
-                                HorizontalAlignment="Center"/>
+                        <Button Command="{Binding SaveCommand}" Grid.Row="9" Grid.ColumnSpan="3" Height="50" Width="250" 
+                                Content="SAVE USER INFO" Style="{StaticResource RainbowButtonStyle}" HorizontalAlignment="Center"/>
                     </Grid>
                 </Border>
             </Border>

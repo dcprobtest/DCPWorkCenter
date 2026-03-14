@@ -11,6 +11,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+// ViewModel-এর নেমস্পেসটি যুক্ত করা হয়েছে
+using View_WPF.ModelView_WPF;
 
 namespace View_WPF
 {
@@ -22,6 +24,9 @@ namespace View_WPF
         public frmAdmin_DocInfo()
         {
             InitializeComponent();
+
+            // ভিউ-এর সাথে UserDocInfoViewModel কানেক্ট করা হলো
+            this.DataContext = new UserDocInfoViewModel();
         }
     }
 }

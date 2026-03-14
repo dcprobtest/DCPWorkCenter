@@ -105,22 +105,27 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
                         <TextBlock Grid.Row="0" Text="User ID (UID)" Foreground="#666" Margin="10,0,10,5"/>
-                        <TextBox Grid.Row="1" Margin="10,0,10,20" FontWeight="SemiBold"/>
+                        <TextBox Grid.Row="1" Margin="10,0,10,20" FontWeight="SemiBold" 
+                                 Text="{Binding UID, UpdateSourceTrigger=PropertyChanged}"/>
 
                         <TextBlock Grid.Row="2" Text="Section ID" Foreground="#666" Margin="10,0,10,5"/>
-                        <TextBox Grid.Row="3" Margin="10,0,10,20"/>
+                        <TextBox Grid.Row="3" Margin="10,0,10,20" 
+                                 Text="{Binding SectionID, UpdateSourceTrigger=PropertyChanged}"/>
 
-                        <CheckBox Grid.Row="4" Margin="10,10,0,30" VerticalAlignment="Center">
+                        <CheckBox Grid.Row="4" Margin="10,10,0,30" VerticalAlignment="Center" 
+                                  IsChecked="{Binding IsActive}">
                             <TextBlock Text="Activate Assignment" Foreground="Black" FontSize="16" Margin="10,0,0,0"/>
                         </CheckBox>
 
                         <Button Grid.Row="5" Height="50" Width="250" 
                                 Content="ASSIGN CLASS" 
                                 Style="{StaticResource RainbowButtonStyle}" 
-                                HorizontalAlignment="Center"/>
+                                HorizontalAlignment="Center"
+                                Command="{Binding SaveCommand}"/>
                     </Grid>
                 </Border>
             </Border>

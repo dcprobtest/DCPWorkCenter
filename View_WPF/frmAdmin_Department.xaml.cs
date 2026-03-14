@@ -1,16 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using View_WPF.ModelView_WPF; // আপনার দেওয়া ViewModel-এর সঠিক নেমস্পেস
 
 namespace View_WPF
 {
@@ -22,6 +12,10 @@ namespace View_WPF
         public frmAdmin_Department()
         {
             InitializeComponent();
+
+            // আপনার দেওয়া DepartmentViewModel ক্লাসটিকে এই উইন্ডোর ডাটা সোর্স হিসেবে সেট করা হলো
+            // এর ফলে XAML-এর {Binding Dept.DeptCode} ইত্যাদি কাজ করবে
+            this.DataContext = new DepartmentViewModel();
         }
     }
 }

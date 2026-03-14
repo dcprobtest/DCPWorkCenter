@@ -1,54 +1,117 @@
 ﻿<Window x:Class="View_WPF.frmClass_ClassVideoText"
-       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Class Video Text Information" 
-        Height="750" Width="850"
-        WindowStartupLocation="CenterScreen" 
-        Background="White"
-        ResizeMode="NoResize">
+        Height="780" Width="1050"
+        MinHeight="700" MinWidth="950"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized" 
+        Background="#F8FAFC"
+        UseLayoutRounding="True">
 
     <Window.Resources>
-        <Style TargetType="TextBox">
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="BorderBrush" Value="#CCC"/>
-            <Setter Property="Padding" Value="10,8"/>
-            <Setter Property="FontSize" Value="14"/>
+        <Style x:Key="ModernTextBox" TargetType="TextBox">
             <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Grid>
+                            <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" CornerRadius="6">
+                                <ScrollViewer x:Name="PART_ContentHost" Focusable="false" />
+                            </Border>
+                            <TextBlock x:Name="placeholder" Text="{TemplateBinding Tag}" Foreground="#94A3B8" IsHitTestVisible="False" VerticalAlignment="Center" Margin="12,0" Visibility="Collapsed"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="Text" Value=""/>
+                                    <Condition Property="IsKeyboardFocused" Value="False"/>
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="placeholder" Property="Visibility" Value="Visible"/>
+                            </MultiTrigger>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#6366F1"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="1.5"/>
+                            </Trigger>
+                            <Trigger Property="IsReadOnly" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#F1F5F9"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
-        <Style x:Key="RainbowButtonStyle" TargetType="Button">
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontWeight" Value="Bold"/>
+        <Style x:Key="BaseBtn" TargetType="Button">
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Grid x:Name="BtnRoot">
-                            <Border CornerRadius="10" Padding="2">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                        <LinearGradientBrush.RelativeTransform>
-                                            <RotateTransform x:Name="BtnRotate" CenterX="0.5" CenterY="0.5" Angle="0" />
-                                        </LinearGradientBrush.RelativeTransform>
-                                        <GradientStop Color="#FF0000" Offset="0.0"/>
-                                        <GradientStop Color="#00FF00" Offset="0.5"/>
-                                        <GradientStop Color="#0000FF" Offset="1.0"/>
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                                <Border Background="#0B0B0D" CornerRadius="8">
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                            </Border>
-                        </Grid>
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="6" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
                         <ControlTemplate.Triggers>
-                            <EventTrigger RoutedEvent="Loaded">
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="BtnRotate" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:3" RepeatBehavior="Forever" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="BtnAdd" TargetType="Button" BasedOn="{StaticResource BaseBtn}">
+            <Setter Property="Background" Value="#10B981"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style x:Key="BtnSave" TargetType="Button" BasedOn="{StaticResource BaseBtn}">
+            <Setter Property="Background" Value="#3B82F6"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style x:Key="BtnEdit" TargetType="Button" BasedOn="{StaticResource BaseBtn}">
+            <Setter Property="Background" Value="#F59E0B"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style x:Key="BtnExit" TargetType="Button" BasedOn="{StaticResource BaseBtn}">
+            <Setter Property="Background" Value="#64748B"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style x:Key="BtnNeutral" TargetType="Button" BasedOn="{StaticResource BaseBtn}">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style x:Key="ToggleSwitchStyle" TargetType="RadioButton">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="SwitchBorder" Width="45" Height="22" Background="White" BorderBrush="#166534" BorderThickness="1.5" CornerRadius="11">
+                            <Ellipse x:Name="dot" Fill="#CBD5E1" Width="14" Height="14" HorizontalAlignment="Left" Margin="4,0">
+                                <Ellipse.RenderTransform>
+                                    <TranslateTransform X="0"/>
+                                </Ellipse.RenderTransform>
+                            </Ellipse>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="dot" Property="HorizontalAlignment" Value="Right"/>
+                                <Setter TargetName="dot" Property="Margin" Value="0,0,4,0"/>
+                                <Setter TargetName="dot" Property="Fill" Value="#991B1B"/>
+                                <Setter TargetName="SwitchBorder" Property="BorderBrush" Value="#991B1B"/>
+                            </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
@@ -56,47 +119,98 @@
         </Style>
     </Window.Resources>
 
-    <Grid>
-        <Ellipse Fill="#1500FF88" Width="500" Height="500" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-150,-150,0">
-            <Ellipse.Effect>
-                <BlurEffect Radius="120"/>
-            </Ellipse.Effect>
-        </Ellipse>
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="320"/>
+        </Grid.ColumnDefinitions>
 
-        <Grid Margin="40">
+        <Grid Grid.Column="0" Margin="0,0,25,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Text="Class Video Text" FontSize="32" FontWeight="Bold" Foreground="#FF1A1A1C" Margin="0,0,0,30" HorizontalAlignment="Center"/>
+            <Grid Grid.Row="0" Margin="0,0,0,15">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.2*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
 
-            <Border Grid.Row="1" Width="700" HorizontalAlignment="Center" VerticalAlignment="Top" CornerRadius="25" Padding="2">
-                <Border.Background>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                        <LinearGradientBrush.RelativeTransform>
-                            <RotateTransform x:Name="MainBorderRotate" CenterX="0.5" CenterY="0.5" Angle="0" />
-                        </LinearGradientBrush.RelativeTransform>
-                        <GradientStop Color="#FF0000" Offset="0.0"/>
-                        <GradientStop Color="#FFFF00" Offset="0.2"/>
-                        <GradientStop Color="#00FF00" Offset="0.4"/>
-                        <GradientStop Color="#00FFFF" Offset="0.6"/>
-                        <GradientStop Color="#0000FF" Offset="0.8"/>
-                        <GradientStop Color="#FF00FF" Offset="1.0"/>
-                    </LinearGradientBrush>
-                </Border.Background>
+                <ComboBox x:Name="cmbSubject" Grid.Column="0" Height="35" Margin="0,0,10,0" 
+                          ItemsSource="{Binding SubjectList}" 
+                          DisplayMemberPath="SubjectDesc" 
+                          SelectedItem="{Binding SelectedSubject, Mode=TwoWay}"
+                          Text="Subject" IsEditable="True" IsReadOnly="True"/>
 
-                <Border.Triggers>
-                    <EventTrigger RoutedEvent="Loaded">
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <DoubleAnimation Storyboard.TargetName="MainBorderRotate" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:10" RepeatBehavior="Forever" />
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                </Border.Triggers>
+                <ComboBox x:Name="cmbSection" Grid.Column="1" Height="35" Margin="0,0,10,0" 
+                          ItemsSource="{Binding SectionList}" 
+                          DisplayMemberPath="SectionDesc"
+                          SelectedItem="{Binding SelectedSection, Mode=TwoWay}"
+                          Text="Select Section" IsEditable="True" IsReadOnly="True"/>
 
-                <Border Background="#FFEBEAE9" CornerRadius="23" Padding="30">
+                <TextBox x:Name="txtDisplaySectionID" Grid.Column="2" 
+                         Style="{StaticResource ModernTextBox}" 
+                         Tag="ID" IsReadOnly="True" 
+                         FontWeight="Bold" Foreground="#1E293B" HorizontalContentAlignment="Center"
+                         Text="{Binding SelectedSection.SectionId, Mode=OneWay}"/>
+            </Grid>
+
+            <Border Grid.Row="1" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Background="White">
+                <ListView x:Name="lstClassVideoData" BorderThickness="0" 
+                          ItemsSource="{Binding ClassVideoList}"
+                          SelectedItem="{Binding SelectedClassItem, Mode=TwoWay}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Class ID" DisplayMemberBinding="{Binding ClassID}" Width="150"/>
+                            <GridViewColumn Header="Class Content" DisplayMemberBinding="{Binding ClassContent}" Width="450"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Border>
+
+            <Grid Grid.Row="2" Margin="0,15,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="txtSectionIDInput" Grid.Column="0" 
+                         Style="{StaticResource ModernTextBox}" Tag="Class ID" 
+                         HorizontalContentAlignment="Center" Margin="0,0,10,0"
+                         Text="{Binding ClassVideo.ClassID, UpdateSourceTrigger=PropertyChanged}"/>
+
+                <TextBox x:Name="txtClassContent" Grid.Column="1" 
+                         Style="{StaticResource ModernTextBox}" Tag="Enter Class Content..."
+                         Text="{Binding ClassVideo.ClassContent, UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
+
+            <Grid Grid.Row="3" Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="txtClassPath" Grid.Column="0" 
+                         Style="{StaticResource ModernTextBox}" Tag="Video Server Path (ClassPath)..." Margin="0,0,10,0"
+                         Text="{Binding ClassVideo.ClassPath, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True"/>
+                <Button x:Name="btnBrowseServer" Grid.Column="1" Content="Browse Server" Width="120" 
+                        Style="{StaticResource BtnNeutral}" Command="{Binding BrowseCommand}"/>
+            </Grid>
+        </Grid>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Expander x:Name="expTimeline" Grid.Row="0" Header="View Timeline (Dates)" Foreground="#8B5CF6" FontWeight="SemiBold" IsExpanded="True">
+                <Border Background="White" CornerRadius="8" Padding="15" Margin="0,10,0,20" BorderBrush="#E2E8F0" BorderThickness="1">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -110,46 +224,87 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Class ID" Foreground="#666" Margin="10,0,10,5"/>
-                        <TextBox Grid.Row="1" Grid.Column="0" Margin="10,0,10,15"/>
+                        <TextBlock Grid.Row="0" Text="Entry By UID" FontSize="11" Foreground="#64748B" Margin="0,0,0,2"/>
+                        <TextBox x:Name="txtEntryByUID" Grid.Row="1" Style="{StaticResource ModernTextBox}" FontWeight="Bold" Margin="0,0,0,10"
+                                 Text="{Binding ClassVideo.EntryByUID}"/>
 
-                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Section ID" Foreground="#666" Margin="10,0,10,5"/>
-                        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="10,0,10,15"/>
+                        <TextBlock Grid.Row="2" Text="Entry Date" FontSize="11" Foreground="#64748B" Margin="0,0,0,2"/>
+                        <TextBox x:Name="txtEntryDate" Grid.Row="3" Style="{StaticResource ModernTextBox}" IsReadOnly="True" Background="#F8FAFC" Margin="0,0,0,10"
+                                 Text="{Binding ClassVideo.EntryDate, StringFormat=\{0:dd-MMM-yyyy\}}"/>
 
-                        <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Text="Section Description" Foreground="#666" Margin="10,0,10,5"/>
-                        <TextBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="10,0,10,15"/>
+                        <TextBlock Grid.Row="4" Text="Start Date" FontSize="11" Foreground="#64748B" Margin="0,0,0,2"/>
+                        <TextBox x:Name="txtStartDate" Grid.Row="5" Style="{StaticResource ModernTextBox}" IsReadOnly="True" Background="#F8FAFC" Margin="0,0,0,10"
+                                 Text="{Binding ClassVideo.StartDate, StringFormat=\{0:dd-MMM-yyyy\}}"/>
 
-                        <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Text="Class Content / Video Text" Foreground="#666" Margin="10,0,10,5"/>
-                        <TextBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Height="100" 
-                                 TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" 
-                                 VerticalScrollBarVisibility="Auto" Margin="10,0,10,15"/>
+                        <TextBlock Grid.Row="6" Text="End Date" FontSize="11" Foreground="#64748B" Margin="0,0,0,2"/>
+                        <TextBox x:Name="txtEndDate" Grid.Row="7" Style="{StaticResource ModernTextBox}" IsReadOnly="True" Background="#F8FAFC" Margin="0,0,0,10"
+                                 Text="{Binding ClassVideo.EndDate, StringFormat=\{0:dd-MMM-yyyy\}}"/>
 
-                        <TextBlock Grid.Row="6" Grid.Column="0" Text="Entry Date" Foreground="#666" FontSize="12" Margin="10,5,10,2"/>
-                        <DatePicker Grid.Row="7" Grid.Column="0" Margin="10,0,10,15"/>
-
-                        <TextBlock Grid.Row="6" Grid.Column="1" Text="Start Date" Foreground="#666" FontSize="12" Margin="10,5,10,2"/>
-                        <DatePicker Grid.Row="7" Grid.Column="1" Margin="10,0,10,15"/>
-
-                        <TextBlock Grid.Row="6" Grid.Column="2" Text="End Date" Foreground="#666" FontSize="12" Margin="10,5,10,2"/>
-                        <DatePicker Grid.Row="7" Grid.Column="2" Margin="10,0,10,15"/>
-
-                        <CheckBox Grid.Row="8" Grid.ColumnSpan="3" Margin="10,10,0,20" VerticalAlignment="Center">
-                            <TextBlock Text="Activate Content" Foreground="Black" FontSize="16" Margin="10,0,0,0"/>
-                        </CheckBox>
-
-                        <Button Grid.Row="9" Grid.ColumnSpan="3" Height="50" Width="280" 
-                                Content="SAVE VIDEO TEXT INFO" 
-                                Style="{StaticResource RainbowButtonStyle}" 
-                                HorizontalAlignment="Center"/>
+                        <TextBlock Grid.Row="8" Text="Last Update" FontSize="11" Foreground="#64748B" Margin="0,0,0,2"/>
+                        <TextBox x:Name="txtLastUpdate" Grid.Row="9" Style="{StaticResource ModernTextBox}" IsReadOnly="True" Background="#F8FAFC"
+                                 Text="{Binding ClassVideo.LastUpdate, StringFormat=\{0:dd-MMM-yyyy HH:mm\}}"/>
                     </Grid>
                 </Border>
-            </Border>
+            </Expander>
+
+            <Grid Grid.Row="1" Margin="0,0,0,15">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="45"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="45"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="45"/>
+                </Grid.RowDefinitions>
+                <Button x:Name="btnUploadVideo" Grid.Row="0" Content="Browse &amp; Prepare Video" 
+                        Background="#F0FDF4" Foreground="#166534" BorderBrush="#BBF7D0" BorderThickness="1" 
+                        Style="{StaticResource BaseBtn}" Command="{Binding BrowseCommand}"/>
+
+                <Button x:Name="btnDownloadVideo" Grid.Row="2" Content="Download" Background="#EFF6FF" Foreground="#1E40AF" BorderBrush="#BFDBFE" BorderThickness="1" Style="{StaticResource BaseBtn}"/>
+                <Button x:Name="btnDeleteFile" Grid.Row="4" Content="Delete File" Background="#FEF2F2" Foreground="#991B1B" BorderBrush="#FECACA" BorderThickness="1" Style="{StaticResource BaseBtn}"/>
+            </Grid>
+
+            <Grid Grid.Row="2" Margin="0,0,0,20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <CheckBox x:Name="chkActivate" Grid.Row="0" Grid.Column="0" Content="Active" 
+                          VerticalAlignment="Center" FontWeight="SemiBold" FontSize="14" Margin="0,0,0,15"
+                          IsChecked="{Binding IsActive, Mode=TwoWay}"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Inactive Video" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="13" Foreground="#475569"/>
+                <RadioButton x:Name="rbInactiveVideo" Grid.Row="1" Grid.Column="1" GroupName="StatusToggles" 
+                             Style="{StaticResource ToggleSwitchStyle}" Margin="0,0,0,10"/>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Delete Video" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="13" Foreground="#991B1B"/>
+                <RadioButton x:Name="rbDeleteVideo" Grid.Row="2" Grid.Column="1" GroupName="StatusToggles" 
+                             Style="{StaticResource ToggleSwitchStyle}"/>
+            </Grid>
+
+            <Grid Grid.Row="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="40"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button x:Name="btnAdd" Grid.Row="0" Grid.Column="0" Content="ADD" Style="{StaticResource BtnAdd}"/>
+                <Button x:Name="btnSave" Grid.Row="0" Grid.Column="2" Content="Save" Style="{StaticResource BtnSave}" Command="{Binding SaveCommand}"/>
+                <Button x:Name="btnEdit" Grid.Row="2" Grid.Column="0" Content="Edit" Style="{StaticResource BtnEdit}"/>
+                <Button x:Name="btnExit" Grid.Row="2" Grid.Column="2" Content="Exit" Style="{StaticResource BtnExit}"/>
+            </Grid>
         </Grid>
     </Grid>
 </Window>
