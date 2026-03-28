@@ -144,6 +144,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <TextBlock Text="Welcome To DCP" Grid.Row="0" FontSize="30" FontWeight="Bold" Foreground="Black" HorizontalAlignment="Center">
@@ -163,8 +164,8 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Text="USERNAME" FontSize="10" FontWeight="Bold" Foreground="#555557" Margin="5,0,0,8"/>
-                    <TextBox Grid.Row="1" Style="{StaticResource ModernInput}" Background="White"/>
+                    <TextBlock Text="USERID" FontSize="10" FontWeight="Bold" Foreground="#555557" Margin="5,0,0,8"/>
+                    <TextBox x:Name="txtUserId" Grid.Row="1" Style="{StaticResource ModernInput}" Background="White" Foreground="Black"/>
                     <Grid.RenderTransform>
                         <TranslateTransform x:Name="UserTrans" Y="30"/>
                     </Grid.RenderTransform>
@@ -176,13 +177,13 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <TextBlock Text="PASSWORD" FontSize="10" FontWeight="Bold" Foreground="#555557" Margin="5,0,0,8"/>
-                    <PasswordBox Grid.Row="1" Style="{StaticResource ModernInput}" Background="#FFFBFBFF"/>
+                    <PasswordBox x:Name="txtPassword" Grid.Row="1" Style="{StaticResource ModernInput}" Background="#FFFBFBFF" Foreground="Black"/>
                     <Grid.RenderTransform>
                         <TranslateTransform x:Name="PassTrans" Y="30"/>
                     </Grid.RenderTransform>
                 </Grid>
 
-                <Button Grid.Row="4" Content="AUTHENTICATE" Style="{StaticResource PremiumAnimatedButton}" Height="50">
+                <Button x:Name="btnAuthenticate" Grid.Row="4" Content="AUTHENTICATE" Style="{StaticResource PremiumAnimatedButton}" Height="50" Click="btnAuthenticate_Click">
                     <Button.RenderTransform>
                         <TranslateTransform x:Name="BtnTrans" Y="30"/>
                     </Button.RenderTransform>
@@ -207,6 +208,7 @@
                 </Grid.Triggers>
             </Grid>
         </Border>
+
         <Ellipse Fill="#1555FF0D" Width="400" Height="400" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="622,0,0,-181" RenderTransformOrigin="0.5,0.5">
             <Ellipse.RenderTransform>
                 <TransformGroup>

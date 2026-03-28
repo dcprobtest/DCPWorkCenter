@@ -5,13 +5,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Linq; // ডাটা গ্রুপিং করার জন্য প্রয়োজন
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using Microsoft.Win32; // File Dialog এর জন্য
+using Microsoft.Win32;
 using View_WPF;
 using View_WPF.Model_WPF;
 
@@ -19,7 +20,6 @@ namespace View_WPF.ModelView_WPF
 {
     public class ClassVideoTextViewModel : INotifyPropertyChanged
     {
-        // API URL আপনার কন্ট্রোলার অনুযায়ী আপডেট করা হয়েছে
         private readonly string _apiUrl = "https://localhost:7073/api/Data/SaveVideo";
         private readonly string _baseApiUrl = "https://localhost:7073/api/Data/";
 
@@ -27,14 +27,13 @@ namespace View_WPF.ModelView_WPF
         private bool _isActive;
         private string _selectedFileSourcePath;
 
-        // ড্রপডাউন লিস্টের জন্য প্রোপার্টি
         public ObservableCollection<ClassSubject> SubjectList { get; set; } = new ObservableCollection<ClassSubject>();
         public ObservableCollection<ClassSection> SectionList { get; set; } = new ObservableCollection<ClassSection>();
-
-        // ইন্টারফেসের লিস্টে Class ID এবং Class Content দেখানোর জন্য নতুন কালেকশন
         public ObservableCollection<ClassVideoTextModel> ClassVideoList { get; set; } = new ObservableCollection<ClassVideoTextModel>();
 
-        // সিলেক্টেড আইটেম হ্যান্ডেল করার জন্য
+        // --- নতুন প্রোপার্টি: TreeView ডাটা সোর্স ---
+        public ObservableCollection<SubjectTreeItem> CourseContent { get; set; } = new ObservableCollection<SubjectTreeItem>();
+
         private ClassSubject _selectedSubject;
         public ClassSubject SelectedSubject
         {
@@ -43,10 +42,7 @@ namespace View_WPF.ModelView_WPF
             {
                 _selectedSubject = value;
                 OnPropertyChanged();
-                if (value != null)
-                {
-                    LoadSections(); // সাবজেক্ট সিলেক্ট করলে সেকশন লোড হবে
-                }
+                if (value != null) { LoadSections(); }
             }
         }
 
@@ -58,18 +54,15 @@ namespace View_WPF.ModelView_WPF
             {
                 _selectedSection = value;
                 OnPropertyChanged();
-                if (value != null && ClassVideo != null)
-                {
-                    ClassVideo.SectionID = value.SectionId; // অটোমেটিক সেকশন আইডি সেট
-                }
+                if (value != null && ClassVideo != null) { ClassVideo.SectionID = value.SectionId; }
             }
         }
 
         public ClassVideoTextViewModel()
         {
             InitializeClassVideo();
-            LoadSubjects(); // শুরুতে সাবজেক্ট লিস্ট লোড হবে
-            LoadClassVideos(); // শুরুতে ইন্টারফেসের লিস্টে ডেটা লোড করার জন্য কল করা হলো
+            LoadSubjects();
+            LoadClassVideos();
 
             SaveCommand = new RelayCommand(async (obj) => await ExecuteSave());
             BrowseCommand = new RelayCommand((obj) => ExecuteBrowse());
@@ -98,7 +91,6 @@ namespace View_WPF.ModelView_WPF
         public ICommand SaveCommand { get; }
         public ICommand BrowseCommand { get; }
 
-        // API থেকে ইন্টারফেসের লিস্টের জন্য ডেটা নিয়ে আসা
         public async void LoadClassVideos()
         {
             try
@@ -114,10 +106,10 @@ namespace View_WPF.ModelView_WPF
                         Application.Current.Dispatcher.Invoke(() =>
                         {
                             ClassVideoList.Clear();
-                            foreach (var item in list)
-                            {
-                                ClassVideoList.Add(item);
-                            }
+                            foreach (var item in list) { ClassVideoList.Add(item); }
+
+                            // ভিডিও লিস্ট লোড হওয়ার পর সেটিকে TreeView ফরম্যাটে সাজানো
+                            BuildTreeView(list);
                         });
                     }
                 }
@@ -125,7 +117,44 @@ namespace View_WPF.ModelView_WPF
             catch (Exception ex) { MessageBox.Show("Video List Load Error: " + ex.Message); }
         }
 
-        // API থেকে সাবজেক্ট লিস্ট নিয়ে আসা
+        // --- নতুন মেথড: ডাটাকে TreeView স্ট্রাকচারে রূপান্তর করা ---
+        private void BuildTreeView(List<ClassVideoTextModel> allVideos)
+        {
+            CourseContent.Clear();
+
+            // সাবজেক্ট অনুযায়ী গ্রুপ করা
+            foreach (var sub in SubjectList)
+            {
+                var subItem = new SubjectTreeItem { Title = sub.SubjectDesc };
+
+                // এই সাবজেক্টের আন্ডারে থাকা সেকশনগুলো বের করা
+                var relevantSections = SectionList.Where(s => s.SubjectCode == sub.SubjectCode);
+
+                foreach (var sec in relevantSections)
+                {
+                    var secItem = new SectionTreeItem { Title = sec.SectionDesc };
+
+                    // এই সেকশনের আন্ডারে থাকা ভিডিওগুলো ডাটাবেস লিস্ট থেকে খুঁজে বের করা
+                    var relevantVideos = allVideos.Where(v => v.SectionID == sec.SectionId);
+
+                    foreach (var vid in relevantVideos)
+                    {
+                        secItem.Videos.Add(new VideoTreeItem
+                        {
+                            Title = vid.ClassContent,
+                            FilePath = vid.ClassPath
+                        });
+                    }
+
+                    if (secItem.Videos.Count > 0)
+                        subItem.Sections.Add(secItem);
+                }
+
+                if (subItem.Sections.Count > 0)
+                    CourseContent.Add(subItem);
+            }
+        }
+
         private async void LoadSubjects()
         {
             try
@@ -145,7 +174,6 @@ namespace View_WPF.ModelView_WPF
             catch (Exception ex) { MessageBox.Show("Subject Load Error: " + ex.Message); }
         }
 
-        // API থেকে সেকশন লিস্ট নিয়ে আসা
         private async void LoadSections()
         {
             try
@@ -165,7 +193,6 @@ namespace View_WPF.ModelView_WPF
             catch (Exception ex) { MessageBox.Show("Section Load Error: " + ex.Message); }
         }
 
-        // ভিডিও ফাইল সিলেক্ট করা
         private void ExecuteBrowse()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -179,7 +206,6 @@ namespace View_WPF.ModelView_WPF
 
         private async Task ExecuteSave()
         {
-            // ভ্যালিডেশন
             if (SelectedSubject == null || SelectedSection == null || string.IsNullOrEmpty(_selectedFileSourcePath))
             {
                 MessageBox.Show("Please select Subject, Section and Video File.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -188,38 +214,30 @@ namespace View_WPF.ModelView_WPF
 
             try
             {
-                // ১. ফাইল নেমিং ফরম্যাট তৈরি
                 string dateStr = DateTime.Now.ToString("ddMMMyyyy");
                 string fileName = $"{SelectedSubject.SubjectCode}_{SelectedSubject.SubjectDesc}_{ClassVideo.ClassID}_{dateStr}{Path.GetExtension(_selectedFileSourcePath)}";
-
-                // ২. ফোল্ডার পাথ তৈরি
                 string rootPath = @"C:\DCP_Videos";
                 string targetPath = Path.Combine(rootPath, SelectedSubject.SubjectDesc, SelectedSection.SectionDesc);
 
                 if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
-
                 string fullPath = Path.Combine(targetPath, fileName);
 
-                // ৩. ফাইল কপি করা
                 File.Copy(_selectedFileSourcePath, fullPath, true);
 
-                // ৪. ডাটাবেসে পাথ পাঠানোর জন্য মডেল আপডেট
                 ClassVideo.ClassPath = fullPath;
                 ClassVideo.LastUpdate = DateTime.Now;
 
-                // ৫. API Call
                 using (HttpClient client = new HttpClient())
                 {
                     var json = JsonConvert.SerializeObject(ClassVideo);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
-
                     HttpResponseMessage response = await client.PostAsync(_apiUrl, content);
 
                     if (response.IsSuccessStatusCode)
                     {
-                        MessageBox.Show("Class Video Saved & Uploaded Successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show("Class Video Saved Successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                         ResetForm();
-                        LoadClassVideos(); // সেভ হওয়ার পর লিস্টটি রিফ্রেশ করা হলো
+                        LoadClassVideos();
                     }
                     else
                     {
@@ -228,22 +246,12 @@ namespace View_WPF.ModelView_WPF
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error: {ex.Message}", "Operation Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            catch (Exception ex) { MessageBox.Show($"Error: {ex.Message}", "Operation Error", MessageBoxButton.OK, MessageBoxImage.Error); }
         }
 
         private void InitializeClassVideo()
         {
-            ClassVideo = new ClassVideoTextModel
-            {
-                ClassID = 0,
-                EntryDate = DateTime.Now,
-                StartDate = DateTime.Now,
-                EndDate = DateTime.Now.AddDays(7),
-                Activate = false
-            };
+            ClassVideo = new ClassVideoTextModel { ClassID = 0, EntryDate = DateTime.Now, StartDate = DateTime.Now, EndDate = DateTime.Now.AddDays(7), Activate = false };
             _isActive = false;
         }
 
@@ -256,10 +264,28 @@ namespace View_WPF.ModelView_WPF
             OnPropertyChanged(nameof(IsActive));
         }
 
-        #region INotifyPropertyChanged Members
+        #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string name = null) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        protected void OnPropertyChanged([CallerMemberName] string name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         #endregion
+    }
+
+    // --- TreeView এর জন্য সাহায্যকারী ক্লাসসমূহ ---
+    public class SubjectTreeItem
+    {
+        public string Title { get; set; }
+        public ObservableCollection<SectionTreeItem> Sections { get; set; } = new ObservableCollection<SectionTreeItem>();
+    }
+
+    public class SectionTreeItem
+    {
+        public string Title { get; set; }
+        public ObservableCollection<VideoTreeItem> Videos { get; set; } = new ObservableCollection<VideoTreeItem>();
+    }
+
+    public class VideoTreeItem
+    {
+        public string Title { get; set; }
+        public string FilePath { get; set; }
     }
 }

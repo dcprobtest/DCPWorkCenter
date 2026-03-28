@@ -1,0 +1,117 @@
+﻿<Window x:Class="View_WPF.frmClass_ClassPlayer"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="DCP EduTrack Player" 
+        Width="1100" Height="700"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized" 
+        Background="#1E1E1E"
+        Foreground="White">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="PlaylistColumn" Width="300"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border x:Name="PlaylistBorder" Grid.Column="0" Background="#252526" BorderBrush="#3F3F46" BorderThickness="0,0,1,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Course Content" FontSize="18" FontWeight="Bold" Margin="15" Foreground="#007ACC"/>
+
+                <TreeView x:Name="TvPlaylist" Grid.Row="1" 
+                          Background="Transparent" BorderThickness="0"
+                          ItemsSource="{Binding CourseContent}" 
+                          SelectedItemChanged="TvPlaylist_SelectedItemChanged">
+
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Sections}">
+                            <Grid Margin="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="📚 "/>
+                                <TextBlock Grid.Column="1" Text="{Binding SubjectDesc}" Foreground="#DCDCDC" FontWeight="SemiBold"/>
+                            </Grid>
+
+                            <HierarchicalDataTemplate.ItemTemplate>
+                                <HierarchicalDataTemplate ItemsSource="{Binding Videos}">
+                                    <Grid Margin="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="📁 "/>
+                                        <TextBlock Grid.Column="1" Text="{Binding SectionDesc}" Foreground="#B4B4B4"/>
+                                    </Grid>
+
+                                    <HierarchicalDataTemplate.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="2">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" Text="{Binding Icon}" Margin="0,0,5,0"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding VideoTitle}" Foreground="#9CDCFE"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </HierarchicalDataTemplate.ItemTemplate>
+                                </HierarchicalDataTemplate>
+                            </HierarchicalDataTemplate.ItemTemplate>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Background="Black">
+                <MediaElement x:Name="Player" 
+                              LoadedBehavior="Manual" 
+                              UnloadedBehavior="Manual" 
+                              Stretch="Uniform" />
+
+                <WebBrowser x:Name="PdfViewer" Visibility="Collapsed" />
+
+                <Button x:Name="BtnTogglePlaylist" Content="☰ Playlist" 
+                        HorizontalAlignment="Left" VerticalAlignment="Top" 
+                        Margin="10" Padding="8,4" Background="#333" Foreground="White" 
+                        BorderThickness="0" Click="BtnTogglePlaylist_Click"/>
+            </Grid>
+
+            <Slider Grid.Row="1" x:Name="TimelineSlider"
+                    Minimum="0" Maximum="1" 
+                    Margin="10,5,10,5"
+                    Thumb.DragStarted="TimelineSlider_DragStarted"
+                    Thumb.DragCompleted="TimelineSlider_DragCompleted"/>
+
+            <Grid x:Name="ControlButtons" Grid.Row="2" HorizontalAlignment="Center" Margin="0,10,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" Content="⏮" Click="Previous_Click" Width="50" Margin="5" Background="#333" Foreground="White"/>
+                <Button Grid.Column="1" x:Name="BtnPlay" Content="⏵" Click="Play_Click" Width="60" Height="40" FontSize="20" Margin="5" Background="#007ACC" Foreground="White"/>
+                <Button Grid.Column="2" Content="⏸" Click="Pause_Click" Width="50" Margin="5" Background="#333" Foreground="White"/>
+                <Button Grid.Column="3" Content="⏹" Click="Stop_Click" Width="50" Margin="5" Background="#333" Foreground="White"/>
+                <Button Grid.Column="4" Content="⏭" Click="Next_Click" Width="50" Margin="5" Background="#333" Foreground="White"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

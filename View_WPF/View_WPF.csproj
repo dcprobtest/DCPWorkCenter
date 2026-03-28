@@ -1,46 +1,50 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UseWPF>true</UseWPF>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UseWPF>true</UseWPF>
+		<UseWindowsForms>true</UseWindowsForms>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="4859897-removebg-preview.png" />
-    <None Remove="mentor-laptop-icon-vector-isolated-contour-symbol-illustration-2AW9E0R-removebg-preview.png" />
-    <None Remove="numix-circle-for-windows-file-manager-blue-icon-png-icon-thumbnail-removebg-preview.png" />
-    <None Remove="Untitled_design-removebg-preview.png" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="4859897-removebg-preview.png" />
+		<None Remove="mentor-laptop-icon-vector-isolated-contour-symbol-illustration-2AW9E0R-removebg-preview.png" />
+		<None Remove="numix-circle-for-windows-file-manager-blue-icon-png-icon-thumbnail-removebg-preview.png" />
+		<None Remove="Untitled_design-removebg-preview.png" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.4" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+		<PackageReference Include="System.Data.SqlClient" Version="4.9.1" />
+		<PackageReference Include="System.Drawing.Common" Version="10.0.5" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\ModelView_WPF\ModelView_WPF.csproj" />
-    <ProjectReference Include="..\Model_WPF\Model_WPF.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\ModelView_WPF\ModelView_WPF.csproj" />
+		<ProjectReference Include="..\Model_WPF\Model_WPF.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Resource Include="4859897-removebg-preview.png" />
-    <Resource Include="mentor-laptop-icon-vector-isolated-contour-symbol-illustration-2AW9E0R-removebg-preview.png" />
-    <Resource Include="numix-circle-for-windows-file-manager-blue-icon-png-icon-thumbnail-removebg-preview.png" />
-    <Resource Include="Untitled_design-removebg-preview.png" />
-  </ItemGroup>
+	<ItemGroup>
+		<Resource Include="4859897-removebg-preview.png" />
+		<Resource Include="mentor-laptop-icon-vector-isolated-contour-symbol-illustration-2AW9E0R-removebg-preview.png" />
+		<Resource Include="numix-circle-for-windows-file-manager-blue-icon-png-icon-thumbnail-removebg-preview.png" />
+		<Resource Include="Untitled_design-removebg-preview.png" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Page Update="frmClass_ClassSubject.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="frm_ClassModule.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="frm_ClassSection.xaml">
-      <Generator>XamlIntelliSenseFileGenerator</Generator>
-    </Page>
-  </ItemGroup>
+	<ItemGroup>
+		<Page Update="frmClass_ClassSubject.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="frm_ClassModule.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="frm_ClassSection.xaml">
+			<Generator>XamlIntelliSenseFileGenerator</Generator>
+		</Page>
+	</ItemGroup>
 
 </Project>
