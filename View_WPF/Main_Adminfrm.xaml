@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Administrative Management" 
-        Height="850" Width="1050" 
+        Height="850" Width="1200" 
         WindowState="Maximized" 
         Background="White">
 
@@ -30,7 +30,7 @@
                                     </LinearGradientBrush>
                                 </Border.Background>
                                 <Border Background="White" CornerRadius="22">
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <ContentPresenter />
                                 </Border>
                             </Border>
                         </Grid>
@@ -68,12 +68,12 @@
     </Window.Resources>
 
     <Grid>
-        <Ellipse Fill="#22FF5722" Width="1000" Height="1000" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-200,-300,0,0">
+        <Ellipse Fill="#22FF5722" Width="800" Height="800" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-100,-200,0,0">
             <Ellipse.Effect>
                 <BlurEffect Radius="150"/>
             </Ellipse.Effect>
         </Ellipse>
-        <Ellipse Fill="#1500C853" Width="1400" Height="1200" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,-300,-300">
+        <Ellipse Fill="#1500C853" Width="1000" Height="900" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,-200,-200">
             <Ellipse.Effect>
                 <BlurEffect Radius="150"/>
             </Ellipse.Effect>
@@ -85,7 +85,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Text="Administrative Forms" FontSize="56" FontWeight="Bold" Foreground="Black" HorizontalAlignment="Center" Margin="0,0,0,60">
+            <TextBlock Text="Administrative Forms" FontSize="50" FontWeight="Bold" Foreground="Black" HorizontalAlignment="Center" Margin="0,0,0,50">
                 <TextBlock.RenderTransform>
                     <TranslateTransform x:Name="TitleMove" Y="40"/>
                 </TextBlock.RenderTransform>
@@ -93,92 +93,108 @@
 
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="450"/>
-                    <ColumnDefinition Width="450"/>
+                    <ColumnDefinition Width="350"/>
+                    <ColumnDefinition Width="350"/>
+                    <ColumnDefinition Width="350"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="260"/>
-                    <RowDefinition Height="260"/>
-                    <RowDefinition Height="260"/>
+                    <RowDefinition Height="240"/>
+                    <RowDefinition Height="240"/>
                 </Grid.RowDefinitions>
 
-                <Button Grid.Column="0" Grid.Row="0" Margin="25" Style="{StaticResource OptionCardStyle}">
+                <Button Grid.Column="0" Grid.Row="0" Margin="15" Style="{StaticResource OptionCardStyle}">
                     <Button.RenderTransform>
                         <TranslateTransform x:Name="Card1Move" Y="100"/>
                     </Button.RenderTransform>
-                    <Grid Width="380" Height="200">
+                    <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="2*"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <Viewbox Grid.Row="0" Height="80" Width="80" VerticalAlignment="Top" Margin="138,35,162,0">
-                            <Path Fill="#2196F3" Data="M12,18.54L19.37,12.8L21,14.07L12,21.07L3,14.07L4.62,12.81L12,18.54M12,16L3,9L12,2L21,9L12,16M12,4.53L6.26,9L12,13.47L17.74,9L12,4.53Z" Stretch="Fill" Width="59" Height="64"/>
+                        <Viewbox Grid.Row="0" Height="65" Width="65" VerticalAlignment="Bottom" Margin="0,0,0,10">
+                            <Path Fill="#2196F3" Data="M12,18.54L19.37,12.8L21,14.07L12,21.07L3,14.07L4.62,12.81L12,18.54M12,16L3,9L12,2L21,9L12,16M12,4.53L6.26,9L12,13.47L17.74,9L12,4.53Z"/>
                         </Viewbox>
-                        <TextBlock Text="Department" FontSize="28" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="101,125,0,0" Grid.RowSpan="2"/>
+                        <TextBlock Grid.Row="1" Text="Department" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                     </Grid>
                 </Button>
 
-                <Button Grid.Column="1" Grid.Row="0" Margin="25" Style="{StaticResource OptionCardStyle}">
+                <Button Grid.Column="1" Grid.Row="0" Margin="15" Style="{StaticResource OptionCardStyle}">
                     <Button.RenderTransform>
                         <TranslateTransform x:Name="Card2Move" Y="100"/>
                     </Button.RenderTransform>
-                    <Grid Width="380" Height="200">
+                    <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="2*"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <Viewbox Height="80" Width="80" VerticalAlignment="Top" Margin="148,39,152,0">
-                            <Path Fill="#E91E63" Data="M12,12C14.21,12 16,10.21 16,8C16,5.79 14.21,4 12,4C9.79,4 8,5.79 8,8C8,10.21 9.79,12 12,12M12,14C9.33,14 4,15.33 4,18V20H20V18C20,15.67 14.67,14 12,14Z" Height="24" Stretch="Fill" Width="24"/>
+                        <Viewbox Grid.Row="0" Height="65" Width="65" VerticalAlignment="Bottom" Margin="0,0,0,10">
+                            <Path Fill="#E91E63" Data="M12,12C14.21,12 16,10.21 16,8C16,5.79 14.21,4 12,4C9.79,4 8,5.79 8,8C8,10.21 9.79,12 12,12M12,14C9.33,14 4,15.33 4,18V20H20V18C20,15.67 14.67,14 12,14Z"/>
                         </Viewbox>
-                        <TextBlock Text="Designation" FontSize="28" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="120,123,0,0" Grid.RowSpan="2"/>
+                        <TextBlock Grid.Row="1" Text="Designation" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                     </Grid>
                 </Button>
 
-                <Button Grid.Column="0" Grid.Row="1" Margin="25" Style="{StaticResource OptionCardStyle}">
+                <Button Grid.Column="2" Grid.Row="0" Margin="15" Style="{StaticResource OptionCardStyle}">
                     <Button.RenderTransform>
                         <TranslateTransform x:Name="Card3Move" Y="100"/>
                     </Button.RenderTransform>
-                    <Grid Width="380" Height="200">
+                    <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="2*"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <Viewbox Grid.Row="0" Height="80" Width="80" VerticalAlignment="Top" Margin="132,31,168,0">
-                            <Path Fill="#FF9800" Data="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        <Viewbox Grid.Row="0" Height="65" Width="65" VerticalAlignment="Bottom" Margin="0,0,0,10">
+                            <Path Fill="#FF9800" Data="M13,9V3.5L18.5,9M6,2H14L20,8V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V4A2,2 0 0,1 6,2M11,15V13H8V15H11M16,15V13H13V15H16M11,19V17H8V19H11M16,19V17H13V19H16Z"/>
                         </Viewbox>
-                        <TextBlock Text="Document Info" FontSize="28" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="88,123,0,0" Grid.RowSpan="2"/>
+                        <TextBlock Grid.Row="1" Text="Document Info" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                     </Grid>
                 </Button>
 
-                <Button Grid.Column="1" Grid.Row="1" Margin="25" Style="{StaticResource OptionCardStyle}">
+                <Button Grid.Column="0" Grid.Row="1" Margin="15" Style="{StaticResource OptionCardStyle}">
                     <Button.RenderTransform>
                         <TranslateTransform x:Name="Card4Move" Y="100"/>
                     </Button.RenderTransform>
-                    <Grid Width="380" Height="200">
+                    <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="2*"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <Viewbox Grid.Row="0" Height="80" Width="80" VerticalAlignment="Bottom">
-                            <Path Fill="#673AB7" Data="M13,20.08L12,20L9,20L6,20L5,20.08C3.85,20.47 3,21.13 3,22V24H21V22C21,21.13 20.15,20.47 19,20.08M12,4L15,4L15,18L12,18L9,18L9,4L12,4M12,0L7,0V2H17V0L12,0Z"/>
+                        <Viewbox Grid.Row="0" Height="65" Width="65" VerticalAlignment="Bottom" Margin="0,0,0,10">
+                            <Path Fill="#673AB7" Data="M12,5.5A3.5,3.5 0 0,1 15.5,9A3.5,3.5 0 0,1 12,12.5A3.5,3.5 0 0,1 8.5,9A3.5,3.5 0 0,1 12,5.5M5,20V18C5,15.79 8.13,14 12,14C15.87,14 19,15.79 19,18V20H5M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
                         </Viewbox>
-                        <TextBlock Text="Employee Info" FontSize="28" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,127,0,0" Grid.RowSpan="2"/>
+                        <TextBlock Grid.Row="1" Text="Employee Info" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                     </Grid>
                 </Button>
 
-                <Button Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Margin="25" Width="500" Style="{StaticResource OptionCardStyle}" HorizontalAlignment="Center">
+                <Button Grid.Column="1" Grid.Row="1" Margin="15" Style="{StaticResource OptionCardStyle}">
                     <Button.RenderTransform>
                         <TranslateTransform x:Name="Card5Move" Y="100"/>
                     </Button.RenderTransform>
-                    <Grid Width="450" Height="200">
+                    <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="2*"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <Viewbox Grid.Row="0" Height="80" Width="80" VerticalAlignment="Bottom">
-                            <Path Fill="#009688" Data="M5,4H19A2,2 0 0,1 21,6V18A2,2 0 0,1 19,20H5A2,2 0 0,1 3,18V6A2,2 0 0,1 5,4M5,8V12H11V8H5M13,8V12H19V8H13M5,14V18H11V14H5M13,14V18H19V14H13Z"/>
+                        <Viewbox Grid.Row="0" Height="65" Width="65" VerticalAlignment="Bottom" Margin="0,0,0,10">
+                            <Path Fill="#009688" Data="M4,3H20A2,2 0 0,1 22,5V19A2,2 0 0,1 20,21H4A2,2 0 0,1 2,19V5A2,2 0 0,1 4,3M4,7V11H11V7H4M13,7V11H20V7H13M4,13V17H11V13H4M13,13V17H20V13H13Z"/>
                         </Viewbox>
-                        <TextBlock Grid.Row="1" Text="User Table" FontSize="28" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0"/>
+                        <TextBlock Grid.Row="1" Text="User Table" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    </Grid>
+                </Button>
+
+                <Button Grid.Column="2" Grid.Row="1" Margin="15" Style="{StaticResource OptionCardStyle}">
+                    <Button.RenderTransform>
+                        <TranslateTransform x:Name="Card6Move" Y="100"/>
+                    </Button.RenderTransform>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="2*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Viewbox Grid.Row="0" Height="65" Width="65" VerticalAlignment="Bottom" Margin="0,0,0,10">
+                            <Path Fill="#2B579A" Data="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M15.2,19H13.8L12.9,15.1L12,19H10.6L9.1,13H10.5L11.5,17.4L12.4,13.4H13.5L14.4,17.4L15.4,13H16.7L15.2,19M13,9V3.5L18.5,9H13Z" Stretch="Uniform"/>
+                        </Viewbox>
+                        <TextBlock Grid.Row="1" Text="Create Docx" FontSize="24" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                     </Grid>
                 </Button>
             </Grid>
@@ -214,6 +230,11 @@
                             </DoubleAnimation.EasingFunction>
                         </DoubleAnimation>
                         <DoubleAnimation Storyboard.TargetName="Card5Move" Storyboard.TargetProperty="Y" To="0" BeginTime="0:0:0.5" Duration="0:0:0.8">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetName="Card6Move" Storyboard.TargetProperty="Y" To="0" BeginTime="0:0:0.6" Duration="0:0:0.8">
                             <DoubleAnimation.EasingFunction>
                                 <CubicEase EasingMode="EaseOut"/>
                             </DoubleAnimation.EasingFunction>
