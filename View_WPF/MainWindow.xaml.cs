@@ -13,8 +13,9 @@ namespace View_WPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        // লগইন করা ইউজারের আইডি ধরে রাখার জন্য ভেরিয়েবল
+        // লগইন করা ইউজারের আইডি এবং নাম ধরে রাখার জন্য ভেরিয়েবল
         private string _loggedInUID;
+        private string _loggedInName;
 
         // ডিফল্ট কনস্ট্রাক্টর (যদি প্রয়োজন হয়)
         public MainWindow()
@@ -22,11 +23,12 @@ namespace View_WPF
             InitializeComponent();
         }
 
-        // লগইন উইন্ডো থেকে UID সহ কল করার জন্য এই কনস্ট্রাক্টরটি ব্যবহার হবে
-        public MainWindow(string uid)
+        // লগইন উইন্ডো থেকে UID এবং Name সহ কল করার জন্য এই কনস্ট্রাক্টরটি ব্যবহার হবে
+        public MainWindow(string uid, string name)
         {
             InitializeComponent();
             _loggedInUID = uid;
+            _loggedInName = name;
         }
 
         // ভিডিও ক্লাস (Class Player) বাটনের ক্লিক ইভেন্ট
@@ -35,7 +37,6 @@ namespace View_WPF
             try
             {
                 // এখানে _loggedInUID প্যারামিটার হিসেবে frmClass_ClassPlayer-এ পাঠানো হচ্ছে
-                // যাতে এই UID অনুযায়ী স্ক্রিনশট ফোল্ডার তৈরি হতে পারে
                 frmClass_ClassPlayer classPlayer = new frmClass_ClassPlayer(_loggedInUID);
                 classPlayer.Show();
             }
@@ -53,13 +54,25 @@ namespace View_WPF
                 // frmAdmin_DocInfo উইন্ডোটি ওপেন করার সময় UID প্যারামিটার হিসেবে পাঠানো হচ্ছে
                 frmAdmin_DocInfo docManager = new frmAdmin_DocInfo(_loggedInUID);
                 docManager.Show();
-
-                // যদি চান ফাইল ম্যানেজার ওপেন হলে মেইন উইন্ডো বন্ধ হয়ে যাবে, তবে নিচের লাইনটি ব্যবহার করুন:
-                //this.Close();
             }
             catch (Exception ex)
             {
                 MessageBox.Show("ফাইল ম্যানেজার ওপেন করতে সমস্যা হচ্ছে: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // Admin Forms বাটনের ক্লিক ইভেন্ট
+        private void btnAdminForms_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // এখানে _loggedInUID এবং _loggedInName প্যারামিটার হিসেবে Main_Adminfrm-এ পাঠানো হচ্ছে
+                Main_Adminfrm adminForms = new Main_Adminfrm(_loggedInUID, _loggedInName);
+                adminForms.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("এডমিন ফর্ম ওপেন করতে সমস্যা হচ্ছে: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

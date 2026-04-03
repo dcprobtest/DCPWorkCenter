@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:View_WPF"
              StartupUri="Main_Adminfrm.xaml">
     <Application.Resources>
-         
+
     </Application.Resources>
 </Application>

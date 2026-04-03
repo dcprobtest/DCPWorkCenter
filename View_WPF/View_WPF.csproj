@@ -17,6 +17,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="FreeSpire.Doc" Version="12.2.0" />
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.4" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="System.Data.SqlClient" Version="4.9.1" />
@@ -45,6 +46,12 @@
 		<Page Update="frm_ClassSection.xaml">
 			<Generator>XamlIntelliSenseFileGenerator</Generator>
 		</Page>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="Asset\Offer Letter.docx">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 </Project>

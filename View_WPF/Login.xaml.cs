@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Text.Json; // JsonElement ব্যবহারের জন্য
 
 // কনফ্লিক্ট দূর করার জন্য নিচের Alias গুলো যোগ করা হলো
 using MessageBox = System.Windows.MessageBox;
@@ -26,7 +27,7 @@ namespace View_WPF
 
         private async void btnAuthenticate_Click(object sender, RoutedEventArgs e)
         {
-            // UI থেকে ইনপুট নেওয়া (নিশ্চিত করুন x:Name গুলো ঠিক আছে)
+            // UI থেকে ইনপুট নেওয়া
             string uid = txtUserId.Text.Trim();
             string password = txtPassword.Password.Trim();
 
@@ -37,7 +38,7 @@ namespace View_WPF
                 return;
             }
 
-            // বাটন ডিজেবল করা (যাতে বারবার ক্লিক না হয়)
+            // বাটন ডিজেবল করা
             btnAuthenticate.IsEnabled = false;
 
             try
@@ -52,18 +53,30 @@ namespace View_WPF
                     };
 
                     // API তে POST রিকোয়েস্ট পাঠানো
-                    // আপনার কন্ট্রোলারের রুট অনুযায়ী 'api/Data/Login' ব্যবহার করা হয়েছে
                     var response = await client.PostAsJsonAsync($"{apiBaseUrl}api/Data/Login", loginRequest);
 
                     if (response.IsSuccessStatusCode)
                     {
-                        // ১. টেক্সটবক্স থেকে UID-টি নিন
+                        // ১. API রেসপন্স থেকে ডাটা পড়া (যাতে নাম পাওয়া যায়)
+                        var jsonString = await response.Content.ReadAsStringAsync();
+                        var loginData = JsonSerializer.Deserialize<JsonElement>(jsonString);
+
+                        // আপনার এপিআই যদি অবজেক্ট রিটার্ন করে যাতে 'FName' বা 'Name' আছে
                         string authenticatedUID = txtUserId.Text.Trim();
+                        string authenticatedName = "";
 
-                        // লগইন সাকসেসফুল মেসেজটি বাদ দেওয়া হয়েছে
+                        // API থেকে নাম বের করার চেষ্টা (আপনার API এর প্রপার্টি নাম অনুযায়ী এটি চেক করুন)
+                        if (loginData.TryGetProperty("FName", out var nameProp))
+                        {
+                            authenticatedName = nameProp.GetString();
+                        }
+                        else if (loginData.TryGetProperty("username", out var userProp))
+                        {
+                            authenticatedName = userProp.GetString();
+                        }
 
-                        // ২. MainWindow ওপেন করার সময় UID প্যারামিটার হিসেবে পাঠিয়ে দিন
-                        MainWindow mainWin = new MainWindow(authenticatedUID);
+                        // ২. MainWindow ওপেন করার সময় UID এবং Name উভয়ই প্যারামিটার হিসেবে পাঠিয়ে দিন
+                        MainWindow mainWin = new MainWindow(authenticatedUID, authenticatedName);
                         mainWin.Show();
 
                         // বর্তমান লগইন উইন্ডো বন্ধ করা
@@ -83,7 +96,6 @@ namespace View_WPF
             }
             catch (Exception ex)
             {
-                // API রান না থাকলে বা নেটওয়ার্ক সমস্যা থাকলে এই এরর দেখাবে
                 MessageBox.Show($"Could not connect to API: {ex.Message}", "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
