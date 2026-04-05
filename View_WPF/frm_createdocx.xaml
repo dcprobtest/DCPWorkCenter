@@ -145,7 +145,26 @@
                         </ComboBox>
 
                         <TextBlock Grid.Row="2" Grid.Column="1" Text="Candidate ID" Margin="10,0,0,2" FontWeight="SemiBold"/>
-                        <ComboBox x:Name="cmbCandidateID" IsEditable="True" Grid.Row="3" Grid.Column="1" Margin="10,0,10,10" KeyUp="cmbCandidateID_KeyUp"/>
+
+                        <ComboBox x:Name="cmbCandidateID" 
+                                  Grid.Row="3" Grid.Column="1" 
+                                  Margin="10,0,10,10" 
+                                  IsEditable="True" 
+                                  SelectedValuePath="UID" 
+                                  KeyUp="cmbCandidateID_KeyUp" 
+                                  SelectionChanged="cmbCandidateID_SelectionChanged">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding UID}" FontWeight="Bold" Width="60"/>
+                                        <TextBlock Text=" - " Foreground="Gray"/>
+                                        <TextBlock Text="{Binding FName}"/>
+                                        <TextBlock Text=" "/>
+                                        <TextBlock Text="{Binding LName}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
 
                         <TextBlock Grid.Row="4" Grid.ColumnSpan="2" Text="Job Designation" Margin="10,0,0,2" FontWeight="SemiBold"/>
                         <TextBox x:Name="txtDesignation" Grid.Row="5" Grid.ColumnSpan="2" Margin="10,0,10,10"/>
@@ -154,7 +173,8 @@
                         <TextBox x:Name="txtResponsibility" Grid.Row="7" Grid.ColumnSpan="2" Margin="10,0,10,10" Height="70" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"/>
 
                         <TextBlock Grid.Row="8" Grid.Column="0" Text="Job Start Date" Margin="10,0,0,2" FontWeight="SemiBold"/>
-                        <DatePicker x:Name="dtpStartDate" Grid.Row="9" Grid.Column="0" Margin="10,0,10,10"/>
+                        <!--<DatePicker x:Name="dtpStartDate"  Grid.Row="8" Grid.Column="0" Margin="12,17,8,11" Grid.RowSpan="2"/>-->
+                        <DatePicker x:Name="dtpStartDate" SelectedDateChanged="dtpStartDate_SelectedDateChanged" Grid.Row="8" Grid.Column="0" Margin="12,17,8,11" Grid.RowSpan="2"/>
 
                         <TextBlock Grid.Row="8" Grid.Column="1" Text="Job End Date" Margin="10,0,0,2" FontWeight="SemiBold"/>
                         <DatePicker x:Name="dtpEndDate" Grid.Row="9" Grid.Column="1" Margin="10,0,10,10"/>

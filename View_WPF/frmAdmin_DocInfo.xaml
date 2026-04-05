@@ -52,6 +52,7 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Text="UID: " FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="#2C3E50"/>
@@ -68,6 +69,11 @@
                               SelectedValuePath="Content"
                               SelectedValue="{Binding SelectedDocType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                         <ComboBoxItem Content="Driving Licence" FontWeight="Normal"/>
+                        <ComboBoxItem Content="SSN" FontWeight="Normal"/>
+                        <ComboBoxItem Content="I-20" FontWeight="Normal"/>
+                        <ComboBoxItem Content="I-9" FontWeight="Normal"/>
+                        <ComboBoxItem Content="EAD" FontWeight="Normal"/>
+                        <ComboBoxItem Content="I-983" FontWeight="Normal"/>
                         <ComboBoxItem Content="Certificate" FontWeight="Normal"/>
                         <ComboBoxItem Content="Passport" FontWeight="Normal"/>
                         <ComboBoxItem Content="Resume" FontWeight="Normal"/>
@@ -77,6 +83,7 @@
 
                     <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="10,12,0,0">
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
@@ -203,8 +210,9 @@
                               VerticalGridLinesBrush="#DCDDE1" BorderThickness="0">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="100"/>
-                            <DataGridTextColumn Header="Path" Binding="{Binding Path}" Width="*"/>
-                            <DataGridTextColumn Header="Action" Binding="{Binding Action}" Width="80"/>
+                            <DataGridTextColumn Header="EntryDate" Binding="{Binding EntryDate, StringFormat='dd-MM-yyyy'}" Width="*"/>
+                            <DataGridTextColumn Header="StartDate" Binding="{Binding StartDate, StringFormat='dd-MM-yyyy'}" Width="*"/>
+                            <DataGridTextColumn Header="EndDate" Binding="{Binding EndDate, StringFormat='dd-MM-yyyy'}" Width="*"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Border>

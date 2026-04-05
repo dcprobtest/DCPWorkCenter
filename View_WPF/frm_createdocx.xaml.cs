@@ -1,4 +1,4 @@
-﻿using DCPWorkCenter_Api.Models; // নিশ্চিত করুন প্রোজেক্ট রেফারেন্স অ্যাড করা আছে
+﻿using View_WPF.Model; // আপনার মডেলের সঠিক নেমস্পেস
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,17 +16,19 @@ namespace View_WPF
     public partial class frm_createdocx : Window
     {
         private readonly string _baseUrl = "https://localhost:7073/api/Data/";
-        private List<string> _allUserIds = new List<string>();
-        private string _currentLoggedInUID;
-        private string _currentLoggedInName; // লগইন করা ইউজারের নাম স্টোর করার জন্য
-        private string _selectedCandidateName = ""; // ক্যান্ডিডেটের নাম স্টোর করার জন্য ভ্যারিয়েবল
 
-        // কনস্ট্রাক্টরে loggedInName প্যারামিটার যোগ করা হয়েছে
+        // আপনার মডেল অনুযায়ী 'EmployeeInfo' কে পরিবর্তন করে 'EmpInfoModel' করা হলো
+        private List<EmpInfoModel> _allEmployees = new List<EmpInfoModel>();
+
+        private string _currentLoggedInUID;
+        private string _currentLoggedInName;
+        private string _selectedCandidateName = "";
+
         public frm_createdocx(string loggedInUID, string loggedInName)
         {
             InitializeComponent();
             _currentLoggedInUID = loggedInUID;
-            _currentLoggedInName = loggedInName; // নাম রিসিভ করা হলো
+            _currentLoggedInName = loggedInName;
             LoadInitialData();
         }
 
@@ -34,12 +36,10 @@ namespace View_WPF
         {
             try
             {
-                // ১. সরাসরি রিসিভ করা আইডি UI-তে সেট করা
                 txtUserID.Text = _currentLoggedInUID;
-
                 using HttpClient client = new HttpClient();
 
-                // --- নতুন যোগ করা অংশ: API থেকে UID অনুযায়ী ইউজার নেম নিয়ে আসা ---
+                // --- লগইন করা ইউজারের নাম নিয়ে আসা ---
                 try
                 {
                     var nameResponse = await client.GetAsync(_baseUrl + $"GetUserName/{_currentLoggedInUID}");
@@ -56,7 +56,6 @@ namespace View_WPF
                     }
                     else
                     {
-                        // যদি এপিআই কল ফেল করে তবে রিসিভ করা নামটাই বসিয়ে দেওয়া হবে
                         txtUserName.Text = _currentLoggedInName;
                     }
                 }
@@ -64,14 +63,22 @@ namespace View_WPF
                 {
                     txtUserName.Text = _currentLoggedInName;
                 }
-                // --- শেষ ---
 
-                // ২. ক্যান্ডিডেট আইডি ড্রপডাউন ডাটা লোড
-                var users = await client.GetFromJsonAsync<List<JsonElement>>(_baseUrl + "GetUsers");
-                if (users != null)
+                // --- ক্যান্ডিডেট ডাটা লোড (GetEmployeeInfo ব্যবহার করে) ---
+                var response = await client.GetAsync(_baseUrl + "GetEmployeeInfo");
+                if (response.IsSuccessStatusCode)
                 {
-                    _allUserIds = users.Select(u => u.GetProperty("uid").ToString()).ToList();
-                    cmbCandidateID.ItemsSource = _allUserIds;
+                    var jsonString = await response.Content.ReadAsStringAsync();
+                    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+                    // এখানেও 'EmpInfoModel' ব্যবহার করা হলো
+                    var employees = JsonSerializer.Deserialize<List<EmpInfoModel>>(jsonString, options);
+
+                    if (employees != null)
+                    {
+                        _allEmployees = employees;
+                        cmbCandidateID.ItemsSource = _allEmployees;
+                    }
                 }
             }
             catch (Exception ex)
@@ -80,38 +87,30 @@ namespace View_WPF
             }
         }
 
-        // ক্যান্ডিডেট আইডি সিলেক্ট করলে নাম নিয়ে আসার মেথড
-        private async void cmbCandidateID_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void cmbCandidateID_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (cmbCandidateID.SelectedItem == null) return;
-
-            string selectedID = cmbCandidateID.SelectedItem.ToString();
-            try
+            // এখানেও 'EmpInfoModel' ব্যবহার করা হলো এবং আপনার মডেলের FName ও LName প্রপার্টি ব্যবহার করা হয়েছে
+            if (cmbCandidateID.SelectedItem is EmpInfoModel selectedEmp)
             {
-                using HttpClient client = new HttpClient();
-                var response = await client.GetAsync(_baseUrl + $"GetEmployeeDetail/{selectedID}");
+                // ক্যান্ডিডেটের পূর্ণ নাম সেট করা
+                _selectedCandidateName = $"{selectedEmp.FName} {selectedEmp.LName}".Trim();
 
-                if (response.IsSuccessStatusCode)
-                {
-                    var jsonString = await response.Content.ReadAsStringAsync();
-                    var empDetail = JsonSerializer.Deserialize<JsonElement>(jsonString);
-
-                    string fName = empDetail.TryGetProperty("FName", out var f) ? f.GetString() : "";
-                    string lName = empDetail.TryGetProperty("LName", out var l) ? l.GetString() : "";
-
-                    _selectedCandidateName = $"{fName} {lName}".Trim();
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Windows.MessageBox.Show("Error fetching candidate name: " + ex.Message);
+                // সিলেকশন হওয়ার পর টেক্সটবক্সে শুধু আইডি দেখানোর জন্য
+                Dispatcher.BeginInvoke(new Action(() => {
+                    cmbCandidateID.Text = selectedEmp.UID;
+                }), System.Windows.Threading.DispatcherPriority.Input);
             }
         }
 
         private void cmbCandidateID_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
         {
+            if (e.Key == System.Windows.Input.Key.Enter || e.Key == System.Windows.Input.Key.Down || e.Key == System.Windows.Input.Key.Up) return;
+
             string searchText = cmbCandidateID.Text;
-            var filteredList = _allUserIds.Where(id => id.StartsWith(searchText)).ToList();
+            var filteredList = _allEmployees
+                .Where(emp => emp.UID != null && emp.UID.StartsWith(searchText, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
             cmbCandidateID.ItemsSource = filteredList;
             cmbCandidateID.IsDropDownOpen = true;
         }
@@ -120,7 +119,6 @@ namespace View_WPF
         {
             try
             {
-                // ১. টেমপ্লেট পাথ ধরা (App ডিরেক্টরি থেকে)
                 string templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Asset", "Offer Letter.docx");
 
                 if (!File.Exists(templatePath))
@@ -134,16 +132,11 @@ namespace View_WPF
                 string fileName = $"{candidateID}_{docType}.docx";
                 string tempFilePath = Path.Combine(Path.GetTempPath(), fileName);
 
-                // ২. ফাইল জেনারেট করা (FreeSpire.Doc ব্যবহার করে)
                 Document document = new Document();
                 document.LoadFromFile(templatePath);
 
-                // টেক্সট রিপ্লেস করার সঠিক মেথড
                 document.Replace("<Date>", DateTime.Now.ToString("MMMM dd, yyyy"), true, true);
-
-                // এখানে আপনার রিকোয়ারমেন্ট অনুযায়ী ক্যান্ডিডেটের নাম বসানো হয়েছে
                 document.Replace("<EmployeeName>", _selectedCandidateName, true, true);
-
                 document.Replace("<Designation>", txtDesignation.Text, true, true);
                 document.Replace("<DocumentType>", docType ?? "", true, true);
                 document.Replace("<JobResponsibility>", txtResponsibility.Text, true, true);
@@ -152,21 +145,17 @@ namespace View_WPF
                 document.Replace("<EndDate>", dtpEndDate.SelectedDate?.ToString("MMMM dd, yyyy") ?? "", true, true);
                 document.Replace("<HourlyRate>", txtHourlyRate.Text, true, true);
 
-                // টেম্পোরারি ফোল্ডারে সেভ করা
                 document.SaveToFile(tempFilePath, FileFormat.Docx);
                 document.Close();
 
-                // ৩. ফাইল এবং ডাটা API-তে পাঠানো (MultipartFormDataContent ব্যবহার করে)
                 using HttpClient client = new HttpClient();
                 using var content = new MultipartFormDataContent();
 
-                // ফাইল যোগ করা
                 byte[] fileBytes = File.ReadAllBytes(tempFilePath);
                 var fileContent = new ByteArrayContent(fileBytes);
                 fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
                 content.Add(fileContent, "file", fileName);
 
-                // অন্যান্য ডাটা যোগ করা
                 content.Add(new StringContent(txtUserID.Text), "LoggedInUserID");
                 content.Add(new StringContent(candidateID), "CandidateID");
                 content.Add(new StringContent(docType ?? ""), "SelectedDocType");
@@ -183,10 +172,7 @@ namespace View_WPF
                 if (response.IsSuccessStatusCode)
                 {
                     System.Windows.MessageBox.Show("Success: Document generated in WPF and uploaded to Server!");
-
-                    // টেম্পোরারি ফাইল মুছে ফেলা
                     if (File.Exists(tempFilePath)) File.Delete(tempFilePath);
-
                     this.Close();
                 }
                 else
@@ -198,6 +184,14 @@ namespace View_WPF
             catch (Exception ex)
             {
                 System.Windows.MessageBox.Show("Error: " + ex.Message);
+            }
+        }
+
+        private void dtpStartDate_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (dtpStartDate.SelectedDate.HasValue && dtpEndDate.SelectedDate == null)
+            {
+                dtpEndDate.SelectedDate = dtpStartDate.SelectedDate.Value.AddYears(1);
             }
         }
     }
