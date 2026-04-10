@@ -227,6 +227,7 @@
 
                         <TextBlock Grid.Row="0" Text="Entry By UID" FontSize="11" Foreground="#64748B" Margin="0,0,0,2"/>
                         <TextBox x:Name="txtEntryByUID" Grid.Row="1" Style="{StaticResource ModernTextBox}" FontWeight="Bold" Margin="0,0,0,10"
+                                 IsReadOnly="True"
                                  Text="{Binding ClassVideo.EntryByUID}"/>
 
                         <TextBlock Grid.Row="2" Text="Entry Date" FontSize="11" Foreground="#64748B" Margin="0,0,0,2"/>

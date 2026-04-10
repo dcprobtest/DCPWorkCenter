@@ -28,6 +28,7 @@ namespace View_WPF.ModelView_WPF
         private string _serverStatus = "Online";
         private DateTime _startDate = DateTime.Now;
         private DateTime _endDate = DateTime.Now;
+        private string _selectedDocType; // নতুন প্রপার্টি ব্যাকলাইন লজিকের জন্য
 
         public string UID
         {
@@ -54,6 +55,18 @@ namespace View_WPF.ModelView_WPF
         public string ServerStatus { get => _serverStatus; set { _serverStatus = value; OnPropertyChanged(); } }
         public DateTime StartDate { get => _startDate; set { _startDate = value; OnPropertyChanged(); } }
         public DateTime EndDate { get => _endDate; set { _endDate = value; OnPropertyChanged(); } }
+
+        // ComboBox এর সিলেক্টেড আইটেমের জন্য প্রপার্টি
+        public string SelectedDocType
+        {
+            get => _selectedDocType;
+            set
+            {
+                _selectedDocType = value;
+                OnPropertyChanged();
+                SetDatesByDocumentType(_selectedDocType); // টাইপ চেঞ্জ হলে ডেট সেট হবে
+            }
+        }
 
         // --- Properties for Popup Window ---
         private bool _isPopupVisible = false;
@@ -95,15 +108,16 @@ namespace View_WPF.ModelView_WPF
         public ICommand UploadInPopupCommand { get; }
         public ICommand SavePopupDataCommand { get; }
         public ICommand DownloadCommand { get; }
-        public ICommand BackCommand { get; } // নতুন ব্যাক বাটন কমান্ড
+        public ICommand BackCommand { get; }
 
         public UserDocInfoViewModel()
         {
             SaveCommand = new RelayCommand(async (obj) => await ExecuteSave());
 
             AddCommand = new RelayCommand(async (obj) => {
-                string docType = obj as string;
+                string docType = obj as string ?? SelectedDocType; // টাইপ না থাকলে সিলেক্টেড টাইপ নিবে
                 if (string.IsNullOrEmpty(UID)) { MessageBox.Show("Please enter or select a UID first!"); return; }
+                if (string.IsNullOrEmpty(docType)) { MessageBox.Show("Please select a Document Type!"); return; }
 
                 OpenFileDialog openFileDialog = new OpenFileDialog { Filter = "Images|*.png;*.jpg;*.jpeg;*.pdf" };
                 if (openFileDialog.ShowDialog() == true)
@@ -122,8 +136,12 @@ namespace View_WPF.ModelView_WPF
                 if (string.IsNullOrEmpty(UID)) { MessageBox.Show("UID is missing!"); return; }
 
                 PopupEmployerName = this.EmployeeName;
-                PopupTitle = obj as string;
+                PopupTitle = obj as string ?? SelectedDocType;
                 IsPopupVisible = true;
+
+                // পপআপ খোলার সময়ও ডেট সেট করে দেওয়া
+                PopupStartDate = this.StartDate;
+                PopupEndDate = this.EndDate;
             });
 
             ClosePopupCommand = new RelayCommand((obj) => {
@@ -176,13 +194,43 @@ namespace View_WPF.ModelView_WPF
                 }
             });
 
-            // --- ব্যাক বাটন লজিক ---
             BackCommand = new RelayCommand((obj) => {
                 if (obj is Window currentWindow)
                 {
-                    currentWindow.Close(); // এটি বর্তমান উইন্ডো বন্ধ করে দিবে
+                    currentWindow.Close();
                 }
             });
+        }
+
+        // --- তারিখ ক্যালকুলেশন লজিক ---
+        private void SetDatesByDocumentType(string docType)
+        {
+            if (string.IsNullOrEmpty(docType)) return;
+
+            StartDate = DateTime.Now; // এন্ট্রি ডেট বা আজ থেকেই শুরু
+
+            switch (docType)
+            {
+                case "Passport":
+                    EndDate = StartDate.AddYears(10); // সাধারণত ১০ বছর
+                    break;
+                case "Driving Licence":
+                    EndDate = StartDate.AddYears(5); // সাধারণত ৫ বছর
+                    break;
+                case "I-20":
+                case "EAD":
+                case "I-983":
+                    EndDate = StartDate.AddYears(1); // ১ বছর মেয়াদ
+                    break;
+                case "Resume":
+                case "Picture":
+                case "Certificate":
+                    EndDate = StartDate.AddYears(1); // এইগুলোর ফিক্সড মেয়াদ না থাকলেও ডিফল্ট ১ বছর
+                    break;
+                default:
+                    EndDate = StartDate.AddYears(1);
+                    break;
+            }
         }
 
         private async Task LoadEmployeeNameAsync(string uid)
@@ -212,7 +260,14 @@ namespace View_WPF.ModelView_WPF
 
         private void AddDocumentToGrid(string type, string path)
         {
-            var newDoc = new DocumentModel { Type = type, Path = path, Action = "View" };
+            var newDoc = new DocumentModel
+            {
+                Type = type,
+                Path = path,
+                Action = "View",
+                CustomStartDate = this.StartDate,
+                CustomEndDate = this.EndDate
+            };
             Documents.Add(newDoc);
             SelectedDocument = newDoc;
         }
@@ -269,7 +324,7 @@ namespace View_WPF.ModelView_WPF
                 EmployeeName = this.EmployeeName,
                 StartDate = this.StartDate.ToString("yyyy-MM-dd"),
                 EndDate = this.EndDate.ToString("yyyy-MM-dd"),
-                EntryDate = DateTime.Now,
+                EntryDate = DateTime.Now.ToString("yyyy-MM-dd"),
                 Activate = "Y",
                 DocumentList = this.Documents.Select(d => new {
                     Type = d.Type,

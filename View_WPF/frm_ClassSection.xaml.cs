@@ -14,11 +14,20 @@ namespace View_WPF
             // এটি ডিজাইনের সাথে কোডকে কানেক্ট করে।
             InitializeComponent();
 
-            // ViewModel সেট করা।
+            // ViewModel সেট করা (ডিফল্ট কনস্ট্রাক্টর কল হলে)
             if (this.DataContext == null)
             {
-                this.DataContext = new ClassSectionViewModel();
+                this.DataContext = new ClassSectionViewModel(null);
             }
+        }
+
+        // নতুন কনস্ট্রাক্টর যা UID রিসিভ করবে এবং ViewModel-এ পাস করবে
+        public frm_ClassSection(string uid)
+        {
+            InitializeComponent();
+
+            // ViewModel সেট করা এবং UID পাস করা
+            this.DataContext = new ClassSectionViewModel(uid);
         }
     }
 }

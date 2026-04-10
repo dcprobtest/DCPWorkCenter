@@ -40,6 +40,21 @@ namespace View_WPF
             _userName = name; // প্যারামিটার থেকে আসা নাম সেভ করে রাখা হলো
         }
 
+        // User Table বাটনের ক্লিক ইভেন্ট
+        private void BtnUserTable_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // frmAdmin_User উইন্ডোটি ওপেন করা হচ্ছে
+                frmAdmin_User userWin = new frmAdmin_User();
+                userWin.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error opening User Table: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         // Create Docx বাটনের ক্লিক ইভেন্ট
         private void BtnCreateDocx_Click(object sender, RoutedEventArgs e)
         {

@@ -14,7 +14,8 @@ namespace View_WPF.ModelView_WPF
 {
     public class UserViewModel : INotifyPropertyChanged
     {
-        private readonly string _baseUrl = "https://localhost:7169/api/User/";
+        // 'User' পরিবর্তন করে 'Data' করা হলো
+        private readonly string _baseUrl = "https://localhost:7073/api/Data/";
 
         // Properties
         public string UID { get; set; }
@@ -30,21 +31,21 @@ namespace View_WPF.ModelView_WPF
 
         public UserViewModel()
         {
-            // আপনার আলাদা ফাইলে থাকা RelayCommand ব্যবহার করা হয়েছে
+            // আপনার আলাদা ফাইলে থাকা RelayCommand ব্যবহার করা হয়েছে
             SaveCommand = new RelayCommand(async (obj) => await ExecuteSave());
         }
 
         private async Task ExecuteSave()
         {
+            // API-এর TblUser মডেলের প্রপার্টি নামের সাথে মিল রেখে অবজেক্ট তৈরি করা হলো
             var userData = new
             {
-                UID,
-                Password,
-                Phone,
-                Email,
-                EntryDate,
-                StartDate,
-                EndDate,
+                Uid = UID,              // API তে প্রপার্টি নাম Uid
+                Password = Password,
+                Phone = Phone,
+                Email = Email,
+                EntryDate = EntryDate,
+                // কন্ট্রোলার মেথডে 'Activate' ফিল্ডটি string হিসেবে (Y/N) পাঠানো হচ্ছে
                 Activate = IsActive ? "Y" : "N"
             };
 
@@ -54,16 +55,19 @@ namespace View_WPF.ModelView_WPF
                 {
                     var json = JsonConvert.SerializeObject(userData);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    // সঠিক URL: api/Data/SaveUser
                     var response = await client.PostAsync(_baseUrl + "SaveUser", content);
 
                     if (response.IsSuccessStatusCode)
                     {
                         MessageBox.Show("User Information Saved Successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                        // প্রয়োজনে এখানে ResetForm() মেথড কল করতে পারেন
                     }
                     else
                     {
-                        MessageBox.Show("Error: " + response.ReasonPhrase, "API Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        // এরর ডিটেইলস দেখার জন্য Content রিড করা হচ্ছে
+                        var errorMsg = await response.Content.ReadAsStringAsync();
+                        MessageBox.Show($"Error: {response.StatusCode}\nDetails: {errorMsg}", "API Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
             }

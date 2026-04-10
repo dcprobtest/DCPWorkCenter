@@ -52,7 +52,7 @@ namespace ModelView_WPF
 
                 if (_selectedClassSection != null)
                 {
-                    // লিস্ট থেকে সিলেক্ট করলে ডাটা ক্লোন করে বক্সে পাঠানো হচ্ছে যাতে অরিজিনাল লিস্টে ইফেক্ট না পড়ে সেভ করার আগে
+                    // লিস্ট থেকে সিলেক্ট করলে ডাটা ক্লোন করে বক্সে পাঠানো হচ্ছে যাতে অরিজিনাল লিস্টে ইফেক্ট না পড়ে সেভ করার আগে
                     ClassSection = new ClassSection
                     {
                         SectionId = _selectedClassSection.SectionId,
@@ -76,10 +76,19 @@ namespace ModelView_WPF
         public ICommand EditCommand { get; }
         public ICommand ExitCommand { get; }
 
-        public ClassSectionViewModel()
+        // --- যোগ করা হয়েছে: XAML এরর দূর করার জন্য ডিফল্ট কনস্ট্রাক্টর ---
+        public ClassSectionViewModel() : this(null)
+        {
+        }
+
+        // কনস্ট্রাক্টর আপডেট করা হয়েছে UID রিসিভ করার জন্য
+        public ClassSectionViewModel(string uid)
         {
             // আপনার পোর্টের সাথে সামঞ্জস্য রেখে HttpClient কনফিগারেশন
             _httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:7073/") };
+
+            // EntryByUid তে প্যারামিটার থেকে আসা uid সেট করা হচ্ছে
+            ClassSection.EntryByUid = uid;
 
             AddCommand = new RelayCommand(obj => OnAdd());
             SaveCommand = new RelayCommand(async obj => await OnSave());
@@ -120,7 +129,11 @@ namespace ModelView_WPF
 
         private void OnAdd()
         {
+            // নতুন অবজেক্ট তৈরির সময়ও আগের EntryByUid সংরক্ষণ করা হচ্ছে
+            string currentUid = ClassSection.EntryByUid;
             ClassSection = new ClassSection();
+            ClassSection.EntryByUid = currentUid;
+
             ClassSection.EntryDate = DateTime.Now;
             ClassSection.StartDate = DateTime.Now;
             ClassSection.Activate = "0";
@@ -133,7 +146,7 @@ namespace ModelView_WPF
             {
                 ClassSection.EndDate = DateTime.Now;
                 ClassSection.Activate = "1";
-                // যেহেতু ClassSection এর ভেতরকার প্রপার্টি পরিবর্তন হয়েছে, তাই পুরো অবজেক্টের আপডেট জানানো প্রয়োজন
+                // যেহেতু ClassSection এর ভেতরকার প্রপার্টি পরিবর্তন হয়েছে, তাই পুরো অবজেক্টের আপডেট জানানো প্রয়োজন
                 OnPropertyChanged(nameof(ClassSection));
                 MessageBox.Show("সেকশনটি Active হিসেবে সেট করা হয়েছে।");
             }
@@ -156,7 +169,7 @@ namespace ModelView_WPF
                 if (response.IsSuccessStatusCode)
                 {
                     MessageBox.Show("ডেটাবেসে সফলভাবে সেভ করা হয়েছে!");
-                    await LoadInitialData(); // লিস্ট আপডেট করার জন্য পুনরায় লোড
+                    await LoadInitialData(); // লিস্ট আপডেট করার জন্য পুনরায় লোড
                 }
                 else
                 {
@@ -189,11 +202,11 @@ namespace ModelView_WPF
                     {
                         MessageBox.Show("সফলভাবে মুছে ফেলা হয়েছে।");
                         await LoadInitialData();
-                        ClassSection = new ClassSection(); // ইনপুট বক্স ক্লিয়ার করার জন্য
+                        ClassSection = new ClassSection(); // ইনপুট বক্স ক্লিয়ার করার জন্য
                     }
                     else
                     {
-                        MessageBox.Show("সার্ভার থেকে মুছে ফেলা সম্ভব হয়নি।");
+                        MessageBox.Show("সার্ভার থেকে মুছে ফেলা সম্ভব হয়নি।");
                     }
                 }
                 catch (Exception ex) { MessageBox.Show($"Error: {ex.Message}"); }

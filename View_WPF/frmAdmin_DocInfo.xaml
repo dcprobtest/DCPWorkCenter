@@ -30,7 +30,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="240"/>
+                    <ColumnDefinition Width="280"/>
                 </Grid.ColumnDefinitions>
 
                 <Grid Grid.Column="0">
@@ -38,135 +38,133 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
 
-                    <Grid Grid.Row="0" Grid.ColumnSpan="2" Margin="5,10,5,5">
+                    <Grid Grid.Row="0" Margin="5,10,5,5">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="UID: " FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="#2C3E50"/>
+                        <TextBlock Grid.Column="0" Text="UID: " FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="#2C3E50"/>
                         <TextBlock Grid.Column="1" Text="{Binding UID}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" Foreground="Black" Margin="0,0,25,0"/>
 
                         <TextBlock Grid.Column="2" Text="Emp Name: " FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="#2C3E50"/>
                         <TextBlock Grid.Column="3" Text="{Binding EmployeeName}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" Foreground="Black"/>
                     </Grid>
 
-                    <ComboBox x:Name="cmbDocType" Grid.Row="1" Grid.Column="0" Height="38" Width="150" HorizontalAlignment="Left" Margin="2,12,0,0" 
-                              Background="#E0E0E0" VerticalContentAlignment="Center" 
-                              IsEditable="True" IsReadOnly="True" Text="Document Type"
-                              FontWeight="Bold" FontSize="14"
-                              SelectedValuePath="Content"
-                              SelectedValue="{Binding SelectedDocType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                        <ComboBoxItem Content="Driving Licence" FontWeight="Normal"/>
-                        <ComboBoxItem Content="SSN" FontWeight="Normal"/>
-                        <ComboBoxItem Content="I-20" FontWeight="Normal"/>
-                        <ComboBoxItem Content="I-9" FontWeight="Normal"/>
-                        <ComboBoxItem Content="EAD" FontWeight="Normal"/>
-                        <ComboBoxItem Content="I-983" FontWeight="Normal"/>
-                        <ComboBoxItem Content="Certificate" FontWeight="Normal"/>
-                        <ComboBoxItem Content="Passport" FontWeight="Normal"/>
-                        <ComboBoxItem Content="Resume" FontWeight="Normal"/>
-                        <ComboBoxItem Content="Picture" FontWeight="Normal"/>
-                        <ComboBoxItem Content="Offer Letter" FontWeight="Normal"/>
-                    </ComboBox>
-
-                    <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="10,12,0,0">
+                    <Grid Grid.Row="1" Margin="0,12,0,0">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <Button x:Name="PlusButton" Grid.Column="0" Width="38" Height="38" Margin="5,0" Cursor="Hand" 
-                                Command="{Binding OpenContextMenuCommand}">
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Grid>
-                                                    <Ellipse Fill="#4CAF50" Stroke="#2E7D32" StrokeThickness="1"/>
-                                                    <Ellipse Margin="2">
-                                                        <Ellipse.Fill>
-                                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                                                <GradientStop Color="#A5D6A7" Offset="0"/>
-                                                                <GradientStop Color="#4CAF50" Offset="0.5"/>
-                                                                <GradientStop Color="#2E7D32" Offset="1"/>
-                                                            </LinearGradientBrush>
-                                                        </Ellipse.Fill>
-                                                    </Ellipse>
-                                                    <TextBlock Text="+" Foreground="White" FontSize="26" FontWeight="Bold" 
-                                                               HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-2,0,0"/>
-                                                </Grid>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </Button.Style>
-                            <Button.ContextMenu>
-                                <ContextMenu DataContext="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
-                                    <MenuItem Header="CPT" Command="{Binding ShowPopupCommand}" CommandParameter="CPT Information"/>
-                                    <MenuItem Header="OPT" Command="{Binding ShowPopupCommand}" CommandParameter="OPT Information"/>
-                                    <MenuItem Header="STEM OPT" Command="{Binding ShowPopupCommand}" CommandParameter="STEM OPT Information"/>
-                                </ContextMenu>
-                            </Button.ContextMenu>
-                        </Button>
+                        <ComboBox x:Name="cmbDocType" Grid.Column="0" Height="38" Width="150" HorizontalAlignment="Left" Margin="2,0,0,0" 
+                                  Background="#E0E0E0" VerticalContentAlignment="Center" 
+                                  IsEditable="True" IsReadOnly="True" Text="Document Type"
+                                  FontWeight="Bold" FontSize="14"
+                                  SelectedValuePath="Content"
+                                  SelectedValue="{Binding SelectedDocType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                            <ComboBoxItem Content="Driving Licence"/>
+                            <ComboBoxItem Content="SSN"/>
+                            <ComboBoxItem Content="I-20"/>
+                            <ComboBoxItem Content="I-9"/>
+                            <ComboBoxItem Content="EAD"/>
+                            <ComboBoxItem Content="I-983"/>
+                            <ComboBoxItem Content="Certificate"/>
+                            <ComboBoxItem Content="Passport"/>
+                            <ComboBoxItem Content="Resume"/>
+                            <ComboBoxItem Content="Picture"/>
+                            <ComboBoxItem Content="Offer Letter"/>
+                        </ComboBox>
 
-                        <Button x:Name="UploadButton" Grid.Column="1" Width="38" Height="38" Margin="5,0" Cursor="Hand"
-                                Command="{Binding AddCommand}" 
-                                CommandParameter="{Binding SelectedValue, ElementName=cmbDocType}">
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
-                                    <Grid>
-                                        <Ellipse Fill="#4CAF50" Stroke="#2E7D32" StrokeThickness="1"/>
-                                        <Ellipse Margin="2">
-                                            <Ellipse.Fill>
-                                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                                    <GradientStop Color="#A5D6A7" Offset="0"/>
-                                                    <GradientStop Color="#4CAF50" Offset="0.5"/>
-                                                    <GradientStop Color="#2E7D32" Offset="1"/>
-                                                </LinearGradientBrush>
-                                            </Ellipse.Fill>
-                                        </Ellipse>
-                                        <Path Data="M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z" Fill="White" 
-                                              Width="18" Height="18" Stretch="Fill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Grid>
-                                </ControlTemplate>
-                            </Button.Template>
-                        </Button>
+                        <Grid Grid.Column="1" Margin="10,0,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
 
-                        <Button Grid.Column="2" Width="38" Height="38" Margin="5,0" Cursor="Hand" Command="{Binding DownloadCommand}">
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
-                                    <Grid>
-                                        <Ellipse Fill="#4CAF50" Stroke="#2E7D32" StrokeThickness="1"/>
-                                        <Ellipse Margin="2">
-                                            <Ellipse.Fill>
-                                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                                    <GradientStop Color="#A5D6A7" Offset="0"/>
-                                                    <GradientStop Color="#4CAF50" Offset="0.5"/>
-                                                    <GradientStop Color="#2E7D32" Offset="1"/>
-                                                </LinearGradientBrush>
-                                            </Ellipse.Fill>
-                                        </Ellipse>
-                                        <Path Data="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" Fill="White" 
-                                              Width="18" Height="18" Stretch="Fill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Grid>
-                                </ControlTemplate>
-                            </Button.Template>
-                        </Button>
+                            <Button x:Name="PlusButton" Grid.Column="0" Width="38" Height="38" Margin="5,0" Cursor="Hand" 
+                                    Command="{Binding OpenContextMenuCommand}">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Grid>
+                                                        <Ellipse Fill="#4CAF50" Stroke="#2E7D32" StrokeThickness="1"/>
+                                                        <Ellipse Margin="2">
+                                                            <Ellipse.Fill>
+                                                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                                    <GradientStop Color="#A5D6A7" Offset="0"/>
+                                                                    <GradientStop Color="#4CAF50" Offset="0.5"/>
+                                                                    <GradientStop Color="#2E7D32" Offset="1"/>
+                                                                </LinearGradientBrush>
+                                                            </Ellipse.Fill>
+                                                        </Ellipse>
+                                                        <TextBlock Text="+" Foreground="White" FontSize="26" FontWeight="Bold" 
+                                                                   HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-2,0,0"/>
+                                                    </Grid>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </Button.Style>
+                                <Button.ContextMenu>
+                                    <ContextMenu DataContext="{Binding Path=PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                                        <MenuItem Header="CPT" Command="{Binding ShowPopupCommand}" CommandParameter="CPT Information"/>
+                                        <MenuItem Header="OPT" Command="{Binding ShowPopupCommand}" CommandParameter="OPT Information"/>
+                                        <MenuItem Header="STEM OPT" Command="{Binding ShowPopupCommand}" CommandParameter="STEM OPT Information"/>
+                                    </ContextMenu>
+                                </Button.ContextMenu>
+                            </Button>
+
+                            <Button x:Name="UploadButton" Grid.Column="1" Width="38" Height="38" Margin="5,0" Cursor="Hand"
+                                    Command="{Binding AddCommand}" 
+                                    CommandParameter="{Binding SelectedValue, ElementName=cmbDocType}">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Grid>
+                                            <Ellipse Fill="#4CAF50" Stroke="#2E7D32" StrokeThickness="1"/>
+                                            <Ellipse Margin="2">
+                                                <Ellipse.Fill>
+                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                        <GradientStop Color="#A5D6A7" Offset="0"/>
+                                                        <GradientStop Color="#4CAF50" Offset="0.5"/>
+                                                        <GradientStop Color="#2E7D32" Offset="1"/>
+                                                    </LinearGradientBrush>
+                                                </Ellipse.Fill>
+                                            </Ellipse>
+                                            <Path Data="M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z" Fill="White" 
+                                                  Width="18" Height="18" Stretch="Fill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+
+                            <Button Grid.Column="2" Width="38" Height="38" Margin="5,0" Cursor="Hand" Command="{Binding DownloadCommand}">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Grid>
+                                            <Ellipse Fill="#4CAF50" Stroke="#2E7D32" StrokeThickness="1"/>
+                                            <Ellipse Margin="2">
+                                                <Ellipse.Fill>
+                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                        <GradientStop Color="#A5D6A7" Offset="0"/>
+                                                        <GradientStop Color="#4CAF50" Offset="0.5"/>
+                                                        <GradientStop Color="#2E7D32" Offset="1"/>
+                                                    </LinearGradientBrush>
+                                                </Ellipse.Fill>
+                                            </Ellipse>
+                                            <Path Data="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" Fill="White" 
+                                                  Width="18" Height="18" Stretch="Fill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </Grid>
                     </Grid>
                 </Grid>
 
@@ -178,19 +176,19 @@
 
                     <Grid Grid.Row="0" Margin="5">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="85"/>
+                            <ColumnDefinition Width="90"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Start Date: " FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="0" Text="Start Date: " FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center"/>
                         <TextBlock Grid.Column="1" Text="{Binding StartDate, StringFormat='dd-MM-yyyy'}" Foreground="Blue" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" FontFamily="Consolas"/>
                     </Grid>
 
                     <Grid Grid.Row="1" Margin="5">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="85"/>
+                            <ColumnDefinition Width="90"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="End Date: " FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="0" Text="End Date: " FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center"/>
                         <TextBlock Grid.Column="1" Text="{Binding EndDate, StringFormat='dd-MM-yyyy'}" Foreground="Red" FontSize="15" FontWeight="Bold" VerticalAlignment="Center" FontFamily="Consolas"/>
                     </Grid>
                 </Grid>
@@ -211,8 +209,8 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="100"/>
                             <DataGridTextColumn Header="EntryDate" Binding="{Binding EntryDate, StringFormat='dd-MM-yyyy'}" Width="*"/>
-                            <DataGridTextColumn Header="StartDate" Binding="{Binding StartDate, StringFormat='dd-MM-yyyy'}" Width="*"/>
-                            <DataGridTextColumn Header="EndDate" Binding="{Binding EndDate, StringFormat='dd-MM-yyyy'}" Width="*"/>
+                            <DataGridTextColumn Header="StartDate" Binding="{Binding CustomStartDate, StringFormat='dd-MM-yyyy'}" Width="*"/>
+                            <DataGridTextColumn Header="EndDate" Binding="{Binding CustomEndDate, StringFormat='dd-MM-yyyy'}" Width="*"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Border>
@@ -304,21 +302,23 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
+
                         <Grid Grid.Column="0" Margin="0,0,10,0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <TextBlock Grid.Row="0" Text="Start Date" Margin="0,5" FontWeight="SemiBold" Foreground="#34495E"/>
-                            <DatePicker Grid.Row="1" Height="38" SelectedDate="{Binding PopupStartDate}"/>
+                            <DatePicker Grid.Row="1" Height="38" SelectedDate="{Binding PopupStartDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         </Grid>
+
                         <Grid Grid.Column="1" Margin="10,0,0,0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <TextBlock Grid.Row="0" Text="End Date" Margin="0,5" FontWeight="SemiBold" Foreground="#34495E"/>
-                            <DatePicker Grid.Row="1" Height="38" SelectedDate="{Binding PopupEndDate}"/>
+                            <DatePicker Grid.Row="1" Height="38" SelectedDate="{Binding PopupEndDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         </Grid>
                     </Grid>
 

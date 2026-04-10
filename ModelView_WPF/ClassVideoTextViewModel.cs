@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using System.Linq; // ডাটা গ্রুপিং করার জন্য প্রয়োজন
+using System.Linq;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -31,7 +31,6 @@ namespace View_WPF.ModelView_WPF
         public ObservableCollection<ClassSection> SectionList { get; set; } = new ObservableCollection<ClassSection>();
         public ObservableCollection<ClassVideoTextModel> ClassVideoList { get; set; } = new ObservableCollection<ClassVideoTextModel>();
 
-        // --- নতুন প্রোপার্টি: TreeView ডাটা সোর্স ---
         public ObservableCollection<SubjectTreeItem> CourseContent { get; set; } = new ObservableCollection<SubjectTreeItem>();
 
         private ClassSubject _selectedSubject;
@@ -58,9 +57,17 @@ namespace View_WPF.ModelView_WPF
             }
         }
 
-        public ClassVideoTextViewModel()
+        // --- আপডেট করা কনস্ট্রাক্টর: UID গ্রহণ করার জন্য ---
+        public ClassVideoTextViewModel(string uid)
         {
             InitializeClassVideo();
+
+            // রিসিভ করা UID মডেলের EntryByUID-এ সেট করা হচ্ছে
+            if (ClassVideo != null)
+            {
+                ClassVideo.EntryByUID = uid;
+            }
+
             LoadSubjects();
             LoadClassVideos();
 
@@ -107,8 +114,6 @@ namespace View_WPF.ModelView_WPF
                         {
                             ClassVideoList.Clear();
                             foreach (var item in list) { ClassVideoList.Add(item); }
-
-                            // ভিডিও লিস্ট লোড হওয়ার পর সেটিকে TreeView ফরম্যাটে সাজানো
                             BuildTreeView(list);
                         });
                     }
@@ -117,24 +122,17 @@ namespace View_WPF.ModelView_WPF
             catch (Exception ex) { MessageBox.Show("Video List Load Error: " + ex.Message); }
         }
 
-        // --- নতুন মেথড: ডাটাকে TreeView স্ট্রাকচারে রূপান্তর করা ---
         private void BuildTreeView(List<ClassVideoTextModel> allVideos)
         {
             CourseContent.Clear();
-
-            // সাবজেক্ট অনুযায়ী গ্রুপ করা
             foreach (var sub in SubjectList)
             {
                 var subItem = new SubjectTreeItem { Title = sub.SubjectDesc };
-
-                // এই সাবজেক্টের আন্ডারে থাকা সেকশনগুলো বের করা
                 var relevantSections = SectionList.Where(s => s.SubjectCode == sub.SubjectCode);
 
                 foreach (var sec in relevantSections)
                 {
                     var secItem = new SectionTreeItem { Title = sec.SectionDesc };
-
-                    // এই সেকশনের আন্ডারে থাকা ভিডিওগুলো ডাটাবেস লিস্ট থেকে খুঁজে বের করা
                     var relevantVideos = allVideos.Where(v => v.SectionID == sec.SectionId);
 
                     foreach (var vid in relevantVideos)
@@ -257,7 +255,9 @@ namespace View_WPF.ModelView_WPF
 
         private void ResetForm()
         {
+            string currentUID = ClassVideo.EntryByUID; // রিসেট করার সময় UID ধরে রাখা
             InitializeClassVideo();
+            ClassVideo.EntryByUID = currentUID;
             SelectedSubject = null;
             SelectedSection = null;
             _selectedFileSourcePath = null;
@@ -270,7 +270,6 @@ namespace View_WPF.ModelView_WPF
         #endregion
     }
 
-    // --- TreeView এর জন্য সাহায্যকারী ক্লাসসমূহ ---
     public class SubjectTreeItem
     {
         public string Title { get; set; }

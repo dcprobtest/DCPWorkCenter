@@ -11,7 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using View_WPF.ModelView_WPF; // ViewModel এর নেমস্পেস নিশ্চিত করা হয়েছে
+using View_WPF.ModelView_WPF; // ViewModel এর নেমস্পেস নিশ্চিত করা হয়েছে
 
 namespace View_WPF
 {
@@ -24,9 +24,17 @@ namespace View_WPF
         {
             InitializeComponent();
 
-            // ViewModel-কে View-এর সাথে কানেক্ট করার জন্য DataContext সেট করা হয়েছে
+            // ViewModel-কে View-এর সাথে কানেক্ট করার জন্য DataContext সেট করা হয়েছে
             // এটি রানটাইমে XAML বাইন্ডিংগুলোকে ডাটা সরবরাহ করবে
-            this.DataContext = new ClassVideoTextViewModel();
+            this.DataContext = new ClassVideoTextViewModel(null);
+        }
+
+        public frmClass_ClassVideoText(string uid)
+        {
+            InitializeComponent();
+
+            // রিসিভ করা UID ভিউ মডেলে পাস করা হচ্ছে
+            this.DataContext = new ClassVideoTextViewModel(uid);
         }
     }
 }

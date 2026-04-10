@@ -27,8 +27,9 @@ namespace ModelView_WPF
     public class ClassSubjectViewModel : INotifyPropertyChanged
     {
         private readonly HttpClient _httpClient;
+        private string _receivedUid; // UID সংরক্ষণের জন্য
 
-        // ডাটাবেস থেকে আসা লিস্টটি রাখার জন্য এটি প্রয়োজন
+        // ডাটাবেস থেকে আসা লিস্টটি রাখার জন্য এটি প্রয়োজন
         private ObservableCollection<ClassSubject> _subjectList;
         public ObservableCollection<ClassSubject> SubjectList
         {
@@ -62,8 +63,15 @@ namespace ModelView_WPF
         public ICommand AddCommand { get; }
         public ICommand DeleteCommand { get; }
 
-        public ClassSubjectViewModel()
+        // ডিফল্ট কনস্ট্রাক্টর (XAML ডিজাইনারের জন্য)
+        public ClassSubjectViewModel() : this(null)
         {
+        }
+
+        // কনস্ট্রাক্টর আপডেট করা হয়েছে UID রিসিভ করার জন্য
+        public ClassSubjectViewModel(string uid)
+        {
+            _receivedUid = uid;
             _httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:7073/") };
             SubjectList = new ObservableCollection<ClassSubject>();
 
@@ -98,7 +106,8 @@ namespace ModelView_WPF
             }
 
             CurrentSubject.LastUpdate = DateTime.Now;
-            CurrentSubject.EntryByUid = "Admin";
+            // Admin এর পরিবর্তে রিসিভ করা UID ব্যবহার করা হচ্ছে
+            CurrentSubject.EntryByUid = _receivedUid;
 
             try
             {
@@ -166,7 +175,8 @@ namespace ModelView_WPF
                 EntryDate = DateTime.Now,
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddMonths(3),
-                Activate = "0"
+                Activate = "0",
+                EntryByUid = _receivedUid // রিসেট করার সময়ও UID ধরে রাখা হচ্ছে
             };
             IsActiveChecked = false;
         }
