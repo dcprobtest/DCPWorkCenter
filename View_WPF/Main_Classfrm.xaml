@@ -166,7 +166,7 @@
                     </Grid>
                 </Button>
 
-                <Button Grid.Column="1" Grid.Row="1" Margin="15" Style="{StaticResource OptionCardStyle}">
+                <Button Grid.Column="1" Grid.Row="1" Margin="15" Style="{StaticResource OptionCardStyle}" Click="btnSectionAssign_Click">
                     <Button.RenderTransform>
                         <TranslateTransform x:Name="Card5Move" Y="80"/>
                     </Button.RenderTransform>

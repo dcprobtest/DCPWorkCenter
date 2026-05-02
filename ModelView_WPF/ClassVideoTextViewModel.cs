@@ -26,11 +26,11 @@ namespace View_WPF.ModelView_WPF
         private ClassVideoTextModel _classVideo;
         private bool _isActive;
         private string _selectedFileSourcePath;
+        private ClassVideoTextModel _selectedItemInGrid; // Grid থেকে সিলেক্ট করার জন্য
 
         public ObservableCollection<ClassSubject> SubjectList { get; set; } = new ObservableCollection<ClassSubject>();
         public ObservableCollection<ClassSection> SectionList { get; set; } = new ObservableCollection<ClassSection>();
         public ObservableCollection<ClassVideoTextModel> ClassVideoList { get; set; } = new ObservableCollection<ClassVideoTextModel>();
-
         public ObservableCollection<SubjectTreeItem> CourseContent { get; set; } = new ObservableCollection<SubjectTreeItem>();
 
         private ClassSubject _selectedSubject;
@@ -57,12 +57,17 @@ namespace View_WPF.ModelView_WPF
             }
         }
 
-        // --- আপডেট করা কনস্ট্রাক্টর: UID গ্রহণ করার জন্য ---
+        // DataGrid-এ কোনো রো সিলেক্ট করলে তা এই প্রপার্টিতে আসবে
+        public ClassVideoTextModel SelectedItemInGrid
+        {
+            get => _selectedItemInGrid;
+            set { _selectedItemInGrid = value; OnPropertyChanged(); }
+        }
+
         public ClassVideoTextViewModel(string uid)
         {
             InitializeClassVideo();
 
-            // রিসিভ করা UID মডেলের EntryByUID-এ সেট করা হচ্ছে
             if (ClassVideo != null)
             {
                 ClassVideo.EntryByUID = uid;
@@ -71,8 +76,16 @@ namespace View_WPF.ModelView_WPF
             LoadSubjects();
             LoadClassVideos();
 
+            // Existing Commands
             SaveCommand = new RelayCommand(async (obj) => await ExecuteSave());
             BrowseCommand = new RelayCommand((obj) => ExecuteBrowse());
+
+            // --- নতুন কমান্ড ---
+            AddCommand = new RelayCommand((obj) => ResetForm());
+            EditCommand = new RelayCommand((obj) => ExecuteEdit());
+            DeleteFileCommand = new RelayCommand(async (obj) => await ExecuteDelete());
+            DownloadCommand = new RelayCommand((obj) => ExecuteDownload());
+            ExitCommand = new RelayCommand((obj) => ExecuteExit(obj));
         }
 
         public ClassVideoTextModel ClassVideo
@@ -97,6 +110,12 @@ namespace View_WPF.ModelView_WPF
 
         public ICommand SaveCommand { get; }
         public ICommand BrowseCommand { get; }
+
+        public ICommand AddCommand { get; }
+        public ICommand EditCommand { get; }
+        public ICommand DeleteFileCommand { get; }
+        public ICommand DownloadCommand { get; }
+        public ICommand ExitCommand { get; }
 
         public async void LoadClassVideos()
         {
@@ -204,7 +223,7 @@ namespace View_WPF.ModelView_WPF
 
         private async Task ExecuteSave()
         {
-            if (SelectedSubject == null || SelectedSection == null || string.IsNullOrEmpty(_selectedFileSourcePath))
+            if (SelectedSubject == null || SelectedSection == null || (string.IsNullOrEmpty(_selectedFileSourcePath) && string.IsNullOrEmpty(ClassVideo.ClassPath)))
             {
                 MessageBox.Show("Please select Subject, Section and Video File.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -212,17 +231,20 @@ namespace View_WPF.ModelView_WPF
 
             try
             {
-                string dateStr = DateTime.Now.ToString("ddMMMyyyy");
-                string fileName = $"{SelectedSubject.SubjectCode}_{SelectedSubject.SubjectDesc}_{ClassVideo.ClassID}_{dateStr}{Path.GetExtension(_selectedFileSourcePath)}";
-                string rootPath = @"C:\DCP_Videos";
-                string targetPath = Path.Combine(rootPath, SelectedSubject.SubjectDesc, SelectedSection.SectionDesc);
+                if (!string.IsNullOrEmpty(_selectedFileSourcePath))
+                {
+                    string dateStr = DateTime.Now.ToString("ddMMMyyyy");
+                    string fileName = $"{SelectedSubject.SubjectCode}_{SelectedSubject.SubjectDesc}_{ClassVideo.ClassID}_{dateStr}{Path.GetExtension(_selectedFileSourcePath)}";
+                    string rootPath = @"C:\DCP_Videos";
+                    string targetPath = Path.Combine(rootPath, SelectedSubject.SubjectDesc, SelectedSection.SectionDesc);
 
-                if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
-                string fullPath = Path.Combine(targetPath, fileName);
+                    if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
+                    string fullPath = Path.Combine(targetPath, fileName);
 
-                File.Copy(_selectedFileSourcePath, fullPath, true);
+                    File.Copy(_selectedFileSourcePath, fullPath, true);
+                    ClassVideo.ClassPath = fullPath;
+                }
 
-                ClassVideo.ClassPath = fullPath;
                 ClassVideo.LastUpdate = DateTime.Now;
 
                 using (HttpClient client = new HttpClient())
@@ -247,6 +269,65 @@ namespace View_WPF.ModelView_WPF
             catch (Exception ex) { MessageBox.Show($"Error: {ex.Message}", "Operation Error", MessageBoxButton.OK, MessageBoxImage.Error); }
         }
 
+        private void ExecuteEdit()
+        {
+            if (SelectedItemInGrid != null)
+            {
+                ClassVideo = SelectedItemInGrid;
+                IsActive = ClassVideo.Activate;
+
+                // মডেল এ SubjectCode না থাকায় SectionID দিয়ে SectionList থেকে SubjectCode বের করা হচ্ছে
+                var section = SectionList.FirstOrDefault(s => s.SectionId == ClassVideo.SectionID);
+                if (section != null)
+                {
+                    SelectedSection = section;
+                    SelectedSubject = SubjectList.FirstOrDefault(s => s.SubjectCode == section.SubjectCode);
+                }
+            }
+        }
+
+        private async Task ExecuteDelete()
+        {
+            if (SelectedItemInGrid == null) return;
+
+            var result = MessageBox.Show("Are you sure you want to delete this record?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    using (HttpClient client = new HttpClient())
+                    {
+                        var response = await client.DeleteAsync(_baseApiUrl + "DeleteVideo/" + SelectedItemInGrid.ClassID);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            MessageBox.Show("Deleted Successfully");
+                            LoadClassVideos();
+                            ResetForm();
+                        }
+                    }
+                }
+                catch (Exception ex) { MessageBox.Show("Delete Error: " + ex.Message); }
+            }
+        }
+
+        private void ExecuteDownload()
+        {
+            if (SelectedItemInGrid == null || string.IsNullOrEmpty(SelectedItemInGrid.ClassPath)) return;
+
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.FileName = Path.GetFileName(SelectedItemInGrid.ClassPath);
+            if (sfd.ShowDialog() == true)
+            {
+                try { File.Copy(SelectedItemInGrid.ClassPath, sfd.FileName, true); MessageBox.Show("Download Success"); }
+                catch (Exception ex) { MessageBox.Show("Error: " + ex.Message); }
+            }
+        }
+
+        private void ExecuteExit(object obj)
+        {
+            if (obj is Window win) { win.Close(); }
+        }
+
         private void InitializeClassVideo()
         {
             ClassVideo = new ClassVideoTextModel { ClassID = 0, EntryDate = DateTime.Now, StartDate = DateTime.Now, EndDate = DateTime.Now.AddDays(7), Activate = false };
@@ -255,12 +336,13 @@ namespace View_WPF.ModelView_WPF
 
         private void ResetForm()
         {
-            string currentUID = ClassVideo.EntryByUID; // রিসেট করার সময় UID ধরে রাখা
+            string currentUID = ClassVideo?.EntryByUID;
             InitializeClassVideo();
-            ClassVideo.EntryByUID = currentUID;
+            if (ClassVideo != null) { ClassVideo.EntryByUID = currentUID; }
             SelectedSubject = null;
             SelectedSection = null;
             _selectedFileSourcePath = null;
+            SelectedItemInGrid = null;
             OnPropertyChanged(nameof(IsActive));
         }
 

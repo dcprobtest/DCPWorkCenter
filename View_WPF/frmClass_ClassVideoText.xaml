@@ -163,11 +163,12 @@
             <Border Grid.Row="1" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Background="White">
                 <ListView x:Name="lstClassVideoData" BorderThickness="0" 
                           ItemsSource="{Binding ClassVideoList}"
-                          SelectedItem="{Binding SelectedClassItem, Mode=TwoWay}">
+                          SelectedItem="{Binding SelectedItemInGrid, Mode=TwoWay}">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="Class ID" DisplayMemberBinding="{Binding ClassID}" Width="150"/>
-                            <GridViewColumn Header="Class Content" DisplayMemberBinding="{Binding ClassContent}" Width="450"/>
+                            <GridViewColumn Header="Class ID" DisplayMemberBinding="{Binding ClassID}" Width="100"/>
+                            <GridViewColumn Header="Class Content" DisplayMemberBinding="{Binding ClassContent}" Width="400"/>
+                            <GridViewColumn Header="Status" DisplayMemberBinding="{Binding Activate}" Width="80"/>
                         </GridView>
                     </ListView.View>
                 </ListView>
@@ -261,20 +262,25 @@
                         Background="#F0FDF4" Foreground="#166534" BorderBrush="#BBF7D0" BorderThickness="1" 
                         Style="{StaticResource BaseBtn}" Command="{Binding BrowseCommand}"/>
 
-                <Button x:Name="btnDownloadVideo" Grid.Row="2" Content="Download" Background="#EFF6FF" Foreground="#1E40AF" BorderBrush="#BFDBFE" BorderThickness="1" Style="{StaticResource BaseBtn}"/>
-                <Button x:Name="btnDeleteFile" Grid.Row="4" Content="Delete File" Background="#FEF2F2" Foreground="#991B1B" BorderBrush="#FECACA" BorderThickness="1" Style="{StaticResource BaseBtn}"/>
+                <Button x:Name="btnDownloadVideo" Grid.Row="2" Content="Download" 
+                        Background="#EFF6FF" Foreground="#1E40AF" BorderBrush="#BFDBFE" BorderThickness="1" 
+                        Style="{StaticResource BaseBtn}" Command="{Binding DownloadCommand}"/>
+
+                <Button x:Name="btnDeleteFile" Grid.Row="4" Content="Delete File" 
+                        Background="#FEF2F2" Foreground="#991B1B" BorderBrush="#FECACA" BorderThickness="1" 
+                        Style="{StaticResource BaseBtn}" Command="{Binding DeleteFileCommand}"/>
             </Grid>
 
             <Grid Grid.Row="2" Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
 
                 <CheckBox x:Name="chkActivate" Grid.Row="0" Grid.Column="0" Content="Active" 
                           VerticalAlignment="Center" FontWeight="SemiBold" FontSize="14" Margin="0,0,0,15"
@@ -301,10 +307,19 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Button x:Name="btnAdd" Grid.Row="0" Grid.Column="0" Content="ADD" Style="{StaticResource BtnAdd}"/>
-                <Button x:Name="btnSave" Grid.Row="0" Grid.Column="2" Content="Save" Style="{StaticResource BtnSave}" Command="{Binding SaveCommand}"/>
-                <Button x:Name="btnEdit" Grid.Row="2" Grid.Column="0" Content="Edit" Style="{StaticResource BtnEdit}"/>
-                <Button x:Name="btnExit" Grid.Row="2" Grid.Column="2" Content="Exit" Style="{StaticResource BtnExit}"/>
+                <Button x:Name="btnAdd" Grid.Row="0" Grid.Column="0" Content="ADD" 
+                        Style="{StaticResource BtnAdd}" Command="{Binding AddCommand}"/>
+
+                <Button x:Name="btnSave" Grid.Row="0" Grid.Column="2" Content="Save" 
+                        Style="{StaticResource BtnSave}" Command="{Binding SaveCommand}"/>
+
+                <Button x:Name="btnEdit" Grid.Row="2" Grid.Column="0" Content="Edit" 
+                        Style="{StaticResource BtnEdit}" Command="{Binding EditCommand}"/>
+
+                <Button x:Name="btnExit" Grid.Row="2" Grid.Column="2" Content="Exit" 
+                        Style="{StaticResource BtnExit}" 
+                        Command="{Binding ExitCommand}"
+                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
             </Grid>
         </Grid>
     </Grid>

@@ -18,12 +18,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="Asset\Offer Letter.docx">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="FreeSpire.Doc" Version="12.2.0" />
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.4" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
@@ -41,6 +35,18 @@
 		<Resource Include="mentor-laptop-icon-vector-isolated-contour-symbol-illustration-2AW9E0R-removebg-preview.png" />
 		<Resource Include="numix-circle-for-windows-file-manager-blue-icon-png-icon-thumbnail-removebg-preview.png" />
 		<Resource Include="Untitled_design-removebg-preview.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="Asset\cpt-opt offer letter.docx">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Asset\opt offer letter .docx">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Asset\STEM opt offer letter.docx">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 	<ItemGroup>

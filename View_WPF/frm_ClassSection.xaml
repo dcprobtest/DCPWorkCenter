@@ -5,6 +5,7 @@
         Title="Class Section Management" 
         Height="700" Width="1000"
         WindowStartupLocation="CenterScreen" 
+        WindowState="Maximized" 
         Background="#F4F7F9"
         ResizeMode="CanResize">
 

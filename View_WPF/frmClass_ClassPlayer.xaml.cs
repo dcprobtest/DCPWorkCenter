@@ -4,14 +4,16 @@ using System.Windows;
 using System.Windows.Threading;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
-using System.Data.SqlClient;
 using System.Runtime.CompilerServices;
-using System.Drawing; // Add Reference: System.Drawing
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
-using System.Windows.Forms; // Add Reference: System.Windows.Forms
+using System.Windows.Forms;
+using System.Net.Http; // এপিআই কলের জন্য যোগ করা হয়েছে
+using System.Text.Json; // জেপিওন পার্সিংয়ের জন্য যোগ করা হয়েছে
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-// Point এর কনফ্লিক্ট দূর করার জন্য নির্দিষ্ট করে দেওয়া হলো
 using Point = System.Drawing.Point;
 
 namespace View_WPF
@@ -19,42 +21,84 @@ namespace View_WPF
     public partial class frmClass_ClassPlayer : Window, INotifyPropertyChanged
     {
         private DispatcherTimer _timer;
-        private DispatcherTimer _screenshotTimer; // স্ক্রিনশটের জন্য আলাদা টাইমার
-        private string _backendUID; // ব্যাকএন্ডে UID ধরে রাখার জন্য
+        private DispatcherTimer _screenshotTimer;
+        private string _rawUID;
+        private string _backendUID;
         private string _screenshotRootPath = @"C:\DCP_UserActivity";
+        private readonly HttpClient _httpClient = new HttpClient(); // HttpClient ইনস্ট্যান্স
 
-        // আপনার SQL Server কানেকশন স্ট্রিং
-        private string connectionString = @"Server=DESKTOP-NDHKDBI\SQLEXPRESS;Database=DCPWorkCenter;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true";
-
-        // TreeView-এর জন্য মূল ডাটা সোর্স
         public ObservableCollection<SubjectViewModel> CourseContent { get; set; } = new ObservableCollection<SubjectViewModel>();
 
-        // আপডেট করা কনস্ট্রাক্টর যা UID রিসিভ করবে
         public frmClass_ClassPlayer(string uid)
         {
             InitializeComponent();
-
-            // আইডি ব্যাকএন্ডে সেভ করা হলো
+            this._rawUID = uid;
             this._backendUID = "UID_" + uid;
             this.WindowState = WindowState.Maximized;
-
-            // DataContext সেট করা হয়েছে যাতে XAML-এ {Binding CourseContent} কাজ করে
             this.DataContext = this;
 
             SetupTimer();
-            LoadTreeViewData();
+            // এখন এপিআই থেকে ডাটা লোড হবে
+            _ = LoadDataFromApi();
 
-            // স্ক্রিনশট লজিক শুরু
-            CleanupOldScreenshots(); // পুরনো ফাইল ডিলিট
-            StartScreenshotTracking(); // টাইমার শুরু
+            CleanupOldScreenshots();
+            StartScreenshotTracking();
         }
 
-        // --- স্ক্রিনশট লজিক শুরু ---
+        // এপিআই থেকে ডাটা লোড করার নতুন মেথড
+        private async Task LoadDataFromApi()
+        {
+            try
+            {
+                CourseContent.Clear();
+                // আপনার টেস্ট করা সফল URL
+                string url = $"https://localhost:7073/api/Data/GetAssignedVideos/{_rawUID}";
+
+                var response = await _httpClient.GetAsync(url);
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonString = await response.Content.ReadAsStringAsync();
+
+                    // এপিআই থেকে আসা ভিডিওর লিস্ট
+                    var apiVideos = JsonSerializer.Deserialize<List<ApiVideoResponse>>(jsonString, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+                    if (apiVideos != null && apiVideos.Count > 0)
+                    {
+                        // আপনার বর্তমান TreeView স্ট্রাকচার (Subject -> Section -> Video) বজায় রাখার জন্য ম্যাপিং
+                        var subject = new SubjectViewModel { SubjectDesc = "My Enrolled Courses" };
+                        var section = new SectionViewModel { SectionDesc = "Assigned Lessons" };
+
+                        foreach (var v in apiVideos)
+                        {
+                            section.Videos.Add(new VideoTreeItem
+                            {
+                                VideoTitle = v.ClassContent, // এপিআই এর কলাম নাম অনুযায়ী
+                                FilePath = v.ClassPath      // এপিআই এর কলাম নাম অনুযায়ী
+                            });
+                        }
+
+                        subject.Sections.Add(section);
+                        CourseContent.Add(subject);
+                    }
+                }
+                else
+                {
+                    System.Windows.MessageBox.Show("এপিআই থেকে ডাটা পাওয়া যায়নি। স্ট্যাটাস কোড: " + response.StatusCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show("এপিআই কানেকশনে সমস্যা: " + ex.Message);
+            }
+        }
 
         private void StartScreenshotTracking()
         {
             _screenshotTimer = new DispatcherTimer();
-            _screenshotTimer.Interval = TimeSpan.FromSeconds(6); // প্রতি ৬ সেকেন্ড অন্তর
+            _screenshotTimer.Interval = TimeSpan.FromSeconds(6);
             _screenshotTimer.Tick += (s, e) => TakeAutoCapture();
             _screenshotTimer.Start();
         }
@@ -63,33 +107,25 @@ namespace View_WPF
         {
             try
             {
-                // ইউজার আইডি অনুযায়ী ফোল্ডার পাথ
                 string userFolderPath = Path.Combine(_screenshotRootPath, _backendUID);
                 if (!Directory.Exists(userFolderPath)) Directory.CreateDirectory(userFolderPath);
-
                 string fileName = Path.Combine(userFolderPath, $"Activity_{DateTime.Now:yyyyMMdd_HHmmss}.jpg");
-
-                // স্ক্রিন ক্যাপচার
                 Rectangle bounds = Screen.PrimaryScreen.Bounds;
                 using (Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height))
                 {
                     using (Graphics g = Graphics.FromImage(bitmap))
                     {
-                        // সরাসরি System.Drawing.Point ব্যবহার করা হয়েছে
                         g.CopyFromScreen(System.Drawing.Point.Empty, System.Drawing.Point.Empty, bounds.Size);
                     }
-
-                    // সাইজ কমানোর জন্য কোয়ালিটি ২৫% করা হলো (৬০ কেবির নিচে থাকবে)
                     ImageCodecInfo jpgEncoder = GetEncoder(ImageFormat.Jpeg);
                     System.Drawing.Imaging.Encoder myEncoder = System.Drawing.Imaging.Encoder.Quality;
                     EncoderParameters myEncoderParameters = new EncoderParameters(1);
                     EncoderParameter myEncoderParameter = new EncoderParameter(myEncoder, 25L);
                     myEncoderParameters.Param[0] = myEncoderParameter;
-
                     bitmap.Save(fileName, jpgEncoder, myEncoderParameters);
                 }
             }
-            catch { /* ব্যাকএন্ড এরর ইগনোর করা হলো */ }
+            catch { }
         }
 
         private void CleanupOldScreenshots()
@@ -99,7 +135,6 @@ namespace View_WPF
                 if (!Directory.Exists(_screenshotRootPath)) return;
                 var threshold = DateTime.Now.AddDays(-4);
                 var files = Directory.GetFiles(_screenshotRootPath, "*.jpg", SearchOption.AllDirectories);
-
                 foreach (var file in files)
                 {
                     FileInfo fi = new FileInfo(file);
@@ -114,8 +149,6 @@ namespace View_WPF
             return ImageCodecInfo.GetImageDecoders().FirstOrDefault(codec => codec.FormatID == format.Guid);
         }
 
-        // --- স্ক্রিনশট লজিক শেষ ---
-
         private void BtnTogglePlaylist_Click(object sender, RoutedEventArgs e)
         {
             if (PlaylistBorder.Visibility == Visibility.Visible)
@@ -127,87 +160,6 @@ namespace View_WPF
             {
                 PlaylistBorder.Visibility = Visibility.Visible;
                 PlaylistColumn.Width = new GridLength(300);
-            }
-        }
-
-        private void LoadTreeViewData()
-        {
-            try
-            {
-                CourseContent.Clear();
-                using (SqlConnection con = new SqlConnection(connectionString))
-                {
-                    con.Open();
-                    string sqlSubject = "SELECT SubjectCode, SubjectDesc FROM ClassSubject WHERE Activate = '1'";
-                    using (SqlCommand cmdSub = new SqlCommand(sqlSubject, con))
-                    using (SqlDataReader drSub = cmdSub.ExecuteReader())
-                    {
-                        while (drSub.Read())
-                        {
-                            var subject = new SubjectViewModel
-                            {
-                                SubjectCode = drSub["SubjectCode"].ToString(),
-                                SubjectDesc = drSub["SubjectDesc"].ToString()
-                            };
-                            LoadSectionsForSubject(subject);
-                            CourseContent.Add(subject);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Windows.MessageBox.Show("ডাটা লোড করতে সমস্যা: " + ex.Message);
-            }
-        }
-
-        private void LoadSectionsForSubject(SubjectViewModel subject)
-        {
-            using (SqlConnection con = new SqlConnection(connectionString))
-            {
-                con.Open();
-                string sqlSection = "SELECT SectionID, SectionDesc FROM ClassSection WHERE SubjectCode = @SubCode AND Activate = '1'";
-                using (SqlCommand cmdSec = new SqlCommand(sqlSection, con))
-                {
-                    cmdSec.Parameters.AddWithValue("@SubCode", subject.SubjectCode);
-                    using (SqlDataReader drSec = cmdSec.ExecuteReader())
-                    {
-                        while (drSec.Read())
-                        {
-                            var section = new SectionViewModel
-                            {
-                                SectionID = drSec["SectionID"].ToString(),
-                                SectionDesc = drSec["SectionDesc"].ToString()
-                            };
-                            LoadVideosForSection(section);
-                            subject.Sections.Add(section);
-                        }
-                    }
-                }
-            }
-        }
-
-        private void LoadVideosForSection(SectionViewModel section)
-        {
-            using (SqlConnection con = new SqlConnection(connectionString))
-            {
-                con.Open();
-                string sqlVideo = "SELECT ClassContent, ClassPath FROM ClassVideoText WHERE SectionID = @SecID AND Activate = '1'";
-                using (SqlCommand cmdVid = new SqlCommand(sqlVideo, con))
-                {
-                    cmdVid.Parameters.AddWithValue("@SecID", section.SectionID);
-                    using (SqlDataReader drVid = cmdVid.ExecuteReader())
-                    {
-                        while (drVid.Read())
-                        {
-                            section.Videos.Add(new VideoTreeItem
-                            {
-                                VideoTitle = drVid["ClassContent"].ToString(),
-                                FilePath = drVid["ClassPath"].ToString()
-                            });
-                        }
-                    }
-                }
             }
         }
 
@@ -224,7 +176,7 @@ namespace View_WPF
                 }
                 else
                 {
-                    System.Windows.MessageBox.Show("ভিডিও ফাইলটি খুঁজে পাওয়া যায়নি: " + selectedVideo.FilePath);
+                    System.Windows.MessageBox.Show("ভিডিও ফাইলটি খুঁজে পাওয়া যায়নি। পাথ চেক করুন: " + selectedVideo.FilePath);
                 }
             }
         }
@@ -254,8 +206,15 @@ namespace View_WPF
             Player.Stop(); _timer.Stop(); BtnPlay.Content = "⏵"; TimelineSlider.Value = 0;
         }
 
-        private void Next_Click(object sender, RoutedEventArgs e) { }
-        private void Previous_Click(object sender, RoutedEventArgs e) { }
+        private void Previous_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.MessageBox.Show("প্রিভিয়াস ভিডিও ফিচারটি এখনো ইমপ্লিমেন্ট করা হয়নি।");
+        }
+
+        private void Next_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.MessageBox.Show("নেক্সট ভিডিও ফিচারটি এখনো ইমপ্লিমেন্ট করা হয়নি।");
+        }
 
         private void TimelineSlider_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e) => _timer.Stop();
 
@@ -272,7 +231,7 @@ namespace View_WPF
         protected override void OnClosing(CancelEventArgs e)
         {
             _timer?.Stop();
-            _screenshotTimer?.Stop(); // বন্ধ করার সময় স্ক্রিনশট টাইমার স্টপ
+            _screenshotTimer?.Stop();
             base.OnClosing(e);
         }
 
@@ -281,7 +240,12 @@ namespace View_WPF
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
-    // --- ডাটা মডেলসমূহ ---
+    // এপিআই রেসপন্স মডেল
+    public class ApiVideoResponse
+    {
+        public string ClassContent { get; set; }
+        public string ClassPath { get; set; }
+    }
 
     public class SubjectViewModel
     {
@@ -301,5 +265,6 @@ namespace View_WPF
     {
         public string VideoTitle { get; set; }
         public string FilePath { get; set; }
+        public string Icon => "🎥 ";
     }
 }

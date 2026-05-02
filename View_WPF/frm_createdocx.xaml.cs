@@ -87,9 +87,31 @@ namespace View_WPF
             }
         }
 
+        // --- নতুন যোগ করা অংশ: ড্রপডাউন পরিবর্তন হলে Hourly Rate কন্ট্রোল করা ---
+        private void cmbDocType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbDocType.SelectedItem is ComboBoxItem selectedItem)
+            {
+                string selectedDocType = selectedItem.Content.ToString();
+
+                // যদি STEM OPT হয়, তবে Hourly Rate ইনপুট দেওয়া যাবে (Enable)
+                if (selectedDocType == "STEM OPT")
+                {
+                    txtHourlyRate.IsEnabled = true;
+                    txtHourlyRate.Opacity = 1.0; // দেখতে উজ্জ্বল লাগবে
+                }
+                else // CPT বা OPT এর জন্য ব্লক হয়ে যাবে (Disable)
+                {
+                    txtHourlyRate.IsEnabled = false;
+                    txtHourlyRate.Text = "0"; // অটোমেটিক ০ সেট করে দিতে পারেন
+                    txtHourlyRate.Opacity = 0.5; // দেখতে আবছা লাগবে যাতে ইউজার বোঝে এটি বন্ধ
+                }
+            }
+        }
+
         private void cmbCandidateID_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // এখানেও 'EmpInfoModel' ব্যবহার করা হলো এবং আপনার মডেলের FName ও LName প্রপার্টি ব্যবহার করা হয়েছে
+            // এখানেও 'EmpInfoModel' ব্যবহার করা হলো এবং আপনার মডেলের FName ও LName প্রপার্টি ব্যবহার করা হয়েছে
             if (cmbCandidateID.SelectedItem is EmpInfoModel selectedEmp)
             {
                 // ক্যান্ডিডেটের পূর্ণ নাম সেট করা
@@ -119,31 +141,54 @@ namespace View_WPF
         {
             try
             {
-                string templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Asset", "Offer Letter.docx");
+                // --- টেমপ্লেট সিলেকশন লজিক আপডেট করা হয়েছে ---
+                string selectedDocType = (cmbDocType.SelectedItem as ComboBoxItem)?.Content.ToString();
+                string templateFileName = "cpt-opt offer letter.docx"; // ডিফল্ট
+
+                // কন্ডিশনাল টেমপ্লেট সিলেকশন
+                if (selectedDocType == "CPT" || selectedDocType == "OPT")
+                {
+                    templateFileName = "cpt-opt offer letter.docx";
+                }
+                else if (selectedDocType == "STEM OPT")
+                {
+                    templateFileName = "STEM opt offer letter.docx"; // আপনার নতুন টেমপ্লেট
+                }
+
+                string templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Asset", templateFileName);
 
                 if (!File.Exists(templatePath))
                 {
-                    System.Windows.MessageBox.Show("Template file not found in Asset folder!");
+                    System.Windows.MessageBox.Show($"{templateFileName} not found in Asset folder!");
                     return;
                 }
 
                 string candidateID = cmbCandidateID.Text;
-                string docType = (cmbDocType.SelectedItem as ComboBoxItem)?.Content.ToString();
+                string docType = selectedDocType; // ড্রপডাউন থেকে নেওয়া ভ্যালু
                 string fileName = $"{candidateID}_{docType}.docx";
                 string tempFilePath = Path.Combine(Path.GetTempPath(), fileName);
 
                 Document document = new Document();
                 document.LoadFromFile(templatePath);
 
+                // তারিখ ক্যালকুলেশন (Start Date এর ৩ দিন আগে Submission Date)
+                DateTime startDateValue = dtpStartDate.SelectedDate ?? DateTime.Now;
+                DateTime submissionDateValue = startDateValue.AddDays(-3);
+
+                // ডাটা রিপ্লেস লজিক
                 document.Replace("<Date>", DateTime.Now.ToString("MMMM dd, yyyy"), true, true);
                 document.Replace("<EmployeeName>", _selectedCandidateName, true, true);
+                document.Replace("< Employee Name>", _selectedCandidateName, true, true); // স্পেসসহ ট্যাগ থাকলে
                 document.Replace("<Designation>", txtDesignation.Text, true, true);
                 document.Replace("<DocumentType>", docType ?? "", true, true);
                 document.Replace("<JobResponsibility>", txtResponsibility.Text, true, true);
                 document.Replace("<WeeklyHours>", txtWeeklyHours.Text, true, true);
-                document.Replace("<StartDate>", dtpStartDate.SelectedDate?.ToString("MMMM dd, yyyy") ?? "", true, true);
+                document.Replace("<StartDate>", startDateValue.ToString("MMMM dd, yyyy"), true, true);
                 document.Replace("<EndDate>", dtpEndDate.SelectedDate?.ToString("MMMM dd, yyyy") ?? "", true, true);
                 document.Replace("<HourlyRate>", txtHourlyRate.Text, true, true);
+
+                // Submission Date সকল টেমপ্লেটের জন্যই রিপ্লেস হবে (যেহেতু আপনি STEM OPT-তেও এটি চেয়েছেন)
+                document.Replace("<SubmissionDate>", submissionDateValue.ToString("MMMM dd, yyyy"), true, true);
 
                 document.SaveToFile(tempFilePath, FileFormat.Docx);
                 document.Close();

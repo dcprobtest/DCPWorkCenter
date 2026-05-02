@@ -35,8 +35,8 @@
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="📚 "/>
-                                <TextBlock Grid.Column="1" Text="{Binding SubjectDesc}" Foreground="#DCDCDC" FontWeight="SemiBold"/>
+                                <TextBlock Grid.Column="0" Text="📚 " VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="{Binding SubjectDesc}" Foreground="#DCDCDC" FontWeight="SemiBold" VerticalAlignment="Center" Margin="5,0,0,0"/>
                             </Grid>
 
                             <HierarchicalDataTemplate.ItemTemplate>
@@ -46,8 +46,8 @@
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="📁 "/>
-                                        <TextBlock Grid.Column="1" Text="{Binding SectionDesc}" Foreground="#B4B4B4"/>
+                                        <TextBlock Grid.Column="0" Text="📁 " VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding SectionDesc}" Foreground="#B4B4B4" VerticalAlignment="Center" Margin="5,0,0,0"/>
                                     </Grid>
 
                                     <HierarchicalDataTemplate.ItemTemplate>
@@ -57,8 +57,8 @@
                                                     <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Grid.Column="0" Text="{Binding Icon}" Margin="0,0,5,0"/>
-                                                <TextBlock Grid.Column="1" Text="{Binding VideoTitle}" Foreground="#9CDCFE"/>
+                                                <TextBlock Grid.Column="0" Text="{Binding Icon}" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding VideoTitle}" Foreground="#9CDCFE" VerticalAlignment="Center" Margin="5,0,0,0"/>
                                             </Grid>
                                         </DataTemplate>
                                     </HierarchicalDataTemplate.ItemTemplate>
@@ -73,6 +73,7 @@
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>

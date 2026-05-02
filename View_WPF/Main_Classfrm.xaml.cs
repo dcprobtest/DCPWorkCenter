@@ -28,14 +28,12 @@ namespace View_WPF
             System.Windows.MessageBox.Show("আপনি বর্তমানে কোর্স ও কন্টেন্ট ম্যানেজমেন্ট ফর্মে আছেন।");
         }
 
-        // কোর্স সাবজেক্ট বাটনের ক্লিক ইভেন্ট হ্যান্ডলার (নতুন যোগ করা হয়েছে)
+        // কোর্স সাবজেক্ট বাটনের ক্লিক ইভেন্ট হ্যান্ডলার
         private void btnCourseSubject_Click(object sender, RoutedEventArgs e)
         {
             // frmClass_ClassSubject উইন্ডোটি তৈরি করা হচ্ছে এবং _uID পাস করা হচ্ছে
             frmClass_ClassSubject courseSubjectWindow = new frmClass_ClassSubject(_uID);
             courseSubjectWindow.Show();
-
-            System.Windows.MessageBox.Show("কোর্স সাবজেক্ট ইন্টারফেসে নিয়ে যাওয়া হচ্ছে...");
         }
 
         // সাবজেক্ট সেকশন বাটনের ক্লিক ইভেন্ট হ্যান্ডলার
@@ -44,8 +42,14 @@ namespace View_WPF
             // frm_ClassSection উইন্ডোটি তৈরি করা হচ্ছে এবং _uID পাস করা হচ্ছে
             frm_ClassSection subjectSectionWindow = new frm_ClassSection(_uID);
             subjectSectionWindow.Show();
+        }
 
-            System.Windows.MessageBox.Show("সাবজেক্ট সেকশন ইন্টারফেসে নিয়ে যাওয়া হচ্ছে...");
+        // সেকশন অ্যাসাইন বাটনের ক্লিক ইভেন্ট হ্যান্ডলার
+        private void btnSectionAssign_Click(object sender, RoutedEventArgs e)
+        {
+            // এখন _uID পাস করে ফর্মটি ওপেন করা হচ্ছে
+            frmClass_SubjectWiseClassAssign sectionAssignWindow = new frmClass_SubjectWiseClassAssign(_uID);
+            sectionAssignWindow.Show();
         }
 
         // ভিডিও আপলোড বাটনের ক্লিক ইভেন্ট হ্যান্ডলার
@@ -54,8 +58,6 @@ namespace View_WPF
             // frmClass_ClassVideoText উইন্ডোটি তৈরি করা হচ্ছে এবং _uID পাস করা হচ্ছে
             frmClass_ClassVideoText videoUploadWindow = new frmClass_ClassVideoText(_uID);
             videoUploadWindow.Show();
-
-            System.Windows.MessageBox.Show("ভিডিও আপলোড ইন্টারফেসে নিয়ে যাওয়া হচ্ছে...");
         }
     }
 }
