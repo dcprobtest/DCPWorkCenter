@@ -3,9 +3,9 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Text.Json; // JsonElement ব্যবহারের জন্য
+using System.Text.Json;
 
-// কনফ্লিক্ট দূর করার জন্য নিচের Alias গুলো যোগ করা হলো
+// Aliases to avoid conflicts
 using MessageBox = System.Windows.MessageBox;
 using MessageBoxButton = System.Windows.MessageBoxButton;
 using MessageBoxImage = System.Windows.MessageBoxImage;
@@ -17,7 +17,7 @@ namespace View_WPF
     /// </summary>
     public partial class Login : Window
     {
-        // আপনার API এর সঠিক Base URL এখানে দিন
+        // Correct Base URL for your API
         private readonly string apiBaseUrl = "https://localhost:7073/";
 
         public Login()
@@ -27,46 +27,49 @@ namespace View_WPF
 
         private async void btnAuthenticate_Click(object sender, RoutedEventArgs e)
         {
-            // UI থেকে ইনপুট নেওয়া
+            // Taking input from UI
             string uid = txtUserId.Text.Trim();
             string password = txtPassword.Password.Trim();
 
-            // ভ্যালিডেশন
+            // Validation
             if (string.IsNullOrEmpty(uid) || string.IsNullOrEmpty(password))
             {
                 MessageBox.Show("Please enter User ID and Password.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            // বাটন ডিজেবল করা
+            // Disable button to prevent multiple clicks
             btnAuthenticate.IsEnabled = false;
 
             try
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    // API এর মডেল অনুযায়ী ডাটা তৈরি
+                    // Create data according to API model
                     var loginRequest = new
                     {
                         Uid = uid,
                         Password = password
                     };
 
-                    // API তে POST রিকোয়েস্ট পাঠানো
+                    // Sending POST request to API
                     var response = await client.PostAsJsonAsync($"{apiBaseUrl}api/Data/Login", loginRequest);
 
                     if (response.IsSuccessStatusCode)
                     {
-                        // ১. API রেসপন্স থেকে ডাটা পড়া (যাতে নাম পাওয়া যায়)
+                        // 1. Reading data from API response
                         var jsonString = await response.Content.ReadAsStringAsync();
-                        var loginData = JsonSerializer.Deserialize<JsonElement>(jsonString);
 
-                        // আপনার এপিআই যদি অবজেক্ট রিটার্ন করে যাতে 'FName' বা 'Name' আছে
+                        // Case-insensitive deserialization option
+                        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                        var loginData = JsonSerializer.Deserialize<JsonElement>(jsonString, options);
+
                         string authenticatedUID = txtUserId.Text.Trim();
                         string authenticatedName = "";
+                        int activateStatus = 0;
 
-                        // API থেকে নাম বের করার চেষ্টা (আপনার API এর প্রপার্টি নাম অনুযায়ী এটি চেক করুন)
-                        if (loginData.TryGetProperty("FName", out var nameProp))
+                        // Extracting Name from API response (using Case-Insensitive check)
+                        if (loginData.TryGetProperty("fname", out var nameProp) || loginData.TryGetProperty("FName", out nameProp))
                         {
                             authenticatedName = nameProp.GetString();
                         }
@@ -75,12 +78,34 @@ namespace View_WPF
                             authenticatedName = userProp.GetString();
                         }
 
-                        // ২. MainWindow ওপেন করার সময় UID এবং Name উভয়ই প্যারামিটার হিসেবে পাঠিয়ে দিন
-                        MainWindow mainWin = new MainWindow(authenticatedUID, authenticatedName);
-                        mainWin.Show();
+                        // Extracting 'Activate' status from API response (Try both 'activate' and 'Activate')
+                        if (loginData.TryGetProperty("activate", out var activateProp) || loginData.TryGetProperty("Activate", out activateProp))
+                        {
+                            // Checking if it's a string or number and converting to int
+                            if (activateProp.ValueKind == JsonValueKind.Number)
+                                activateStatus = activateProp.GetInt32();
+                            else if (activateProp.ValueKind == JsonValueKind.String)
+                                int.TryParse(activateProp.GetString(), out activateStatus);
+                        }
 
-                        // বর্তমান লগইন উইন্ডো বন্ধ করা
-                        this.Close();
+                        // 2. Role-Based Access Control Logic
+                        if (activateStatus == 0)
+                        {
+                            MessageBox.Show("Your account is deactivated (Status 0). Please contact the Administrator.", "Access Denied", MessageBoxButton.OK, MessageBoxImage.Stop);
+                        }
+                        else if (activateStatus == 1 || activateStatus == 3)
+                        {
+                            // Open MainWindow and pass UID, Name, and Activate Status
+                            MainWindow mainWin = new MainWindow(authenticatedUID, authenticatedName, activateStatus);
+                            mainWin.Show();
+
+                            // Close the current login window
+                            this.Close();
+                        }
+                        else
+                        {
+                            MessageBox.Show("You do not have permission to access this system. Only Status 1 and 3 are allowed.", "Access Denied", MessageBoxButton.OK, MessageBoxImage.Stop);
+                        }
                     }
                     else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                     {
@@ -100,7 +125,7 @@ namespace View_WPF
             }
             finally
             {
-                // বাটন আবার এনাবল করা
+                // Re-enable the button
                 btnAuthenticate.IsEnabled = true;
             }
         }

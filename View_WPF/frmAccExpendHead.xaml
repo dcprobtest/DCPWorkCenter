@@ -1,0 +1,193 @@
+﻿<Window x:Class="View_WPF.frmAccExpendHead"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:View_WPF"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Title="Expense Head Setup" Height="320" Width="720" Background="#F4F7F9">
+
+    <Window.Resources>
+        <Style x:Key="PremiumAnimatedButton" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="BtnContainer" RenderTransformOrigin="0.5,0.5">
+                            <Grid.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                            </Grid.RenderTransform>
+
+                            <Border x:Name="GradientBorder" CornerRadius="5" Padding="1.5">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <LinearGradientBrush.RelativeTransform>
+                                            <RotateTransform x:Name="GradientRotate" CenterX="0.5" CenterY="0.5" Angle="0" />
+                                        </LinearGradientBrush.RelativeTransform>
+                                        <GradientStop Color="#FF0000" Offset="0.0"/>
+                                        <GradientStop Color="#FFFF00" Offset="0.2"/>
+                                        <GradientStop Color="#00FF00" Offset="0.4"/>
+                                        <GradientStop Color="#00FFFF" Offset="0.6"/>
+                                        <GradientStop Color="#0000FF" Offset="0.8"/>
+                                        <GradientStop Color="#FF00FF" Offset="1.0"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+
+                                <Border Background="#764ba2" CornerRadius="4">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </Border>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="GradientRotate" 
+                                                         Storyboard.TargetProperty="Angle"
+                                                         From="0" To="360" Duration="0:0:4" 
+                                                         RepeatBehavior="Forever" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BtnContainer" Property="Opacity" Value="0.9"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="12">
+        <Border CornerRadius="10" BorderThickness="3">
+            <Border.BorderBrush>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#FF4B2B" Offset="0"/>
+                    <GradientStop Color="#FFB22C" Offset="0.3"/>
+                    <GradientStop Color="#2ECC71" Offset="0.6"/>
+                    <GradientStop Color="#3498DB" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.BorderBrush>
+
+            <Grid Background="White" Margin="2" x:Name="MainContainer">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0" Margin="10">
+                    <Grid.RenderTransform>
+                        <TranslateTransform x:Name="TopSectionTrans" Y="30"/>
+                    </Grid.RenderTransform>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="260"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0" Background="White" CornerRadius="8" Padding="12" Margin="0,0,10,10">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="8" ShadowDepth="1" Color="#DDDDDD"/>
+                        </Border.Effect>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Exp Code" VerticalAlignment="Center" Margin="0,8,10,8" FontWeight="SemiBold" FontSize="12" Foreground="Gray"/>
+                            <TextBox x:Name="txtExpCode" Grid.Row="0" Grid.Column="1" Height="26" Margin="0,5" MaxLength="2" VerticalContentAlignment="Center" Padding="5,0" BorderBrush="#DDD" 
+                                     Text="{Binding ExpCode, UpdateSourceTrigger=PropertyChanged}"/>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Exp Detail" VerticalAlignment="Center" Margin="0,8,10,8" FontWeight="SemiBold" FontSize="12" Foreground="Gray"/>
+                            <TextBox x:Name="txtExpDetail" Grid.Row="1" Grid.Column="1" Height="26" Margin="0,5" MaxLength="25" VerticalContentAlignment="Center" Padding="5,0" BorderBrush="#DDD" 
+                                     Text="{Binding ExpDetail, UpdateSourceTrigger=PropertyChanged}"/>
+                        </Grid>
+                    </Border>
+
+                    <Border Grid.Column="1" Background="White" CornerRadius="8" Margin="0,0,0,10">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="8" ShadowDepth="1" Color="#DDDDDD"/>
+                        </Border.Effect>
+                        <DataGrid x:Name="dgExpenses" BorderThickness="0" Background="Transparent" AutoGenerateColumns="False" CanUserAddRows="False" SelectionMode="Single" RowHeight="25" GridLinesVisibility="Horizontal" 
+                                  ItemsSource="{Binding ExpenseList}" SelectedItem="{Binding SelectedExpense}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Exp Code" Width="80" Binding="{Binding ExpCode}"/>
+                                <DataGridTextColumn Header="Expense Detail" Width="*" Binding="{Binding ExpDetail}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </Grid>
+
+                <Grid Grid.Row="1" Margin="10,0,10,10">
+                    <Grid.RenderTransform>
+                        <TranslateTransform x:Name="ButtonSectionTrans" Y="30"/>
+                    </Grid.RenderTransform>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Grid.Column="0" HorizontalAlignment="Left">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="85"/>
+                            <ColumnDefinition Width="85"/>
+                            <ColumnDefinition Width="85"/>
+                            <ColumnDefinition Width="85"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button x:Name="btnAdd" Grid.Column="0" Content="ADD" Style="{StaticResource PremiumAnimatedButton}" Height="35" Command="{Binding AddCommand}"/>
+                        <Button x:Name="btnSave" Grid.Column="1" Content="SAVE" Style="{StaticResource PremiumAnimatedButton}" Height="35" Command="{Binding SaveCommand}"/>
+                        <Button x:Name="btnEdit" Grid.Column="2" Content="EDIT" Style="{StaticResource PremiumAnimatedButton}" Height="35" Command="{Binding EditCommand}"/>
+                        <Button x:Name="btnExit" Grid.Column="3" Content="EXIT" Style="{StaticResource PremiumAnimatedButton}" Height="35" Command="{Binding ExitCommand}"/>
+                    </Grid>
+
+                    <Grid Grid.Column="1" VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="130"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox x:Name="txtUid" Grid.Column="0" Height="26" Margin="5,0" Visibility="Visible" IsReadOnly="True" Background="#F0F0F0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" BorderThickness="1" BorderBrush="#DDD" 
+                                 Text="{Binding UID}"/>
+                        <DatePicker x:Name="dtEntryDate" Grid.Column="1" Height="26" Margin="5,0" Visibility="Visible" 
+                                    SelectedDate="{Binding EntryDate}"/>
+                    </Grid>
+                </Grid>
+
+                <Grid.Triggers>
+                    <EventTrigger RoutedEvent="Loaded">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="TopSectionTrans" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.6">
+                                    <DoubleAnimation.EasingFunction>
+                                        <CubicEase EasingMode="EaseOut"/>
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                                <DoubleAnimation Storyboard.TargetName="ButtonSectionTrans" Storyboard.TargetProperty="Y" To="0" BeginTime="0:0:0.2" Duration="0:0:0.6">
+                                    <DoubleAnimation.EasingFunction>
+                                        <CubicEase EasingMode="EaseOut"/>
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Grid.Triggers>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

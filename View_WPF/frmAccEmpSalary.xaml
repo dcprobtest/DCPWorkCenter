@@ -1,0 +1,194 @@
+﻿<Window x:Class="View_WPF.frmAccEmpSalary"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:local="clr-namespace:View_WPF"
+        xmlns:localVM="clr-namespace:ModelView_WPF;assembly=ModelView_WPF"
+        mc:Ignorable="d"
+        Title="Employee Salary Management" Height="450" Width="780" 
+        WindowStartupLocation="CenterScreen" 
+        ResizeMode="NoResize"
+        Background="#F5F6F7">
+
+    <Window.DataContext>
+        <localVM:AccEmpSalaryViewModel/>
+    </Window.DataContext>
+
+    <Window.Resources>
+        <Style x:Key="ModernButtonStyle" TargetType="Button">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#667eea" Offset="0"/>
+                        <GradientStop Color="#764ba2" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="btnBorder" CornerRadius="6" Background="{TemplateBinding Background}" BorderThickness="0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="btnBorder" Property="Opacity" Value="0.8"/>
+                                <Setter Property="Cursor" Value="Hand"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ModernTextBox" TargetType="TextBox">
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="5,0"/>
+            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Style.Triggers>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="#764ba2"/>
+                </Trigger>
+                <Trigger Property="IsReadOnly" Value="True">
+                    <Setter Property="Background" Value="#F0F0F0"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="LabelStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#555"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,10,0"/>
+            <Setter Property="FontSize" Value="11"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="10">
+        <Border CornerRadius="12" BorderThickness="1.5">
+            <Border.BorderBrush>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#667eea" Offset="0"/>
+                    <GradientStop Color="#764ba2" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.BorderBrush>
+
+            <Grid Background="White" Margin="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="260"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Background="#FAFBFC" CornerRadius="11,0,0,11" Padding="15">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Salary Expenditure" FontSize="16" FontWeight="Bold" Foreground="#764ba2" Margin="0,0,0,15"/>
+
+                        <Grid Grid.Row="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="85"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Exp Sub Code" Style="{StaticResource LabelStyle}"/>
+                            <ComboBox Grid.Row="0" Grid.Column="1" x:Name="cmbExpSubCode" 
+                                      ItemsSource="{Binding ExpSubCodeList}"
+                                      DisplayMemberPath="ExpSubCode"
+                                      SelectedValuePath="ExpSubCode"
+                                      SelectedValue="{Binding SelectedSalary.ExpSubCode, Mode=TwoWay}" 
+                                      Height="28" Margin="0,4" VerticalContentAlignment="Center"/>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Month" Style="{StaticResource LabelStyle}"/>
+                            <ComboBox Grid.Row="1" Grid.Column="1" x:Name="cmbMonth" SelectedValue="{Binding MonthID, UpdateSourceTrigger=PropertyChanged}" Height="28" Margin="0,4" VerticalContentAlignment="Center">
+                                <sys:String>1</sys:String>
+                                <sys:String>2</sys:String>
+                                <sys:String>3</sys:String>
+                                <sys:String>4</sys:String>
+                                <sys:String>5</sys:String>
+                                <sys:String>6</sys:String>
+                                <sys:String>7</sys:String>
+                                <sys:String>8</sys:String>
+                                <sys:String>9</sys:String>
+                                <sys:String>10</sys:String>
+                                <sys:String>11</sys:String>
+                                <sys:String>12</sys:String>
+                            </ComboBox>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Exp Date" Style="{StaticResource LabelStyle}"/>
+                            <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtExpDate" Text="{Binding SelectedSalary.ExpDate, StringFormat=\{0:dd-MM-yyyy\}, Mode=OneWay}" Style="{StaticResource ModernTextBox}" IsReadOnly="True" Margin="0,4"/>
+
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="User ID (UID)" Style="{StaticResource LabelStyle}"/>
+                            <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtUID" Text="{Binding SelectedSalary.UID, Mode=TwoWay}" Style="{StaticResource ModernTextBox}" Margin="0,4"/>
+
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="Employee UID" Style="{StaticResource LabelStyle}"/>
+                            <TextBox Grid.Row="4" Grid.Column="1" x:Name="txtEmpUID" Text="{Binding SelectedSalary.EmpUID, Mode=TwoWay}" Style="{StaticResource ModernTextBox}" Margin="0,4"/>
+
+                            <TextBlock Grid.Row="5" Grid.Column="0" Text="Entry Date" Style="{StaticResource LabelStyle}"/>
+                            <DatePicker Grid.Row="5" Grid.Column="1" SelectedDate="{Binding SelectedSalary.EntryDate, Mode=TwoWay}" Height="28" Margin="0,4" VerticalContentAlignment="Center"/>
+                        </Grid>
+
+                        <Grid Grid.Row="2" Margin="0,10,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Button Grid.Row="0" Grid.Column="0" Content="ADD" Command="{Binding AddCommand}" Margin="3" Style="{StaticResource ModernButtonStyle}"/>
+                            <Button Grid.Row="0" Grid.Column="1" Content="SAVE" Command="{Binding SaveCommand}" Margin="3" Style="{StaticResource ModernButtonStyle}"/>
+                            <Button Grid.Row="1" Grid.Column="0" Content="EDIT" Command="{Binding EditCommand}" Margin="3" Style="{StaticResource ModernButtonStyle}"/>
+                            <Button Grid.Row="1" Grid.Column="1" Content="EXIT" Command="{Binding ExitCommand}" Margin="3" Style="{StaticResource ModernButtonStyle}"/>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <Grid Grid.Column="1" Margin="15">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Salary Record List" FontSize="16" FontWeight="Bold" Foreground="#333" Margin="5,0,0,10"/>
+
+                    <DataGrid x:Name="dgSalary" Grid.Row="1" AutoGenerateColumns="False" 
+                              ItemsSource="{Binding SalaryList}" SelectedItem="{Binding SelectedSalary}"
+                              Background="White" BorderBrush="#EEE" RowHeaderWidth="0" 
+                              GridLinesVisibility="Horizontal" SelectionUnit="FullRow" IsReadOnly="True"
+                              FontSize="12" CanUserAddRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding ExpenditurID}" Width="40"/>
+                            <DataGridTextColumn Header="Sub Code" Binding="{Binding ExpSubCode}" Width="80"/>
+                            <DataGridTextColumn Header="Month" Binding="{Binding MonthID}" Width="50"/>
+                            <DataGridTextColumn Header="Exp Date" Binding="{Binding ExpDate, StringFormat=\{0:dd-MM-yyyy\}}" Width="90"/>
+                            <DataGridTextColumn Header="Emp UID" Binding="{Binding EmpUID}" Width="90"/>
+                            <DataGridTextColumn Header="Entry Date" Binding="{Binding EntryDate, StringFormat=\{0:dd-MM-yyyy HH:mm\}}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

@@ -1,0 +1,193 @@
+﻿<Window x:Class="View_WPF.frmAccExpBub"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Title="Expense Head Setup" Height="450" Width="850"
+        Background="#F0F2F5"
+        UseLayoutRounding="True">
+
+    <Window.Resources>
+        <!-- Boolean to Visibility Converter: শুরুতে হাইড রাখার জন্য এটি প্রয়োজন -->
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
+        <Style x:Key="RainbowButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="OuterBorder" CornerRadius="8" Padding="2">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#FF00FF" Offset="0"/>
+                                    <GradientStop Color="#00FFFF" Offset="0.5"/>
+                                    <GradientStop Color="#FF0000" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Border Background="#62309C" CornerRadius="6">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="OuterBorder" Property="Opacity" Value="0.8"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ModernTextBox" TargetType="TextBox">
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="5,0"/>
+            <Setter Property="BorderBrush" Value="#DFDFDF"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" Background="White" CornerRadius="4">
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="15">
+        <Border CornerRadius="20" BorderThickness="3">
+            <Border.BorderBrush>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#FF4500" Offset="0"/>
+                    <GradientStop Color="#FFFF00" Offset="0.3"/>
+                    <GradientStop Color="#00FF00" Offset="0.6"/>
+                    <GradientStop Color="#00BFFF" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.BorderBrush>
+
+            <Grid Margin="15">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- input area and list area container -->
+                <Grid Grid.Row="0" Visibility="{Binding IsEntryVisible, Converter={StaticResource BoolToVis}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="320"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Left Panel: Input Fields -->
+                    <Border Grid.Column="0" Background="White" CornerRadius="15" Margin="5" Padding="20">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="10" Opacity="0.1" ShadowDepth="2"/>
+                        </Border.Effect>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0" Margin="0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="90"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Label Content="Exp Code" Foreground="#555" FontWeight="SemiBold"/>
+                                <ComboBox x:Name="cmbExpCode" Grid.Column="1" Height="32" 
+                                          ItemsSource="{Binding ExpCodeList}" 
+                                          SelectedValue="{Binding SelectedExpCode}"/>
+                            </Grid>
+
+                            <Grid Grid.Row="1" Margin="0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="90"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Label Content="Exp Detail" Foreground="#555" FontWeight="SemiBold"/>
+                                <TextBox x:Name="txtExpDetail" Grid.Column="1" Style="{StaticResource ModernTextBox}" 
+                                         MaxLength="30" Text="{Binding CurrentEntry.ExpDetail}"/>
+                            </Grid>
+
+                            <Grid Grid.Row="2" Margin="0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="90"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Label Content="ExpSub Code" Foreground="#555" FontWeight="SemiBold"/>
+                                <!-- ReadOnly="True" করা হয়েছে কারণ এটি অটো জেনারেট হবে -->
+                                <TextBox x:Name="txtExpSubCode" Grid.Column="1" Style="{StaticResource ModernTextBox}" 
+                                         MaxLength="4" IsReadOnly="True" Background="#F9F9F9"
+                                         Text="{Binding CurrentEntry.ExpSubCode}"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <!-- Right Panel: DataGrid -->
+                    <Border Grid.Column="1" Background="White" CornerRadius="15" Margin="5" Padding="5">
+                        <DataGrid x:Name="dgExpense" AutoGenerateColumns="False" BorderThickness="0" 
+                                  Background="Transparent" GridLinesVisibility="Horizontal" 
+                                  HorizontalGridLinesBrush="#F0F0F0" 
+                                  ItemsSource="{Binding ExpBubList}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Exp Code" Binding="{Binding ExpCode}" Width="80"/>
+                                <DataGridTextColumn Header="Expense Detail" Binding="{Binding ExpDetail}" Width="*"/>
+                                <DataGridTextColumn Header="ExpSub Code" Binding="{Binding ExpSubCode}" Width="100"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </Grid>
+
+                <!-- Bottom Button Area -->
+                <Grid Grid.Row="1" Margin="5,20,5,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Grid.Column="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Content="ADD" Margin="0,0,10,0" Style="{StaticResource RainbowButtonStyle}" 
+                                Command="{Binding AddCommand}"/>
+                        <Button Content="SAVE" Grid.Column="1" Margin="0,0,10,0" Style="{StaticResource RainbowButtonStyle}" 
+                                Command="{Binding SaveCommand}"/>
+                        <Button Content="EDIT" Grid.Column="2" Margin="0,0,10,0" Style="{StaticResource RainbowButtonStyle}" 
+                                Command="{Binding EditCommand}"/>
+                        <Button Content="EXIT" Grid.Column="3" Style="{StaticResource RainbowButtonStyle}" 
+                                Command="{Binding ExitCommand}"/>
+                    </Grid>
+
+                    <!-- UID and Date are also visible after clicking ADD -->
+                    <Grid Grid.Column="2" VerticalAlignment="Center" Visibility="{Binding IsEntryVisible, Converter={StaticResource BoolToVis}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="150"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="txtUID" Width="70" Height="32" IsReadOnly="True" Background="#F0F0F0" 
+                                 Style="{StaticResource ModernTextBox}" HorizontalAlignment="Left" 
+                                 Text="{Binding CurrentEntry.UID}"/>
+                        <DatePicker x:Name="dtpEntryDate" Grid.Column="1" Height="32" VerticalContentAlignment="Center" 
+                                    SelectedDate="{Binding CurrentEntry.EntryDate}"/>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
