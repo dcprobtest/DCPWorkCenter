@@ -9,7 +9,7 @@
         ResizeMode="NoResize">
 
     <Window.DataContext>
-        <vm:ClassModuleViewModel />
+         <vm:ClassModuleViewModel />
     </Window.DataContext>
 
     <Window.Resources>
