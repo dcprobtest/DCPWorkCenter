@@ -1,0 +1,177 @@
+﻿<Window x:Class="View_WPF.US_AccountsLogin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="US Accounts Security Login" Height="550" Width="800"
+        WindowStartupLocation="CenterScreen"
+        Background="#F4F7F9"
+        ResizeMode="NoResize">
+
+    <Window.Resources>
+        <Style x:Key="AccountButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="Container" RenderTransformOrigin="0.5,0.5">
+                            <Grid.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                            </Grid.RenderTransform>
+                            <Border x:Name="OuterBorder" CornerRadius="15" Padding="2">
+                                <Border.Background>
+                                    <LinearGradientBrush x:Name="ActionGradient" StartPoint="0,0" EndPoint="1,1">
+                                        <LinearGradientBrush.RelativeTransform>
+                                            <RotateTransform x:Name="GradRotate" CenterX="0.5" CenterY="0.5" Angle="0"/>
+                                        </LinearGradientBrush.RelativeTransform>
+                                        <GradientStop Color="#007AFF" Offset="0"/>
+                                        <GradientStop Color="#5856D6" Offset="0.5"/>
+                                        <GradientStop Color="#AF52DE" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Border Background="#1C1C1E" CornerRadius="13">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="GradRotate" Storyboard.TargetProperty="Angle"
+                                                         From="0" To="360" Duration="0:0:3" RepeatBehavior="Forever"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Container" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect BlurRadius="15" Color="#5856D6" Opacity="0.5"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="AccInputStyle" TargetType="Control">
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Control">
+                        <Grid>
+                            <Border x:Name="Border" Background="White" CornerRadius="10" BorderThickness="1.5" BorderBrush="#E5E5EA"/>
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="15,0" VerticalAlignment="Center" Foreground="#1C1C1E"/>
+                            <Border x:Name="Indicator" Height="2" Background="#5856D6" VerticalAlignment="Bottom" Width="0" HorizontalAlignment="Left" Margin="10,0,10,2"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="Border" Property="BorderBrush" Value="#5856D6"/>
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="Indicator" Storyboard.TargetProperty="Width" To="150" Duration="0:0:0.3"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid ClipToBounds="True">
+        <Ellipse Fill="#33AF52DE" Width="600" Height="600" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-250,-200,0,0">
+            <Ellipse.Effect>
+                <BlurEffect Radius="120"/>
+            </Ellipse.Effect>
+        </Ellipse>
+        <Ellipse Fill="#22007AFF" Width="500" Height="500" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,-200,-150">
+            <Ellipse.Effect>
+                <BlurEffect Radius="100"/>
+            </Ellipse.Effect>
+        </Ellipse>
+
+        <Border x:Name="LoginCard" Width="420" HorizontalAlignment="Center" VerticalAlignment="Center"
+                Background="White" CornerRadius="30" Padding="45" BorderThickness="1" BorderBrush="White">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="60" Opacity="0.15" ShadowDepth="10" Color="#000000"/>
+            </Border.Effect>
+
+            <Border.RenderTransform>
+                <TransformGroup>
+                    <TranslateTransform x:Name="CardSlide" Y="100"/>
+                    <ScaleTransform x:Name="CardScale" ScaleX="0.9" ScaleY="0.9"/>
+                </TransformGroup>
+            </Border.RenderTransform>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="US Accounts Login" Grid.Row="0" FontSize="28" FontWeight="ExtraBold" Foreground="#1C1C1E" HorizontalAlignment="Left"/>
+                <TextBlock Text="Administrative portal for US financial records." Grid.Row="1" FontSize="13" Foreground="#8E8E93" TextWrapping="Wrap" Margin="0,10,0,35"/>
+
+                <Grid Grid.Row="2" Margin="0,0,0,20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="ADMIN ID" FontSize="11" FontWeight="Bold" Foreground="#8E8E93" Margin="5,0,0,8"/>
+                    <TextBox x:Name="txtAccountUserID" Grid.Row="1" 
+                             Style="{StaticResource AccInputStyle}" 
+                             IsReadOnly="True"
+                             Text="{Binding AdminID, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                </Grid>
+
+                <Grid Grid.Row="3" Margin="0,0,0,35">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="PASSWORD" FontSize="11" FontWeight="Bold" Foreground="#8E8E93" Margin="5,0,0,8"/>
+                    <PasswordBox x:Name="pbAccountPassword" Grid.Row="1" Style="{StaticResource AccInputStyle}"/>
+                </Grid>
+
+                <Button x:Name="btnAccountLogin" Grid.Row="4" Content="SECURE ACCESS" 
+                        Style="{StaticResource AccountButtonStyle}" Height="55" 
+                        Click="btnAccountLogin_Click"/>
+            </Grid>
+        </Border>
+
+        <Grid.Triggers>
+            <EventTrigger RoutedEvent="Loaded">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="CardSlide" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.8">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetName="CardScale" Storyboard.TargetProperty="ScaleX" To="1" Duration="0:0:0.8">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetName="CardScale" Storyboard.TargetProperty="ScaleY" To="1" Duration="0:0:0.8">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Grid.Triggers>
+    </Grid>
+</Window>

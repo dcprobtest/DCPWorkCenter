@@ -38,7 +38,7 @@ namespace View_WPF
             _loggedInUID = uid; // Setting the passed UID to the private variable
 
             // Connecting the View with the ViewModel via DataContext
-            this.DataContext = new AccUSExpBubViewModel();
+            this.DataContext = new AccUSExpBubViewModel(uid);
 
             // Optional: Setting the window title to display the logged-in user ID for tracking
             this.Title = $"Acc US Exp Bub - Logged in as: {uid}";

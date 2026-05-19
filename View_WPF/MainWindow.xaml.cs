@@ -11,8 +11,8 @@ namespace View_WPF
     public partial class MainWindow : Window
     {
         // Variables to store the logged-in user's ID, Name, and Role (Activate status)
-        private string _loggedInUID;
-        private string _loggedInName;
+        private string _loggedInUID = string.Empty;
+        private string _loggedInName = string.Empty;
         private int _userRole;
 
         public MainWindow()
@@ -28,15 +28,15 @@ namespace View_WPF
             _loggedInName = name;
             _userRole = role;
 
-            // যেহেতু বাটন লুকানোর দরকার নেই, তাই ApplyAccessControl কল করার প্রয়োজন নেই।
-            // তবে আপনি চাইলে টাইটেল বারে ইউজারের নাম সেট করতে পারেন।
+            // Access control logic can be handled here if needed.
+            // Setting the window title to display the logged-in user details.
             this.Title = $"Main Window - Welcome {name} (ID: {uid})";
         }
 
         // Click event for Video Class (Class Player) button
         private void btnVideoClass_Click(object sender, RoutedEventArgs e)
         {
-            // Activate 3 হলে এই সেকশনে ঢোকা নিষেধ
+            // Restrict access if the user status/role is 3
             if (_userRole == 3)
             {
                 MessageBox.Show("Access Denied: Your account status does not allow access to Video Class.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -57,7 +57,7 @@ namespace View_WPF
         // Click event for File Manager button
         private void btnFileManager_Click(object sender, RoutedEventArgs e)
         {
-            // Activate 3 হলে এই সেকশনে ঢোকা নিষেধ
+            // Restrict access if the user status/role is 3
             if (_userRole == 3)
             {
                 MessageBox.Show("Access Denied: Your account status does not allow access to File Manager.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -78,7 +78,7 @@ namespace View_WPF
         // Click event for Admin Forms button
         private void btnAdminForms_Click(object sender, RoutedEventArgs e)
         {
-            // Activate 2 বা 3 কারোরই Admin Forms-এ ঢোকা উচিত নয় (লজিক অনুযায়ী)
+            // Restrict access to Admin Forms for role status 2 and 3
             if (_userRole == 2 || _userRole == 3)
             {
                 MessageBox.Show("Access Denied: You do not have permission to access Admin Forms.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -99,7 +99,7 @@ namespace View_WPF
         // Click event for Class Forms button
         private void btnClassForms_Click(object sender, RoutedEventArgs e)
         {
-            // Activate 3 হলে এই সেকশনে ঢোকা নিষেধ
+            // Restrict access if the user status/role is 3
             if (_userRole == 3)
             {
                 MessageBox.Show("Access Denied: Your account status does not allow access to Class Forms.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -120,7 +120,7 @@ namespace View_WPF
         // Click event for Accounts button
         private void btnAccounts_Click(object sender, RoutedEventArgs e)
         {
-            // Accounts বাটন সবার জন্য খোলা (Role 1, 2, 3 সবাই ঢুকতে পারবে)
+            // Accounts button is accessible to all authorized roles (1, 2, 3)
             try
             {
                 AccountsLogin accountsWindow = new AccountsLogin(_loggedInUID);
@@ -137,13 +137,14 @@ namespace View_WPF
         {
             try
             {
-                // Main_frmUSAccounts ফর্ম ওপেন করা হচ্ছে এবং সেখানে UID পাস করা হচ্ছে
-                Main_frmUSAccounts usAccountsWindow = new Main_frmUSAccounts(_loggedInUID);
-                usAccountsWindow.Show();
+                // Opening the secure US Accounts Login window instead of the main form directly
+                // Passing the logged-in user UID to initialize the security verification
+                US_AccountsLogin usAccountsLoginWindow = new US_AccountsLogin(_loggedInUID);
+                usAccountsLoginWindow.Show();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error opening US Accounts: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Error opening US Accounts Login: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

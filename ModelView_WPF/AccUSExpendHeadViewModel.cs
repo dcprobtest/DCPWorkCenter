@@ -110,7 +110,7 @@ namespace ModelView_WPF
 
         #endregion
 
-        #region Constructor
+        #region Constructors
 
         public AccUSExpendHeadViewModel()
         {
@@ -128,6 +128,13 @@ namespace ModelView_WPF
 
             // Call method to load initial data from the database via API
             LoadExpenseData();
+        }
+
+        // Parameterized constructor to receive UID from View
+        public AccUSExpendHeadViewModel(string uid) : this()
+        {
+            // Set the received UID to the property so it displays in the interface
+            UID = uid;
         }
 
         #endregion

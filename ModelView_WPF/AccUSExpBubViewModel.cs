@@ -32,6 +32,9 @@ namespace ModelView_WPF
         private ObservableCollection<string> _expCodeList; // Keeping simple list for dropdown strings as requested
         private string _selectedExpCode;
 
+        // Private variable to hold the passed logged-in User ID
+        private string _loggedInUID = string.Empty;
+
         // Public Properties for Binding with frmAccUSExpBub.xaml
         public bool IsEntryVisible
         {
@@ -77,9 +80,17 @@ namespace ModelView_WPF
         public ICommand EditCommand { get; }
         public ICommand ExitCommand { get; }
 
-        // Constructor
-        public AccUSExpBubViewModel()
+        // Default Constructor
+        public AccUSExpBubViewModel() : this(string.Empty)
         {
+        }
+
+        // Parameterized Constructor to receive UID from the View
+        public AccUSExpBubViewModel(string uid)
+        {
+            // Store the received UID
+            _loggedInUID = uid;
+
             // Initialize collections and entities
             ExpBubList = new ObservableCollection<AccUSExpBubModel>();
             ExpCodeList = new ObservableCollection<string>();
@@ -150,7 +161,7 @@ namespace ModelView_WPF
             CurrentEntry = new AccUSExpBubModel
             {
                 EntryDate = DateTime.Now,
-                UID = "U001" // Assign current system login user id dynamically
+                UID = _loggedInUID // Assigns the actual logged-in user id dynamically instead of hardcoded "U001"
             };
             SelectedExpCode = null; // Clear old dropdown states
             IsEntryVisible = true;

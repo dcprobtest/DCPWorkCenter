@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ModelView_WPF; // ViewModel প্রজেক্টের নেমস্পেসটি যুক্ত করা হলো
 
 namespace View_WPF
 {
@@ -22,6 +23,18 @@ namespace View_WPF
         public frmAccIncSub()
         {
             InitializeComponent();
+
+            // ViewModel-এর একটি নতুন ইন্সট্যান্স তৈরি করে DataContext-এ অ্যাসাইন করা হলো
+            this.DataContext = new AccIncSubViewModel();
+        }
+
+        // Main_Accountsfrm থেকে uid রিসিভ করার জন্য নতুন কনস্ট্রাক্টর
+        public frmAccIncSub(string uid)
+        {
+            InitializeComponent();
+
+            // ViewModel-এর ইন্সট্যান্সে uid পাস করে DataContext-এ অ্যাসাইন করা হলো
+            this.DataContext = new AccIncSubViewModel(uid);
         }
     }
 }

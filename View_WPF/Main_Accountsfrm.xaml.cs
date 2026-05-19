@@ -45,5 +45,33 @@ namespace View_WPF
             frmAccEmpSalary salaryForm = new frmAccEmpSalary(_userUID);
             salaryForm.Show();
         }
+
+        // Expense Bub button click logic
+        private void btnExpBub_Click(object sender, RoutedEventArgs e)
+        {
+            frmAccExpBub expBubForm = new frmAccExpBub(_userUID);
+            expBubForm.Show();
+        }
+
+        // Expend Head button click logic
+        private void btnExpendHead_Click(object sender, RoutedEventArgs e)
+        {
+            frmAccExpendHead expendHeadForm = new frmAccExpendHead(_userUID);
+            expendHeadForm.Show();
+        }
+
+        // Income Head button click logic
+        private void btnIncomeHead_Click(object sender, RoutedEventArgs e)
+        {
+            frmAccIncomeHead incomeHeadForm = new frmAccIncomeHead(_userUID);
+            incomeHeadForm.Show();
+        }
+
+        // Income Sub button click logic
+        private void btnIncSub_Click(object sender, RoutedEventArgs e)
+        {
+            frmAccIncSub incSubForm = new frmAccIncSub(_userUID);
+            incSubForm.Show();
+        }
     }
 }

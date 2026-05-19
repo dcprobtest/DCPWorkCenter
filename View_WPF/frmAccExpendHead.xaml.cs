@@ -11,7 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-// ViewModel এর নেমস্পেসটি এখানে যুক্ত করা হয়েছে
+// ViewModel এর নেমস্পেসটি এখানে যুক্ত করা হয়েছে
 using ModelView_WPF;
 
 namespace View_WPF
@@ -28,11 +28,23 @@ namespace View_WPF
         {
             InitializeComponent();
 
-            // ViewModel ইনিশিয়ালাইজ করা হচ্ছে
+            // ViewModel ইনিশিয়ালাইজ করা হচ্ছে
             _viewModel = new AccExpendHeadViewModel();
 
             // উইন্ডোর DataContext হিসেবে ViewModel কে সেট করা হলো
             // এর মাধ্যমেই XAML এর সাথে C# কোডের বাইন্ডিং কাজ করবে
+            this.DataContext = _viewModel;
+        }
+
+        // Main_Accountsfrm থেকে uid রিসিভ করার জন্য নতুন কনস্ট্রাক্টর
+        public frmAccExpendHead(string uid)
+        {
+            InitializeComponent();
+
+            // ViewModel ইনিশিয়ালাইজ করার সময় uid পাস করা হলো
+            _viewModel = new AccExpendHeadViewModel(uid);
+
+            // উইন্ডোর DataContext সেট করা হলো
             this.DataContext = _viewModel;
         }
     }

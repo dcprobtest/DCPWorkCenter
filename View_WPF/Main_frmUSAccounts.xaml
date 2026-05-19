@@ -39,13 +39,6 @@
                             </Border>
                         </Grid>
                         <ControlTemplate.Triggers>
-                            <EventTrigger RoutedEvent="Loaded">
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="BorderRotate" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:4" RepeatBehavior="Forever" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Trigger.EnterActions>
                                     <BeginStoryboard>
@@ -72,6 +65,55 @@
     </Window.Resources>
 
     <Grid>
+        <Grid.Triggers>
+            <EventTrigger RoutedEvent="Loaded">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="TitleMove" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.8">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetName="Card1Move" Storyboard.TargetProperty="Y" To="0" BeginTime="0:0:0.1" Duration="0:0:0.8">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetName="Card2Move" Storyboard.TargetProperty="Y" To="0" BeginTime="0:0:0.2" Duration="0:0:0.8">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetName="Card3Move" Storyboard.TargetProperty="Y" To="0" BeginTime="0:0:0.3" Duration="0:0:0.8">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetName="Card4Move" Storyboard.TargetProperty="Y" To="0" BeginTime="0:0:0.4" Duration="0:0:0.8">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetName="Card5Move" Storyboard.TargetProperty="Y" To="0" BeginTime="0:0:0.5" Duration="0:0:0.8">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetName="Card6Move" Storyboard.TargetProperty="Y" To="0" BeginTime="0:0:0.6" Duration="0:0:0.8">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetName="Card7Move" Storyboard.TargetProperty="Y" To="0" BeginTime="0:0:0.7" Duration="0:0:0.8">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Grid.Triggers>
+
         <Ellipse Fill="#222196F3" Width="800" Height="800" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-100,-200,0,0">
             <Ellipse.Effect>
                 <BlurEffect Radius="150"/>
@@ -139,7 +181,7 @@
                     </Grid>
                 </Button>
 
-                <Button Grid.Column="2" Grid.Row="0" Margin="10" Style="{StaticResource OptionCardStyle}" x:Name="btnAccUSExpendHead">
+                <Button Grid.Column="2" Grid.Row="0" Margin="10" Style="{StaticResource OptionCardStyle}" x:Name="btnAccUSExpendHead" Click="btnAccUSExpendHead_Click">
                     <Button.RenderTransform>
                         <TranslateTransform x:Name="Card3Move" Y="100"/>
                     </Button.RenderTransform>
@@ -155,7 +197,7 @@
                     </Grid>
                 </Button>
 
-                <Button Grid.Column="3" Grid.Row="0" Margin="10" Style="{StaticResource OptionCardStyle}" x:Name="btnAccUSExpenditureBD">
+                <Button Grid.Column="3" Grid.Row="0" Margin="10" Style="{StaticResource OptionCardStyle}" x:Name="btnAccUSExpenditure">
                     <Button.RenderTransform>
                         <TranslateTransform x:Name="Card4Move" Y="100"/>
                     </Button.RenderTransform>
@@ -167,7 +209,7 @@
                         <Viewbox Grid.Row="0" Height="50" Width="50" VerticalAlignment="Bottom" Margin="0,0,0,10">
                             <Path Fill="#00796B" Data="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z"/>
                         </Viewbox>
-                        <TextBlock Grid.Row="1" Text="Acc US Expenditure BD" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                        <TextBlock Grid.Row="1" Text="Acc US Expenditure" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                     </Grid>
                 </Button>
 
@@ -221,54 +263,5 @@
 
             </Grid>
         </Grid>
-
-        <Grid.Triggers>
-            <EventTrigger RoutedEvent="Loaded">
-                <BeginStoryboard>
-                    <Storyboard>
-                        <DoubleAnimation Storyboard.TargetName="TitleMove" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.8">
-                            <DoubleAnimation.EasingFunction>
-                                <CubicEase EasingMode="EaseOut"/>
-                            </DoubleAnimation.EasingFunction>
-                        </DoubleAnimation>
-                        <DoubleAnimation Storyboard.TargetName="Card1Move" Storyboard.TargetProperty="Y" To="0" BeginTime="0:0:0.1" Duration="0:0:0.8">
-                            <DoubleAnimation.EasingFunction>
-                                <CubicEase EasingMode="EaseOut"/>
-                            </DoubleAnimation.EasingFunction>
-                        </DoubleAnimation>
-                        <DoubleAnimation Storyboard.TargetName="Card2Move" Storyboard.TargetProperty="Y" To="0" BeginTime="0:0:0.2" Duration="0:0:0.8">
-                            <DoubleAnimation.EasingFunction>
-                                <CubicEase EasingMode="EaseOut"/>
-                            </DoubleAnimation.EasingFunction>
-                        </DoubleAnimation>
-                        <DoubleAnimation Storyboard.TargetName="Card3Move" Storyboard.TargetProperty="Y" To="0" BeginTime="0:0:0.3" Duration="0:0:0.8">
-                            <DoubleAnimation.EasingFunction>
-                                <CubicEase EasingMode="EaseOut"/>
-                            </DoubleAnimation.EasingFunction>
-                        </DoubleAnimation>
-                        <DoubleAnimation Storyboard.TargetName="Card4Move" Storyboard.TargetProperty="Y" To="0" BeginTime="0:0:0.4" Duration="0:0:0.8">
-                            <DoubleAnimation.EasingFunction>
-                                <CubicEase EasingMode="EaseOut"/>
-                            </DoubleAnimation.EasingFunction>
-                        </DoubleAnimation>
-                        <DoubleAnimation Storyboard.TargetName="Card5Move" Storyboard.TargetProperty="Y" To="0" BeginTime="0:0:0.5" Duration="0:0:0.8">
-                            <DoubleAnimation.EasingFunction>
-                                <CubicEase EasingMode="EaseOut"/>
-                            </DoubleAnimation.EasingFunction>
-                        </DoubleAnimation>
-                        <DoubleAnimation Storyboard.TargetName="Card6Move" Storyboard.TargetProperty="Y" To="0" BeginTime="0:0:0.6" Duration="0:0:0.8">
-                            <DoubleAnimation.EasingFunction>
-                                <CubicEase EasingMode="EaseOut"/>
-                            </DoubleAnimation.EasingFunction>
-                        </DoubleAnimation>
-                        <DoubleAnimation Storyboard.TargetName="Card7Move" Storyboard.TargetProperty="Y" To="0" BeginTime="0:0:0.7" Duration="0:0:0.8">
-                            <DoubleAnimation.EasingFunction>
-                                <CubicEase EasingMode="EaseOut"/>
-                            </DoubleAnimation.EasingFunction>
-                        </DoubleAnimation>
-                    </Storyboard>
-                </BeginStoryboard>
-            </EventTrigger>
-        </Grid.Triggers>
     </Grid>
 </Window>

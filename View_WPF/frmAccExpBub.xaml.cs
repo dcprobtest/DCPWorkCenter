@@ -34,5 +34,17 @@ namespace View_WPF
             // এটি করার ফলেই XAML এর Binding গুলো কাজ করবে
             this.DataContext = _viewModel;
         }
+
+        // Main_Accountsfrm থেকে uid রিসিভ করার জন্য নতুন কনস্ট্রাক্টর
+        public frmAccExpBub(string uid)
+        {
+            InitializeComponent();
+
+            // ViewModel ইনিশিয়ালাইজ করার সময় uid পাস করা হলো
+            _viewModel = new AccExpBubViewModel(uid);
+
+            // DataContext সেট করা হলো
+            this.DataContext = _viewModel;
+        }
     }
 }

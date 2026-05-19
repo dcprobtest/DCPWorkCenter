@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 namespace View_WPF
 {
     /// <summary>
-    /// Interaction logic for frmAccUSExpenditureBD.xaml
+    /// Interaction logic for frmAccUSTypeExpend.xaml
     /// </summary>
-    public partial class frmAccUSExpenditureBD : Window
+    public partial class frmAccUSTypeExpend : Window
     {
-        public frmAccUSExpenditureBD()
+        public frmAccUSTypeExpend()
         {
             InitializeComponent();
         }

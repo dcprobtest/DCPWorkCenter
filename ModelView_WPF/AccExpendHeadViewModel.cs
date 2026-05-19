@@ -16,6 +16,7 @@ namespace ModelView_WPF
     {
         private readonly HttpClient _httpClient;
         private const string ApiUrl = "api/AccExpendHead";
+        private readonly string _receivedUid = string.Empty; // রিসিভ করা uid ধরে রাখার জন্য লোকাল ফিল্ড
 
         // Collection for DataGrid
         private ObservableCollection<AccExpendHeadModel> _expenseList = new();
@@ -36,6 +37,7 @@ namespace ModelView_WPF
                 OnPropertyChanged();
                 if (value != null)
                 {
+                    // Populating fields when a row is selected from DataGrid
                     ExpCode = value.ExpCode;
                     ExpDetail = value.ExpDetail;
                     UID = value.UID;
@@ -83,7 +85,7 @@ namespace ModelView_WPF
 
         public AccExpendHeadViewModel()
         {
-            // আপনার API পোর্ট অনুযায়ী URL চেক করে নিবেন (যেমন: 7073)
+            // আপনার API পোর্ট অনুযায়ী URL চেক করে নিবেন (যেমন: 7073)
             _httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:7073/") };
 
             AddCommand = new RelayCommand(ExecuteAdd);
@@ -91,7 +93,14 @@ namespace ModelView_WPF
             EditCommand = new RelayCommand(async (p) => await ExecuteEdit());
             ExitCommand = new RelayCommand(ExecuteExit);
 
-            _ = LoadData(); // উইন্ডো লোড হওয়ার সময় ডেটা ফেচ করবে
+            _ = LoadData(); // উইন্ডো লোড হওয়ার সময় ডেটা ফেচ করবে
+        }
+
+        // frmAccExpendHead.xaml.cs থেকে uid রিসিভ করার জন্য নতুন কনস্ট্রাক্টর
+        public AccExpendHeadViewModel(string uid) : this()
+        {
+            _receivedUid = uid;
+            UID = uid; // রিসিভ করা uid ইনিশিয়ালি ফর্মে শো করার জন্য সেট করা হলো
         }
 
         private async Task LoadData()
@@ -207,7 +216,7 @@ namespace ModelView_WPF
         {
             ExpCode = string.Empty;
             ExpDetail = string.Empty;
-            UID = string.Empty;
+            UID = _receivedUid; // ক্লিয়ার করার সময় ব্ল্যাঙ্ক না করে রিসিভ করা আইডিটি ধরে রাখা হলো
             EntryDate = DateTime.Now;
             SelectedExpense = null;
         }

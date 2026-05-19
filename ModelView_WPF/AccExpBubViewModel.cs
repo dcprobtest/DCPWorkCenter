@@ -18,6 +18,7 @@ namespace ViewModel_WPF
     {
         private readonly string _apiUrl = "https://localhost:7073/api/AccExpBub";
         private readonly HttpClient _httpClient;
+        private readonly string _receivedUid = "Admin"; // ডিফল্ট ভ্যালু হিসেবে "Admin" রাখা হলো
 
         #region Properties
 
@@ -87,6 +88,12 @@ namespace ViewModel_WPF
             LoadExpCodes(); // এই মেথডটি নতুন যোগ করা হয়েছে
         }
 
+        // frmAccExpBub.xaml.cs থেকে uid রিসিভ করার জন্য নতুন কনস্ট্রাক্টর
+        public AccExpBubViewModel(string uid) : this()
+        {
+            _receivedUid = uid; // রিসিভ করা uid লোকাল ভেরিয়েবলে সেট করা হলো
+        }
+
         private async void LoadDataFromApi()
         {
             try
@@ -137,11 +144,11 @@ namespace ViewModel_WPF
                 nextSubCode = (lastCode + 1).ToString("D3"); // ৩ ডিজিটে ফরম্যাট করবে
             }
 
-            // ২. নতুন এন্ট্রি তৈরি (UID এখানে "Admin" সেট করা হয়েছে)
+            // ২. নতুন এন্ট্রি তৈরি (হার্ডকোডেড "Admin" এর বদলে রিসিভ করা _receivedUid সেট করা হলো)
             CurrentEntry = new AccExpBubModel
             {
                 EntryDate = DateTime.Now,
-                UID = "Admin", // এখানে ডিফল্টভাবে "Admin" সেট করা হলো
+                UID = _receivedUid, // রিসিভ করা User ID এখানে সেট হবে এবং ফর্মে দেখাবে
                 ExpSubCode = nextSubCode,
                 ExpDetail = ""
             };

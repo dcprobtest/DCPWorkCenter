@@ -23,7 +23,7 @@ namespace View_WPF
     public partial class Main_frmUSAccounts : Window
     {
         // Variable to store the logged-in user's UID
-        private string _loggedInUID;
+        private string _loggedInUID = string.Empty;
 
         // Default constructor (for general usage if needed)
         public Main_frmUSAccounts()
@@ -31,7 +31,7 @@ namespace View_WPF
             InitializeComponent();
         }
 
-        // Parameterized constructor to receive UID from MainWindow
+        // Parameterized constructor to receive UID from US_AccountsLogin window
         public Main_frmUSAccounts(string uid)
         {
             InitializeComponent();
@@ -53,6 +53,21 @@ namespace View_WPF
             catch (Exception ex)
             {
                 MessageBox.Show("Error opening Acc US Exp Bub: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // Click event for Acc US Expend Head button
+        private void btnAccUSExpendHead_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Opening frmAccUSExpendHead form and passing the logged-in UID
+                frmAccUSExpendHead expendHeadWindow = new frmAccUSExpendHead(_loggedInUID);
+                expendHeadWindow.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error opening Acc US Expend Head: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
