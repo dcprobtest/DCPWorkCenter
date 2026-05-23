@@ -8,7 +8,8 @@
 
     <Window.Resources>
         <Style x:Key="PremiumAnimatedButton" TargetType="Button">
-            <Setter Property="Foreground" Value="White"/>
+            <!-- এখানে Foreground কালার White থেকে Black করা হয়েছে -->
+            <Setter Property="Foreground" Value="Black"/>
             <Setter Property="FontSize" Value="15"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Cursor" Value="Hand"/>
@@ -35,7 +36,8 @@
                                     </LinearGradientBrush>
                                 </Border.Background>
 
-                                <Border Background="#161618" CornerRadius="10">
+                                <!-- এখানে Background কালার #161618 থেকে #FFFFFF (সাদা) করা হয়েছে -->
+                                <Border Background="#FFFFFF" CornerRadius="10">
                                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
                             </Border>

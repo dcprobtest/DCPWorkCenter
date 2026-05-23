@@ -38,27 +38,28 @@
                             </Border>
                         </Grid>
                         <ControlTemplate.Triggers>
-                            <EventTrigger RoutedEvent="Loaded">
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="BorderRotate" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:4" RepeatBehavior="Forever" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Trigger.EnterActions>
-                                    <BeginStoryboard>
+                                    <BeginStoryboard x:Name="HoverStoryboard">
                                         <Storyboard>
+                                            <!-- মাউস উপরে আনলে কার্ড বড় হবে -->
                                             <DoubleAnimation Storyboard.TargetName="CardContainer" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.05" Duration="0:0:0.2"/>
                                             <DoubleAnimation Storyboard.TargetName="CardContainer" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.05" Duration="0:0:0.2"/>
+                                            <!-- মাউস উপরে আনলে বর্ডার ঘোরা শুরু হবে -->
+                                            <DoubleAnimation Storyboard.TargetName="BorderRotate" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:4" RepeatBehavior="Forever" />
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.EnterActions>
                                 <Trigger.ExitActions>
+                                    <!-- মাউস সরিয়ে নিলে অ্যানিমেশন বন্ধ হয়ে যাবে -->
+                                    <StopStoryboard BeginStoryboardName="HoverStoryboard"/>
                                     <BeginStoryboard>
                                         <Storyboard>
+                                            <!-- কার্ড আগের সাইজে ফেরত যাবে -->
                                             <DoubleAnimation Storyboard.TargetName="CardContainer" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1" Duration="0:0:0.2"/>
                                             <DoubleAnimation Storyboard.TargetName="CardContainer" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1" Duration="0:0:0.2"/>
+                                            <!-- বর্ডার ঘূর্ণন ০ ডিগ্রিতে সেট হয়ে স্থির হবে -->
+                                            <DoubleAnimation Storyboard.TargetName="BorderRotate" Storyboard.TargetProperty="Angle" To="0" Duration="0:0:0.2"/>
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.ExitActions>

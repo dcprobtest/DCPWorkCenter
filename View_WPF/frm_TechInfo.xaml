@@ -1,0 +1,202 @@
+﻿<Window x:Class="View_WPF.frm_TechInfo"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:View_WPF"
+        mc:Ignorable="d"
+        Title="Technology Information" Height="700" Width="1200"
+        WindowStartupLocation="CenterScreen" Background="White"
+        ResizeMode="NoResize">
+
+    <Window.Resources>
+        <!-- Textbox Style -->
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="#333"/>
+            <Setter Property="Padding" Value="8,5"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="10,0,10,15"/>
+        </Style>
+
+        <!-- DatePicker Style -->
+        <Style TargetType="DatePicker">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Margin" Value="10,0,10,15"/>
+        </Style>
+
+        <!-- Rainbow Animated Button Style -->
+        <Style x:Key="RainbowButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="BtnRoot">
+                            <Border CornerRadius="10" Padding="2">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <LinearGradientBrush.RelativeTransform>
+                                            <RotateTransform x:Name="BtnRotate" CenterX="0.5" CenterY="0.5" Angle="0" />
+                                        </LinearGradientBrush.RelativeTransform>
+                                        <GradientStop Color="#FF0000" Offset="0.0"/>
+                                        <GradientStop Color="#00FF00" Offset="0.5"/>
+                                        <GradientStop Color="#0000FF" Offset="1.0"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Border Background="White" CornerRadius="8">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="BtnRotate" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:3" RepeatBehavior="Forever" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <!-- Background Glowing Blur Gradient Effect -->
+        <Ellipse Fill="#15007AFF" Width="700" Height="700" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-250,-250,0">
+            <Ellipse.Effect>
+                <BlurEffect Radius="150"/>
+            </Ellipse.Effect>
+        </Ellipse>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid Margin="40">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Form Title -->
+                <TextBlock Text="Technology Information" FontSize="32" FontWeight="Bold" Foreground="#FF0A0909" Margin="0,0,0,30" HorizontalAlignment="Center"/>
+
+                <!-- Main Rainbow Animated Border Container -->
+                <Border Grid.Row="1" Width="1100" HorizontalAlignment="Center" VerticalAlignment="Top" CornerRadius="25" Padding="2">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <LinearGradientBrush.RelativeTransform>
+                                <RotateTransform x:Name="MainBorderRotate" CenterX="0.5" CenterY="0.5" Angle="0" />
+                            </LinearGradientBrush.RelativeTransform>
+                            <GradientStop Color="#FF0000" Offset="0.0"/>
+                            <GradientStop Color="#FFFF00" Offset="0.2"/>
+                            <GradientStop Color="#00FF00" Offset="0.4"/>
+                            <GradientStop Color="#00FFFF" Offset="0.6"/>
+                            <GradientStop Color="#0000FF" Offset="0.8"/>
+                            <GradientStop Color="#FF00FF" Offset="1.0"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+
+                    <Border.Triggers>
+                        <EventTrigger RoutedEvent="Loaded">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="MainBorderRotate" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:8" RepeatBehavior="Forever" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Border.Triggers>
+
+                    <!-- Inside Content Grid Section -->
+                    <Border Background="#FFEBEAE9" CornerRadius="23" Padding="30">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="2.5*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- TechID (Unchecked - Primary Key / Input) -->
+                            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="Tech ID" Foreground="#666" Margin="10,0,0,5"/>
+                            <TextBox Text="{Binding Tech.TechID, UpdateSourceTrigger=PropertyChanged}" MaxLength="3" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
+
+                            <!-- EntryByUID (Checked) -->
+                            <TextBlock Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Text="Entry By UID" Foreground="#666" Margin="10,0,0,5"/>
+                            <TextBox Text="{Binding Tech.EntryByUID, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" Background="#FFE0E0E0" MaxLength="6" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2"/>
+
+                            <!-- TechDesc (Checked) -->
+                            <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" Text="Technology Description" Foreground="#666" Margin="10,0,0,5"/>
+                            <TextBox Text="{Binding Tech.TechDesc, UpdateSourceTrigger=PropertyChanged}" MaxLength="100" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Height="80" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"/>
+
+                            <!-- EntryDate (Checked) -->
+                            <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Text="Entry Date" Foreground="#666" Margin="10,0,0,5"/>
+                            <DatePicker SelectedDate="{Binding Tech.EntryDate, UpdateSourceTrigger=PropertyChanged}" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"/>
+
+                            <!-- StartDate (Checked) -->
+                            <TextBlock Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" Text="Start Date" Foreground="#666" Margin="10,0,0,5"/>
+                            <DatePicker SelectedDate="{Binding Tech.StartDate, UpdateSourceTrigger=PropertyChanged}" Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2"/>
+
+                            <!-- EndDate (Checked) -->
+                            <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Text="End Date" Foreground="#666" Margin="10,0,0,5"/>
+                            <DatePicker SelectedDate="{Binding Tech.EndDate, UpdateSourceTrigger=PropertyChanged}" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2"/>
+
+                            <!-- LastUpdate (Checked) -->
+                            <TextBlock Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="2" Text="Last Update" Foreground="#666" Margin="10,0,0,5"/>
+                            <DatePicker SelectedDate="{Binding Tech.LastUpdate, UpdateSourceTrigger=PropertyChanged}" Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="2"/>
+
+                            <!-- Activate (Checked - Mapped to Char(1) via True/False Binding) -->
+                            <CheckBox IsChecked="{Binding IsActivated}" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="4" Margin="15,10,0,15" VerticalAlignment="Center">
+                                <TextBlock Text="Activate Technology" Foreground="Black" FontSize="16" Margin="10,0,0,0"/>
+                            </CheckBox>
+
+                            <!-- Right Side Data List Header -->
+                            <TextBlock Grid.Row="0" Grid.Column="4" Text="Technology Data List" Foreground="#666" Margin="20,0,0,5"/>
+
+                            <!-- ListBox Container for Tech Records -->
+                            <Border Grid.Row="1" Grid.RowSpan="8" Grid.Column="4" Margin="20,0,10,15" BorderBrush="#333" BorderThickness="1" CornerRadius="5">
+                                <ListBox ItemsSource="{Binding TechList}" SelectedItem="{Binding SelectedTech}" Background="White" BorderThickness="0">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <!-- Displays the Technology Description in the list -->
+                                                <TextBlock Text="{Binding TechDesc}" FontSize="14" Foreground="Black" Margin="5"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </Border>
+
+                            <!-- Form Action Buttons -->
+                            <Button Command="{Binding AddCommand}" Content="ADD" Style="{StaticResource RainbowButtonStyle}" Grid.Row="9" Grid.Column="0" Height="45" Margin="10,10,5,0"/>
+                            <Button Command="{Binding SaveCommand}" Content="SAVE" Style="{StaticResource RainbowButtonStyle}" Grid.Row="9" Grid.Column="1" Height="45" Margin="5,10,5,0"/>
+                            <Button Command="{Binding EditCommand}" Content="EDIT" Style="{StaticResource RainbowButtonStyle}" Grid.Row="9" Grid.Column="2" Height="45" Margin="5,10,5,0"/>
+                            <Button Command="{Binding ExitCommand}" Content="EXIT" Style="{StaticResource RainbowButtonStyle}" Grid.Row="9" Grid.Column="3" Height="45" Margin="5,10,10,0"/>
+
+                        </Grid>
+                    </Border>
+                </Border>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</Window>

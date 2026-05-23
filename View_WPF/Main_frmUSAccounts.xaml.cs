@@ -70,5 +70,35 @@ namespace View_WPF
                 MessageBox.Show("Error opening Acc US Expend Head: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        // Click event for Acc US Income Head button
+        private void btnAccUSIncomeHead_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Opening frmAccUSIncomeHead form and passing the logged-in UID
+                frmAccUSIncomeHead incomeHeadWindow = new frmAccUSIncomeHead(_loggedInUID);
+                incomeHeadWindow.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error opening Acc US Income Head: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // Click event for Acc US Inc Sub button
+        private void btnAccUSIncSub_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Opening frmAccUSIncSub form and passing the logged-in UID
+                frmAccUSIncSub incomeSubWindow = new frmAccUSIncSub(_loggedInUID);
+                incomeSubWindow.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error opening Acc US Inc Sub: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
     }
 }

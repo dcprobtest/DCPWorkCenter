@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ModelView_WPF; // Adding ViewModel namespace
 
 namespace View_WPF
 {
@@ -19,9 +20,26 @@ namespace View_WPF
     /// </summary>
     public partial class frmAccUSIncSub : Window
     {
+        // Variable to store the logged-in user's UID
+        private string _loggedInUID = string.Empty;
+
+        // Default constructor
         public frmAccUSIncSub()
         {
             InitializeComponent();
+
+            // Setting Connection/DataContext with ViewModel
+            this.DataContext = new AccUSIncSubViewModel();
+        }
+
+        // Parameterized constructor to receive UID from Main_frmUSAccounts window
+        public frmAccUSIncSub(string uid)
+        {
+            InitializeComponent();
+            _loggedInUID = uid; // Setting the passed UID to the private variable
+
+            // Setting DataContext and passing the UID to the ViewModel constructor
+            this.DataContext = new AccUSIncSubViewModel(_loggedInUID);
         }
     }
 }

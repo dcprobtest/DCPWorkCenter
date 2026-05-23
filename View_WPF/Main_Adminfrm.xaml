@@ -16,7 +16,10 @@
                             <Grid.RenderTransform>
                                 <ScaleTransform ScaleX="1" ScaleY="1"/>
                             </Grid.RenderTransform>
-                            <Border x:Name="GradientBorder" CornerRadius="25" Padding="3">
+
+                            <Border x:Name="BaseBorder" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="25" Background="White" Opacity="1"/>
+
+                            <Border x:Name="GradientBorder" CornerRadius="25" Padding="3" Opacity="0">
                                 <Border.Background>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                                         <LinearGradientBrush.RelativeTransform>
@@ -29,31 +32,34 @@
                                         <GradientStop Color="#FF00FF" Offset="1.0"/>
                                     </LinearGradientBrush>
                                 </Border.Background>
-                                <Border Background="White" CornerRadius="22">
-                                    <ContentPresenter />
-                                </Border>
+                                <Border Background="White" CornerRadius="22"/>
+                            </Border>
+
+                            <Border Background="Transparent" CornerRadius="25">
+                                <ContentPresenter />
                             </Border>
                         </Grid>
+
                         <ControlTemplate.Triggers>
-                            <EventTrigger RoutedEvent="Loaded">
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="BorderRotate" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:4" RepeatBehavior="Forever" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Trigger.EnterActions>
-                                    <BeginStoryboard>
+                                    <BeginStoryboard x:Name="HoverStoryboard">
                                         <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="BaseBorder" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="GradientBorder" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="BorderRotate" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:4" RepeatBehavior="Forever" />
+
                                             <DoubleAnimation Storyboard.TargetName="CardContainer" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.05" Duration="0:0:0.2"/>
                                             <DoubleAnimation Storyboard.TargetName="CardContainer" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.05" Duration="0:0:0.2"/>
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.EnterActions>
                                 <Trigger.ExitActions>
+                                    <StopStoryboard BeginStoryboardName="HoverStoryboard"/>
                                     <BeginStoryboard>
                                         <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="BaseBorder" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="GradientBorder" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.2"/>
                                             <DoubleAnimation Storyboard.TargetName="CardContainer" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1" Duration="0:0:0.2"/>
                                             <DoubleAnimation Storyboard.TargetName="CardContainer" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1" Duration="0:0:0.2"/>
                                         </Storyboard>
