@@ -21,6 +21,9 @@ namespace View_WPF
         // Variable to store the UID passed from MainWindow
         private string _loggedInUID;
 
+        // Custom property to track login success safely without using DialogResult
+        public bool IsLoginSuccess { get; set; } = false;
+
         public AccountsLogin()
         {
             InitializeComponent();
@@ -69,6 +72,9 @@ namespace View_WPF
                     // Open Main_Accountsfrm if the password is correct
                     Main_Accountsfrm accountsForm = new Main_Accountsfrm(_loggedInUID);
                     accountsForm.Show();
+
+                    // Set custom property to true instead of DialogResult to bypass WPF Exception
+                    this.IsLoginSuccess = true;
 
                     // Close the current login window
                     this.Close();

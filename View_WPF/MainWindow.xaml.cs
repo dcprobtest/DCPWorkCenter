@@ -46,11 +46,25 @@ namespace View_WPF
             try
             {
                 frmClass_ClassPlayer classPlayer = new frmClass_ClassPlayer(_loggedInUID);
+
+                // Hide the main window
+                this.Hide();
+
+                // Subscribe to the Closed event to restore MainWindow
+                classPlayer.Closed += (s, args) =>
+                {
+                    this.Show();
+                };
+
+                // Show the target window
                 classPlayer.Show();
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error opening Video Class: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                // Fallback to ensure MainWindow remains visible on failure
+                this.Show();
             }
         }
 
@@ -67,11 +81,25 @@ namespace View_WPF
             try
             {
                 frmAdmin_DocInfo docManager = new frmAdmin_DocInfo(_loggedInUID);
+
+                // Hide the main window
+                this.Hide();
+
+                // Subscribe to the Closed event to restore MainWindow
+                docManager.Closed += (s, args) =>
+                {
+                    this.Show();
+                };
+
+                // Show the target window
                 docManager.Show();
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error opening File Manager: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                // Fallback to ensure MainWindow remains visible on failure
+                this.Show();
             }
         }
 
@@ -88,11 +116,25 @@ namespace View_WPF
             try
             {
                 Main_Adminfrm adminForms = new Main_Adminfrm(_loggedInUID, _loggedInName);
+
+                // Hide the main window
+                this.Hide();
+
+                // Subscribe to the Closed event to restore MainWindow
+                adminForms.Closed += (s, args) =>
+                {
+                    this.Show();
+                };
+
+                // Show the target window
                 adminForms.Show();
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error opening Admin Forms: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                // Fallback to ensure MainWindow remains visible on failure
+                this.Show();
             }
         }
 
@@ -109,11 +151,25 @@ namespace View_WPF
             try
             {
                 Main_Classfrm classForms = new Main_Classfrm(_loggedInUID);
+
+                // Hide the main window
+                this.Hide();
+
+                // Subscribe to the Closed event to restore MainWindow
+                classForms.Closed += (s, args) =>
+                {
+                    this.Show();
+                };
+
+                // Show the target window
                 classForms.Show();
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error opening Class Forms: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                // Fallback to ensure MainWindow remains visible on failure
+                this.Show();
             }
         }
 
@@ -123,12 +179,32 @@ namespace View_WPF
             // Accounts button is accessible to all authorized roles (1, 2, 3)
             try
             {
+                // অ্যাপ্লিকেশনটিকে নিশ্চিত করা হলো যে এটিই আসল প্রধান উইন্ডো
+                System.Windows.Application.Current.MainWindow = this;
+
                 AccountsLogin accountsWindow = new AccountsLogin(_loggedInUID);
+
+                // Hide the main window
+                this.Hide();
+
+                // Updated: Checking custom property IsLoginSuccess instead of DialogResult
+                accountsWindow.Closed += (s, args) =>
+                {
+                    if (accountsWindow.IsLoginSuccess == false)
+                    {
+                        this.Show();
+                    }
+                };
+
+                // Show the target window
                 accountsWindow.Show();
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error opening Accounts Login: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                // Fallback to ensure MainWindow remains visible on failure
+                this.Show();
             }
         }
 
@@ -137,14 +213,51 @@ namespace View_WPF
         {
             try
             {
+                // অ্যাপ্লিকেশনটিকে নিশ্চিত করা হলো যে এটিই আসল প্রধান উইন্ডো
+                System.Windows.Application.Current.MainWindow = this;
+
                 // Opening the secure US Accounts Login window instead of the main form directly
                 // Passing the logged-in user UID to initialize the security verification
                 US_AccountsLogin usAccountsLoginWindow = new US_AccountsLogin(_loggedInUID);
+
+                // Hide the main window
+                this.Hide();
+
+                // Updated: Checking custom property IsLoginSuccess instead of DialogResult
+                usAccountsLoginWindow.Closed += (s, args) =>
+                {
+                    // যদি পাসওয়ার্ড না দিয়ে বা ভুল দিয়ে লগইন উইন্ডো কেটে দেয়, তবে MainWindow শো করবে
+                    if (usAccountsLoginWindow.IsLoginSuccess == false)
+                    {
+                        this.Show();
+                    }
+                    else
+                    {
+                        // যদি লগইন সফল হয়, তবে একটু আগে ওপেন হওয়া Main_frmUSAccounts উইন্ডোটিকে ট্র্যাক করার লজিক
+                        foreach (Window window in System.Windows.Application.Current.Windows)
+                        {
+                            if (window is Main_frmUSAccounts)
+                            {
+                                // Main_frmUSAccounts ফর্মটি যখন ক্লোজ করা হবে, তখন এই MainWindow আবার দৃশ্যমান হবে
+                                window.Closed += (senderWin, eWin) =>
+                                {
+                                    this.Show();
+                                };
+                                break;
+                            }
+                        }
+                    }
+                };
+
+                // Show the target window
                 usAccountsLoginWindow.Show();
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error opening US Accounts Login: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                // Fallback to ensure MainWindow remains visible on failure
+                this.Show();
             }
         }
 

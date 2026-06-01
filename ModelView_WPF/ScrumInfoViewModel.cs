@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Windows;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace ModelView_WPF
 {
@@ -17,6 +18,9 @@ namespace ModelView_WPF
         private ObservableCollection<ScrumInfoModel> _scrumList;
         private readonly HttpClient _httpClient;
         private const string ApiUrl = "https://localhost:7073/api/ScrumInfo";
+
+        // SignalR client connection global variable
+        private HubConnection _hubConnection;
 
         // Properties bound to the View
         public ScrumInfoModel Scrum
@@ -80,6 +84,39 @@ namespace ModelView_WPF
 
             // Load data asynchronously from API on startup
             _ = LoadDataFromApiAsync();
+
+            // Initialize and start SignalR live connection setup
+            InitializeSignalR();
+        }
+
+        // Initialize SignalR and setup listeners
+        public async void InitializeSignalR()
+        {
+            _hubConnection = new HubConnectionBuilder()
+                .WithUrl("https://localhost:7073/scrumHub")
+                .WithAutomaticReconnect()
+                .Build();
+
+            // When API broadcasts "RefreshScrumList", WPF executes this logic
+            _hubConnection.On("RefreshScrumList", () =>
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke(async () =>
+                {
+                    // Triggers the existing API fetch method to reload data instantly
+                    await LoadDataFromApiAsync();
+                });
+            });
+
+            try
+            {
+                // Start connection
+                await _hubConnection.StartAsync();
+            }
+            catch (Exception ex)
+            {
+                // Soft log if connection fails initially, avoids crashing UI
+                System.Diagnostics.Debug.WriteLine($"SignalR Connection Error: {ex.Message}");
+            }
         }
 
         // Fetch Data from API

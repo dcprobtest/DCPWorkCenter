@@ -29,6 +29,9 @@ namespace View_WPF
         public Main_frmUSAccounts()
         {
             InitializeComponent();
+
+            // এই উইন্ডোটি বন্ধ (Closed) হলে MainWindow শো করার জন্য ইভেন্ট সাবস্ক্রাইব করা হলো
+            this.Closed += Main_frmUSAccounts_Closed;
         }
 
         // Parameterized constructor to receive UID from US_AccountsLogin window
@@ -37,8 +40,28 @@ namespace View_WPF
             InitializeComponent();
             _loggedInUID = uid; // Setting the passed UID to the private variable
 
+            // এই উইন্ডোটি বন্ধ (Closed) হলে MainWindow শো করার জন্য ইভেন্ট সাবস্ক্রাইব করা হলো
+            this.Closed += Main_frmUSAccounts_Closed;
+
             // Setting the window title to display the logged-in user ID
             this.Title = $"US Accounts - Logged in as: {uid}";
+        }
+
+        // Event handler that triggers when Main_frmUSAccounts is closed
+        private void Main_frmUSAccounts_Closed(object sender, EventArgs e)
+        {
+            try
+            {
+                // Ambigous reference কাটাতে explicit namespace (System.Windows) ব্যবহার করে MainWindow-কে শো করানো হলো
+                if (System.Windows.Application.Current.MainWindow != null)
+                {
+                    System.Windows.Application.Current.MainWindow.Show();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error returning to Main Window: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         // Click event for Acc US Exp Bub button
