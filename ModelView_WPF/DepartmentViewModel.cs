@@ -15,7 +15,7 @@ namespace View_WPF.ModelView_WPF
     public class DepartmentViewModel : INotifyPropertyChanged
     {
         // স্ক্রিনশট অনুযায়ী পোর্ট 7073 এবং রাউট একদম সঠিক আছে।
-        private readonly string _apiUrl = "https://localhost:7073/api/Data/SaveDepartment";
+        private readonly string _apiUrl = "http://74.208.227.170:8050//api/Data/SaveDepartment";
 
         private DepartmentModel _dept;
         private bool _isActive;

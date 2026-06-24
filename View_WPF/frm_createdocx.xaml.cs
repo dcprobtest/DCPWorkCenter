@@ -15,7 +15,7 @@ namespace View_WPF
 {
     public partial class frm_createdocx : Window
     {
-        private readonly string _baseUrl = "https://localhost:7073/api/Data/";
+        private readonly string _baseUrl = "http://74.208.227.170:8050//api/Data/";
 
         // আপনার মডেল অনুযায়ী 'EmployeeInfo' কে পরিবর্তন করে 'EmpInfoModel' করা হলো
         private List<EmpInfoModel> _allEmployees = new List<EmpInfoModel>();

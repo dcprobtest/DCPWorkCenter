@@ -17,7 +17,7 @@ namespace ModelView_WPF
         private ScrumInfoModel _selectedScrum;
         private ObservableCollection<ScrumInfoModel> _scrumList;
         private readonly HttpClient _httpClient;
-        private const string ApiUrl = "https://localhost:7073/api/ScrumInfo";
+        private const string ApiUrl = "http://74.208.227.170:8050//api/ScrumInfo";
 
         // SignalR client connection global variable
         private HubConnection _hubConnection;
@@ -93,7 +93,7 @@ namespace ModelView_WPF
         public async void InitializeSignalR()
         {
             _hubConnection = new HubConnectionBuilder()
-                .WithUrl("https://localhost:7073/scrumHub")
+                .WithUrl("http://74.208.227.170:8050//scrumHub")
                 .WithAutomaticReconnect()
                 .Build();
 

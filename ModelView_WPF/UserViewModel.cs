@@ -15,7 +15,7 @@ namespace View_WPF.ModelView_WPF
     public class UserViewModel : INotifyPropertyChanged
     {
         // 'User' পরিবর্তন করে 'Data' করা হলো
-        private readonly string _baseUrl = "https://localhost:7073/api/Data/";
+        private readonly string _baseUrl = "http://74.208.227.170:8050//api/Data/";
 
         // Properties
         public string UID { get; set; }

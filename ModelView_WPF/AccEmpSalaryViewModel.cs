@@ -30,7 +30,7 @@ namespace ModelView_WPF
 
         public AccEmpSalaryViewModel()
         {
-            _httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:7073/") };
+            _httpClient = new HttpClient { BaseAddress = new Uri("http://74.208.227.170:8050//") };
 
             SalaryList = new ObservableCollection<AccEmpSalaryModel>();
             ExpSubCodeList = new ObservableCollection<AccExpBubModel>();

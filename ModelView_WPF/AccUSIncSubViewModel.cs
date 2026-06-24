@@ -22,7 +22,7 @@ namespace ModelView_WPF
         private DateTime? _entryDate = DateTime.Now;
         private AccUSIncSubModel? _selectedUSIncSub;
         private readonly HttpClient _httpClient;
-        private const string ApiBaseUrl = "https://localhost:7073/api/AccUSIncSub";
+        private const string ApiBaseUrl = "http://74.208.227.170:8050//api/AccUSIncSub";
 
         // Collections for DataGrid and ComboBox
         public ObservableCollection<AccUSIncSubModel> USIncSubList { get; set; }

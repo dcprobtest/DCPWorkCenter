@@ -86,7 +86,7 @@ namespace ModelView_WPF
         public AccExpendHeadViewModel()
         {
             // আপনার API পোর্ট অনুযায়ী URL চেক করে নিবেন (যেমন: 7073)
-            _httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:7073/") };
+            _httpClient = new HttpClient { BaseAddress = new Uri("http://74.208.227.170:8050//") };
 
             AddCommand = new RelayCommand(ExecuteAdd);
             SaveCommand = new RelayCommand(async (p) => await ExecuteSave());

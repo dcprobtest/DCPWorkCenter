@@ -20,8 +20,8 @@ namespace View_WPF.ModelView_WPF
 {
     public class ClassVideoTextViewModel : INotifyPropertyChanged
     {
-        private readonly string _apiUrl = "https://localhost:7073/api/Data/SaveVideo";
-        private readonly string _baseApiUrl = "https://localhost:7073/api/Data/";
+        private readonly string _apiUrl = "http://74.208.227.170:8050//api/Data/SaveVideo";
+        private readonly string _baseApiUrl = "http://74.208.227.170:8050//api/Data/";
 
         private ClassVideoTextModel _classVideo;
         private bool _isActive;

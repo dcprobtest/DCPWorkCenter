@@ -72,7 +72,7 @@ namespace ModelView_WPF
         public ClassSubjectViewModel(string uid)
         {
             _receivedUid = uid;
-            _httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:7073/") };
+            _httpClient = new HttpClient { BaseAddress = new Uri("http://74.208.227.170:8050//") };
             SubjectList = new ObservableCollection<ClassSubject>();
 
             SaveCommand = new RelayCommand(async (obj) => await ExecuteSave());

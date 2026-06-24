@@ -17,7 +17,7 @@ namespace ModelView_WPF
 
         // HttpClient instance for API interaction
         private readonly HttpClient _httpClient;
-        private const string ApiUrl = "https://localhost:7073/api/AccUSIncomeHead";
+        private const string ApiUrl = "http://74.208.227.170:8050//api/AccUSIncomeHead";
 
         // Private field to retain the passed-in User ID across operations
         private readonly string _currentUID = string.Empty;

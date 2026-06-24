@@ -116,7 +116,7 @@ namespace View_WPF.ModelView_WPF
             UID = uid;
             EntryByUid = uid;
             // আপনার পোর্টের সাথে সামঞ্জস্য রেখে HttpClient (বাকি কোডের মতো)
-            _httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:7073/") };
+            _httpClient = new HttpClient { BaseAddress = new Uri("http://74.208.227.170:8050//") };
 
             SubjectList = new ObservableCollection<ClassSubject>();
             SectionList = new ObservableCollection<ClassSection>();

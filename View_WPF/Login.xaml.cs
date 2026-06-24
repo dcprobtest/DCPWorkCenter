@@ -18,7 +18,7 @@ namespace View_WPF
     public partial class Login : Window
     {
         // Correct Base URL for your API
-        private readonly string apiBaseUrl = "https://localhost:7073/";
+        private readonly string apiBaseUrl = "http://74.208.227.170:8050//";
 
         public Login()
         {

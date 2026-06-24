@@ -17,7 +17,7 @@ namespace View_WPF.ViewModels
         private readonly HttpClient _httpClient = new HttpClient();
         private string _selectedLocalFilePath;
         // আপনার API এর লোকাল হোস্ট ইউআরএল (পোর্ট নম্বরটি আপনার Swagger অনুযায়ী চেক করে নিন)
-        private const string ApiBaseUrl = "https://localhost:7073/api/Data/";
+        private const string ApiBaseUrl = "http://74.208.227.170:8050//api/Data/";
 
         public SourseAssignViewModel()
         {

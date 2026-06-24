@@ -23,7 +23,7 @@ namespace ModelView_WPF
         }
 
         // HttpClient instance for API Communication
-        private readonly HttpClient _httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:7073/") };
+        private readonly HttpClient _httpClient = new HttpClient { BaseAddress = new Uri("http://74.208.227.170:8050//") };
 
         // Privates for Form Visibility and States
         private bool _isEntryVisible;

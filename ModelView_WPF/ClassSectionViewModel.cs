@@ -85,7 +85,7 @@ namespace ModelView_WPF
         public ClassSectionViewModel(string uid)
         {
             // আপনার পোর্টের সাথে সামঞ্জস্য রেখে HttpClient কনফিগারেশন
-            _httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:7073/") };
+            _httpClient = new HttpClient { BaseAddress = new Uri("http://74.208.227.170:8050//") };
 
             // EntryByUid তে প্যারামিটার থেকে আসা uid সেট করা হচ্ছে
             ClassSection.EntryByUid = uid;

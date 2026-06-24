@@ -52,7 +52,7 @@ namespace View_WPF
             {
                 CourseContent.Clear();
                 // আপনার টেস্ট করা সফল URL
-                string url = $"https://localhost:7073/api/Data/GetAssignedVideos/{_rawUID}";
+                string url = $"http://74.208.227.170:8050/api/Data/GetAssignedVideos/{_rawUID}";
 
                 var response = await _httpClient.GetAsync(url);
                 if (response.IsSuccessStatusCode)

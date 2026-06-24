@@ -87,7 +87,7 @@ namespace ModelView_WPF
         private async void InitializeSignalR()
         {
             _connection = new HubConnectionBuilder()
-                .WithUrl("https://localhost:7073/conferenceHub")
+                .WithUrl("http://74.208.227.170:8050//conferenceHub")
                 .WithAutomaticReconnect()
                 .Build();
 

@@ -25,7 +25,7 @@ namespace ModelView_WPF
         // HttpClient field for API communication
         private readonly HttpClient _httpClient;
         // Base URL of your running Web API
-        private readonly string _apiBaseUrl = "https://localhost:7073/api/AccUSExpendHead";
+        private readonly string _apiBaseUrl = "http://74.208.227.170:8050//api/AccUSExpendHead";
 
         #endregion
 

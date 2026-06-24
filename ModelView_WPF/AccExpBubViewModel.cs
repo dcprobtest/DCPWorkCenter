@@ -16,7 +16,7 @@ namespace ViewModel_WPF
 {
     public class AccExpBubViewModel : INotifyPropertyChanged
     {
-        private readonly string _apiUrl = "https://localhost:7073/api/AccExpBub";
+        private readonly string _apiUrl = "http://74.208.227.170:8050//api/AccExpBub";
         private readonly HttpClient _httpClient;
         private readonly string _receivedUid = "Admin"; // ডিফল্ট ভ্যালু হিসেবে "Admin" রাখা হলো
 
@@ -110,7 +110,7 @@ namespace ViewModel_WPF
             try
             {
                 // আপনার নতুন API এন্ডপয়েন্ট কল করা হচ্ছে
-                var codes = await _httpClient.GetFromJsonAsync<List<string>>("https://localhost:7073/api/AccExpBub/GetExpendHeadCodes");
+                var codes = await _httpClient.GetFromJsonAsync<List<string>>("http://74.208.227.170:8050//api/AccExpBub/GetExpendHeadCodes");
 
                 if (codes != null)
                 {

@@ -35,7 +35,7 @@ namespace ModelView_WPF
         public AccIncSubViewModel()
         {
             // API Base URL Setup (Adjust port if necessary based on your DCPWorkCenter_Api)
-            _httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:7073/") };
+            _httpClient = new HttpClient { BaseAddress = new Uri("http://74.208.227.170:8050//") };
 
             IncSubList = new ObservableCollection<AccIncSubModel>();
             IncCodeList = new ObservableCollection<string>();

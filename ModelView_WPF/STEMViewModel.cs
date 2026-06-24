@@ -221,7 +221,7 @@ namespace ModelView_WPF
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    string apiUrl = "https://localhost:7073/api/Data/GetLastTransID";
+                    string apiUrl = "http://74.208.227.170:8050//api/Data/GetLastTransID";
                     var response = await client.GetAsync(apiUrl);
 
                     if (response.IsSuccessStatusCode)
@@ -262,7 +262,7 @@ namespace ModelView_WPF
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    string apiUrl = "https://localhost:7073/api/Data/SaveSTEM";
+                    string apiUrl = "http://74.208.227.170:8050//api/Data/SaveSTEM";
 
                     var stemData = new
                     {

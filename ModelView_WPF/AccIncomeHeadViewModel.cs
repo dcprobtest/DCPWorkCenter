@@ -19,7 +19,7 @@ namespace ModelView_WPF
         private AccIncomeHeadModel _selectedIncome;
 
         // API Endpoint Configuration
-        private static readonly HttpClient httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:7073/") };
+        private static readonly HttpClient httpClient = new HttpClient { BaseAddress = new Uri("http://74.208.227.170:8050//") };
 
         // Collection to hold database records for the DataGrid
         public ObservableCollection<AccIncomeHeadModel> IncomeList { get; set; }

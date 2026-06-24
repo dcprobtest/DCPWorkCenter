@@ -253,7 +253,7 @@ namespace View_WPF
                 {
                     var json = JsonSerializer.Serialize(userData);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
-                    await client.PostAsync("https://localhost:7073/api/Data/SaveUser", content);
+                    await client.PostAsync("http://74.208.227.170:8050//api/Data/SaveUser", content);
                     MessageBox.Show("Done!", "Success");
                 }
             }

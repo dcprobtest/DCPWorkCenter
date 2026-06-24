@@ -18,8 +18,8 @@ namespace View_WPF.ModelView_WPF
 {
     public class UserDocInfoViewModel : INotifyPropertyChanged
     {
-        private readonly string _apiUrl = "https://localhost:7073/api/Data/SaveUserDoc";
-        private readonly string _empDetailApiUrl = "https://localhost:7073/api/Data/GetEmployeeDetail/";
+        private readonly string _apiUrl = "http://74.208.227.170:8050//api/Data/SaveUserDoc";
+        private readonly string _empDetailApiUrl = "http://74.208.227.170:8050//api/Data/GetEmployeeDetail/";
 
         // --- Properties for Main Window ---
         private string _uid;
