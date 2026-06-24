@@ -19,6 +19,9 @@ namespace ModelView_WPF
         private readonly HttpClient _httpClient;
         private const string ApiUrl = "https://localhost:7073/api/ScrumInfo";
 
+        // Global variable to store the logged-in UID passed from the view
+        private string _passedUid = "ADMIN";
+
         // SignalR client connection global variable
         private HubConnection _hubConnection;
 
@@ -66,6 +69,37 @@ namespace ModelView_WPF
 
         public ScrumInfoViewModel()
         {
+            // Initialize HttpClient for API connection
+            _httpClient = new HttpClient();
+
+            // Initialize model and collection
+            Scrum = new ScrumInfoModel();
+            ScrumList = new ObservableCollection<ScrumInfoModel>();
+
+            // Initialize commands using RelayCommand from your project
+            AddCommand = new RelayCommand(ExecuteAdd);
+            SaveCommand = new RelayCommand(ExecuteSave, CanExecuteSave);
+            EditCommand = new RelayCommand(ExecuteEdit, CanExecuteEdit);
+            ExitCommand = new RelayCommand(ExecuteExit);
+
+            // Default initial values
+            ResetForm();
+
+            // Load data asynchronously from API on startup
+            _ = LoadDataFromApiAsync();
+
+            // Initialize and start SignalR live connection setup
+            InitializeSignalR();
+        }
+
+        // Overloaded constructor to receive the Uid from the View
+        public ScrumInfoViewModel(string uid)
+        {
+            if (!string.IsNullOrEmpty(uid))
+            {
+                _passedUid = uid;
+            }
+
             // Initialize HttpClient for API connection
             _httpClient = new HttpClient();
 
@@ -244,7 +278,7 @@ namespace ModelView_WPF
             Scrum.EntryDate = DateTime.Now;
             Scrum.StartDate = DateTime.Now;
             Scrum.EndDate = DateTime.Now.AddDays(30);
-            Scrum.EntryByUID = "ADMIN"; // Read-only default placeholder
+            Scrum.EntryByUID = _passedUid; // Sets the dynamically received UID or custom default
             Scrum.LastUpdate = DateTime.Now;
             Scrum.Activate = "Y";
         }

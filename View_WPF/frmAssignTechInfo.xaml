@@ -18,19 +18,25 @@
             <Setter Property="Padding" Value="8,5"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="10,0,10,15"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+        </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8,5"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
         </Style>
 
         <Style TargetType="DatePicker">
             <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Padding" Value="2"/>
-            <Setter Property="Margin" Value="10,0,10,15"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
-        </Style>
-
-        <Style x:Key="SmallFieldStyle" TargetType="FrameworkElement">
-            <Setter Property="HorizontalAlignment" Value="Left"/>
-            <Setter Property="Width" Value="140"/>
         </Style>
 
         <Style x:Key="RainbowButtonStyle" TargetType="Button">
@@ -80,14 +86,14 @@
             </Ellipse.Effect>
         </Ellipse>
 
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,0,0,0">
-            <Grid Margin="30,40,30,40">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid Margin="30,30,30,30">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="Assign Tech Information Management" FontSize="32" FontWeight="Bold" Foreground="#FF0A0909" Margin="0,0,0,30" HorizontalAlignment="Center"/>
+                <TextBlock Text="Assign Tech Information Management" FontSize="30" FontWeight="Bold" Foreground="#FF0A0909" Margin="0,0,0,25" HorizontalAlignment="Center"/>
 
                 <Border Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" CornerRadius="25" Padding="2">
                     <Border.Background>
@@ -118,12 +124,13 @@
                         </EventTrigger>
                     </Border.Triggers>
 
-                    <Border Background="#FFEBEAE9" CornerRadius="23" Padding="25" Margin="0,0,0,0">
+                    <Border Background="#FFEBEAE9" CornerRadius="23" Padding="25">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="165"/>
-                                <ColumnDefinition Width="165"/>
-                                <ColumnDefinition Width="15"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="30"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
@@ -139,46 +146,65 @@
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="Assign Tech Info ID" Foreground="#555555" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                            <TextBox Text="{Binding TechInfo.AssignTechInfoID, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" Style="{StaticResource SmallFieldStyle}" Grid.Row="1" Grid.Column="0"/>
+                            <TextBox Text="{Binding AssignTechInfoID, StringFormat={}{0:#}, Mode=OneWay}" IsReadOnly="True" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch"/>
 
-                            <TextBlock Grid.Row="0" Grid.Column="1" Text="Assign ID" Foreground="#555555" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                            <TextBox Text="{Binding TechInfo.AssignID, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource SmallFieldStyle}" Grid.Row="1" Grid.Column="1"/>
+                            <TextBlock Grid.Row="0" Grid.Column="2" Text="Assign ID" Foreground="#555555" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                            <TextBox Text="{Binding AssignID, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch"/>
 
                             <TextBlock Grid.Row="2" Grid.Column="0" Text="Scrum ID" Foreground="#555555" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                            <TextBox Text="{Binding TechInfo.ScrumID, UpdateSourceTrigger=PropertyChanged}" MaxLength="5" Style="{StaticResource SmallFieldStyle}" Grid.Row="3" Grid.Column="0"/>
+                            <ComboBox SelectedValue="{Binding ScrumID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding ScrumList}" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Stretch"/>
 
-                            <TextBlock Grid.Row="2" Grid.Column="1" Text="Entry By UID" Foreground="#555555" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                            <TextBox Text="{Binding TechInfo.EntryByUID, UpdateSourceTrigger=PropertyChanged}" MaxLength="6" Style="{StaticResource SmallFieldStyle}" Grid.Row="3" Grid.Column="1"/>
+                            <TextBlock Grid.Row="2" Grid.Column="2" Text="Entry By UID" Foreground="#555555" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                            <TextBox Text="{Binding EntryByUID, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" IsReadOnly="True" MaxLength="6" Grid.Row="3" Grid.Column="2" HorizontalAlignment="Stretch"/>
 
                             <TextBlock Grid.Row="4" Grid.Column="0" Text="Entry Date" Foreground="#555555" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                            <DatePicker SelectedDate="{Binding TechInfo.EntryDate, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource SmallFieldStyle}" Grid.Row="5" Grid.Column="0"/>
+                            <DatePicker SelectedDate="{Binding EntryDate, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.Row="5" Grid.Column="0" HorizontalAlignment="Stretch"/>
 
-                            <CheckBox IsChecked="{Binding IsActivated}" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Margin="10,15,10,15" VerticalAlignment="Top">
+                            <CheckBox IsChecked="{Binding IsActivated, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,10,0,20" VerticalAlignment="Center">
                                 <TextBlock Text="Activate Information" Foreground="Black" FontSize="15" FontWeight="SemiBold" Margin="8,0,0,0"/>
                             </CheckBox>
 
-                            <TextBlock Grid.Row="0" Grid.Column="3" Text="Tech Information List" Foreground="#555555" FontWeight="SemiBold" Margin="5,0,0,5"/>
-                            <Border Grid.Row="1" Grid.RowSpan="5" Grid.Column="3" Margin="5,0,10,15" BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="8" Background="White">
-                                <ListBox ItemsSource="{Binding TechInfoList}" SelectedItem="{Binding SelectedTechInfo}" Background="Transparent" BorderThickness="0" Margin="5">
+                            <TextBlock Grid.Row="0" Grid.Column="4" Text="Tech Information List" Foreground="#555555" FontWeight="SemiBold" Margin="0,0,0,5"/>
+
+                            <Border Grid.Row="1" Grid.RowSpan="6" Grid.Column="4" Margin="0,0,0,20" BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="8" Background="White" Height="190" VerticalAlignment="Stretch">
+                                <ListBox ItemsSource="{Binding TechInfoList}" SelectedItem="{Binding SelectedTechInfo, Mode=TwoWay}" Background="Transparent" BorderThickness="0" Margin="5" HorizontalContentAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <Border Padding="4">
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Text="Scrum ID: " FontSize="14" FontWeight="Bold" Foreground="Black"/>
-                                                    <TextBlock Text="{Binding ScrumID}" FontSize="14" Foreground="Black" Margin="0,0,15,0"/>
-                                                    <TextBlock Text="By: " FontSize="14" FontWeight="Bold" Foreground="DimGray"/>
-                                                    <TextBlock Text="{Binding EntryByUID}" FontSize="14" Foreground="DimGray"/>
-                                                </StackPanel>
+                                            <Border Padding="8,6" BorderBrush="#EEEEEE" BorderThickness="0,0,0,1">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Grid.Column="0" Text="Scrum ID: " FontSize="14" FontWeight="SemiBold" Foreground="#333333"/>
+                                                    <TextBlock Grid.Column="1" Text="{Binding ScrumID}" FontSize="14" FontWeight="Bold" Foreground="#111111" Margin="2,0,15,0"/>
+                                                    <TextBlock Grid.Column="2" Text="By: " FontSize="13" FontWeight="Normal" Foreground="#777777"/>
+                                                    <TextBlock Grid.Column="3" Text="{Binding EntryByUID}" FontSize="13" FontWeight="SemiBold" Foreground="#555555" Margin="2,0,5,0"/>
+                                                </Grid>
                                             </Border>
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>
                                 </ListBox>
                             </Border>
 
-                            <Button Command="{Binding AddCommand}" Content="ADD" Style="{StaticResource RainbowButtonStyle}" Grid.Row="7" Grid.Column="0" Height="45" Margin="10,10,5,0"/>
-                            <Button Command="{Binding SaveCommand}" Content="SAVE" Style="{StaticResource RainbowButtonStyle}" Grid.Row="7" Grid.Column="1" Height="45" Margin="5,10,10,0"/>
-                            <Button Command="{Binding EditCommand}" Content="EDIT" Style="{StaticResource RainbowButtonStyle}" Grid.Row="7" Grid.Column="2" HorizontalAlignment="Left" Width="150" Height="45" Margin="11,10,0,0" Grid.ColumnSpan="2"/>
-                            <Button Command="{Binding ExitCommand}" Content="EXIT" Style="{StaticResource RainbowButtonStyle}" Grid.Row="7" Grid.Column="3" HorizontalAlignment="Right" Width="150" Height="45" Margin="5,10,10,0"/>
+                            <Grid Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="5" Margin="0,10,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Button Command="{Binding AddCommand}" Content="ADD" Style="{StaticResource RainbowButtonStyle}" Grid.Column="0" Height="45"/>
+                                <Button Command="{Binding SaveCommand}" Content="SAVE" Style="{StaticResource RainbowButtonStyle}" Grid.Column="2" Height="45"/>
+                                <Button Command="{Binding EditCommand}" Content="EDIT" Style="{StaticResource RainbowButtonStyle}" Grid.Column="4" Height="45"/>
+                                <Button Command="{Binding ExitCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" Content="EXIT" Style="{StaticResource RainbowButtonStyle}" Grid.Column="6" Height="45"/>
+                            </Grid>
 
                         </Grid>
                     </Border>

@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ModelView_WPF;
 
 namespace View_WPF
 {
@@ -19,14 +20,25 @@ namespace View_WPF
     /// </summary>
     public partial class frmAssignmentScrum : Window
     {
+        private string _loggedInUID = string.Empty;
+
         public frmAssignmentScrum()
         {
             InitializeComponent();
+            this.DataContext = new AssignmentScrumViewModel();
+        }
+
+        // Overloaded constructor to receive the UID from Main_ScrumWindow and pass it to ViewModel
+        public frmAssignmentScrum(string uid)
+        {
+            InitializeComponent();
+            _loggedInUID = uid;
+            this.DataContext = new AssignmentScrumViewModel(uid);
         }
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-
+            // Event handler to prevent CS1061 compilation error
         }
     }
 }

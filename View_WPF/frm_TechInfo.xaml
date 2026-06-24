@@ -10,7 +10,6 @@
         ResizeMode="NoResize">
 
     <Window.Resources>
-        <!-- Textbox Style -->
         <Style TargetType="TextBox">
             <Setter Property="Background" Value="White"/>
             <Setter Property="Foreground" Value="Black"/>
@@ -21,14 +20,12 @@
             <Setter Property="Margin" Value="10,0,10,15"/>
         </Style>
 
-        <!-- DatePicker Style -->
         <Style TargetType="DatePicker">
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Padding" Value="5"/>
             <Setter Property="Margin" Value="10,0,10,15"/>
         </Style>
 
-        <!-- Rainbow Animated Button Style -->
         <Style x:Key="RainbowButtonStyle" TargetType="Button">
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="FontWeight" Value="Bold"/>
@@ -70,7 +67,6 @@
     </Window.Resources>
 
     <Grid>
-        <!-- Background Glowing Blur Gradient Effect -->
         <Ellipse Fill="#15007AFF" Width="700" Height="700" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-250,-250,0">
             <Ellipse.Effect>
                 <BlurEffect Radius="150"/>
@@ -84,10 +80,8 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- Form Title -->
                 <TextBlock Text="Technology Information" FontSize="32" FontWeight="Bold" Foreground="#FF0A0909" Margin="0,0,0,30" HorizontalAlignment="Center"/>
 
-                <!-- Main Rainbow Animated Border Container -->
                 <Border Grid.Row="1" Width="1100" HorizontalAlignment="Center" VerticalAlignment="Top" CornerRadius="25" Padding="2">
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -113,7 +107,6 @@
                         </EventTrigger>
                     </Border.Triggers>
 
-                    <!-- Inside Content Grid Section -->
                     <Border Background="#FFEBEAE9" CornerRadius="23" Padding="30">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -137,49 +130,38 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
 
-                            <!-- TechID (Unchecked - Primary Key / Input) -->
                             <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="Tech ID" Foreground="#666" Margin="10,0,0,5"/>
-                            <TextBox Text="{Binding Tech.TechID, UpdateSourceTrigger=PropertyChanged}" MaxLength="3" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
+                            <TextBox Text="{Binding Tech.TechId, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MaxLength="3" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
 
-                            <!-- EntryByUID (Checked) -->
                             <TextBlock Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Text="Entry By UID" Foreground="#666" Margin="10,0,0,5"/>
-                            <TextBox Text="{Binding Tech.EntryByUID, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" Background="#FFE0E0E0" MaxLength="6" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2"/>
+                            <TextBox Text="{Binding Tech.EntryByUid, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" IsReadOnly="True" Background="#FFE0E0E0" MaxLength="6" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2"/>
 
-                            <!-- TechDesc (Checked) -->
                             <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" Text="Technology Description" Foreground="#666" Margin="10,0,0,5"/>
-                            <TextBox Text="{Binding Tech.TechDesc, UpdateSourceTrigger=PropertyChanged}" MaxLength="100" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Height="80" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"/>
+                            <TextBox Text="{Binding Tech.TechDesc, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MaxLength="100" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Height="80" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"/>
 
-                            <!-- EntryDate (Checked) -->
                             <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Text="Entry Date" Foreground="#666" Margin="10,0,0,5"/>
-                            <DatePicker SelectedDate="{Binding Tech.EntryDate, UpdateSourceTrigger=PropertyChanged}" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"/>
+                            <DatePicker SelectedDate="{Binding Tech.EntryDate, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"/>
 
-                            <!-- StartDate (Checked) -->
                             <TextBlock Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" Text="Start Date" Foreground="#666" Margin="10,0,0,5"/>
-                            <DatePicker SelectedDate="{Binding Tech.StartDate, UpdateSourceTrigger=PropertyChanged}" Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2"/>
+                            <DatePicker SelectedDate="{Binding Tech.StartDate, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2"/>
 
-                            <!-- EndDate (Checked) -->
                             <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Text="End Date" Foreground="#666" Margin="10,0,0,5"/>
-                            <DatePicker SelectedDate="{Binding Tech.EndDate, UpdateSourceTrigger=PropertyChanged}" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2"/>
+                            <DatePicker SelectedDate="{Binding Tech.EndDate, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2"/>
 
-                            <!-- LastUpdate (Checked) -->
                             <TextBlock Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="2" Text="Last Update" Foreground="#666" Margin="10,0,0,5"/>
-                            <DatePicker SelectedDate="{Binding Tech.LastUpdate, UpdateSourceTrigger=PropertyChanged}" Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="2"/>
+                            <DatePicker SelectedDate="{Binding Tech.LastUpdate, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="2"/>
 
-                            <!-- Activate (Checked - Mapped to Char(1) via True/False Binding) -->
-                            <CheckBox IsChecked="{Binding IsActivated}" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="4" Margin="15,10,0,15" VerticalAlignment="Center">
+                            <CheckBox IsChecked="{Binding Tech.IsActivated, Mode=TwoWay}" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="4" Margin="15,10,0,15" VerticalAlignment="Center">
                                 <TextBlock Text="Activate Technology" Foreground="Black" FontSize="16" Margin="10,0,0,0"/>
                             </CheckBox>
 
-                            <!-- Right Side Data List Header -->
                             <TextBlock Grid.Row="0" Grid.Column="4" Text="Technology Data List" Foreground="#666" Margin="20,0,0,5"/>
 
-                            <!-- ListBox Container for Tech Records -->
                             <Border Grid.Row="1" Grid.RowSpan="8" Grid.Column="4" Margin="20,0,10,15" BorderBrush="#333" BorderThickness="1" CornerRadius="5">
-                                <ListBox ItemsSource="{Binding TechList}" SelectedItem="{Binding SelectedTech}" Background="White" BorderThickness="0">
+                                <ListBox ItemsSource="{Binding TechList}" SelectedItem="{Binding SelectedTech, Mode=TwoWay}" Background="White" BorderThickness="0">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <Grid>
-                                                <!-- Displays the Technology Description in the list -->
                                                 <TextBlock Text="{Binding TechDesc}" FontSize="14" Foreground="Black" Margin="5"/>
                                             </Grid>
                                         </DataTemplate>
@@ -187,7 +169,6 @@
                                 </ListBox>
                             </Border>
 
-                            <!-- Form Action Buttons -->
                             <Button Command="{Binding AddCommand}" Content="ADD" Style="{StaticResource RainbowButtonStyle}" Grid.Row="9" Grid.Column="0" Height="45" Margin="10,10,5,0"/>
                             <Button Command="{Binding SaveCommand}" Content="SAVE" Style="{StaticResource RainbowButtonStyle}" Grid.Row="9" Grid.Column="1" Height="45" Margin="5,10,5,0"/>
                             <Button Command="{Binding EditCommand}" Content="EDIT" Style="{StaticResource RainbowButtonStyle}" Grid.Row="9" Grid.Column="2" Height="45" Margin="5,10,5,0"/>

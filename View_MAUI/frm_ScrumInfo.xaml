@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="View_MAUI.frm_ScrumInfo"
+             Title="Scrum Information"
+             BackgroundColor="#FFF7F7F7">
+
+    <ContentPage.Resources>
+        <LinearGradientBrush x:Key="MainGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#FF0000" Offset="0.0"/>
+            <GradientStop Color="#FFFF00" Offset="0.2"/>
+            <GradientStop Color="#00FF00" Offset="0.4"/>
+            <GradientStop Color="#00FFFF" Offset="0.6"/>
+            <GradientStop Color="#0000FF" Offset="0.8"/>
+            <GradientStop Color="#FF00FF" Offset="1.0"/>
+        </LinearGradientBrush>
+
+        <Style x:Key="ButtonBorderStyle" TargetType="Border">
+            <Setter Property="StrokeShape" Value="RoundRectangle 10"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="WidthRequest" Value="100"/>
+            <Setter Property="HeightRequest" Value="45"/>
+            <Setter Property="StrokeThickness" Value="2"/>
+        </Style>
+
+        <Style x:Key="ButtonStyle" TargetType="Button">
+            <Setter Property="BackgroundColor" Value="Transparent"/>
+            <Setter Property="TextColor" Value="Black"/>
+            <Setter Property="FontAttributes" Value="Bold"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="VerticalOptions" Value="FillAndExpand"/>
+            <Setter Property="HorizontalOptions" Value="FillAndExpand"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <Grid Margin="40">
+            <Ellipse Fill="#15007AFF" WidthRequest="700" HeightRequest="700" HorizontalOptions="End" VerticalOptions="Start" Margin="0,-250,-250,0"/>
+
+            <StackLayout Spacing="20">
+                <Label Text="Scrum Information" FontSize="32" FontAttributes="Bold" HorizontalOptions="Center" TextColor="#FF0A0909"/>
+
+                <Border x:Name="MainBorder" 
+                        StrokeShape="RoundRectangle 25" 
+                        Padding="3" 
+                        Background="Transparent" 
+                        WidthRequest="1100" 
+                        HorizontalOptions="Center"
+                        Stroke="{StaticResource MainGradient}">
+
+                    <Border Background="#FFEBEAE9" StrokeThickness="0" Padding="30" StrokeShape="RoundRectangle 23">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="2.5*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="Scrum ID" FontAttributes="Bold" Margin="10,0"/>
+                            <Entry Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Scrum.ScrumID}" Margin="10,0"/>
+                            <Label Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Text="Entry By UID" FontAttributes="Bold" Margin="10,0"/>
+                            <Entry Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Text="{Binding Scrum.EntryByUID}" IsReadOnly="True" BackgroundColor="#FFE0E0E0" Margin="10,0"/>
+                            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" Text="Scrum Description" FontAttributes="Bold" Margin="10,0"/>
+                            <Editor Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" HeightRequest="80" Text="{Binding Scrum.ScrumDesc}" Margin="10,0"/>
+                            <Label Grid.Row="4" Grid.Column="0" Text="Entry Date" Margin="10,0"/>
+                            <DatePicker Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Date="{Binding Scrum.EntryDate}" Margin="10,0"/>
+                            <Label Grid.Row="4" Grid.Column="2" Text="Start Date" Margin="10,0"/>
+                            <DatePicker Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2" Date="{Binding Scrum.StartDate}" Margin="10,0"/>
+                            <Label Grid.Row="6" Grid.Column="0" Text="End Date" Margin="10,0"/>
+                            <DatePicker Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Date="{Binding Scrum.EndDate}" Margin="10,0"/>
+                            <Label Grid.Row="6" Grid.Column="2" Text="Last Update" Margin="10,0"/>
+                            <DatePicker Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="2" Date="{Binding Scrum.LastUpdate}" Margin="10,0"/>
+                            <CheckBox Grid.Row="8" IsChecked="{Binding IsActivated}" Color="Black"/>
+                            <Label Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Text="Activate Scrum" VerticalOptions="Center" Margin="50,0,0,0"/>
+                            <Label Grid.Row="0" Grid.Column="4" Text="Scrum Data List" FontAttributes="Bold" Margin="20,0,0,5"/>
+                            <CollectionView Grid.Row="1" Grid.RowSpan="8" Grid.Column="4" ItemsSource="{Binding ScrumList}" BackgroundColor="White" Margin="20,0,10,15">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Label Text="{Binding ScrumDesc}" Padding="10"/>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+
+                            <StackLayout Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="4" Orientation="Horizontal" HorizontalOptions="Center" Spacing="20" Margin="0,30,0,0">
+
+                                <Border x:Name="AddBorder" Style="{StaticResource ButtonBorderStyle}" Stroke="Transparent">
+                                    <Border.GestureRecognizers>
+                                        <PointerGestureRecognizer PointerEntered="StartButtonAnimation" PointerExited="StopButtonAnimation"/>
+                                    </Border.GestureRecognizers>
+                                    <Button Command="{Binding AddCommand}" Text="ADD" Style="{StaticResource ButtonStyle}"/>
+                                </Border>
+
+                                <Border x:Name="SaveBorder" Style="{StaticResource ButtonBorderStyle}" Stroke="Transparent">
+                                    <Border.GestureRecognizers>
+                                        <PointerGestureRecognizer PointerEntered="StartButtonAnimation" PointerExited="StopButtonAnimation"/>
+                                    </Border.GestureRecognizers>
+                                    <Button Command="{Binding SaveCommand}" Text="SAVE" Style="{StaticResource ButtonStyle}"/>
+                                </Border>
+
+                                <Border x:Name="EditBorder" Style="{StaticResource ButtonBorderStyle}" Stroke="Transparent">
+                                    <Border.GestureRecognizers>
+                                        <PointerGestureRecognizer PointerEntered="StartButtonAnimation" PointerExited="StopButtonAnimation"/>
+                                    </Border.GestureRecognizers>
+                                    <Button Command="{Binding EditCommand}" Text="EDIT" Style="{StaticResource ButtonStyle}"/>
+                                </Border>
+
+                                <Border x:Name="ExitBorder" Style="{StaticResource ButtonBorderStyle}" Stroke="Transparent">
+                                    <Border.GestureRecognizers>
+                                        <PointerGestureRecognizer PointerEntered="StartButtonAnimation" PointerExited="StopButtonAnimation"/>
+                                    </Border.GestureRecognizers>
+                                    <Button Command="{Binding ExitCommand}" Text="EXIT" Style="{StaticResource ButtonStyle}"/>
+                                </Border>
+                            </StackLayout>
+                        </Grid>
+                    </Border>
+                </Border>
+            </StackLayout>
+        </Grid>
+    </ScrollView>
+</ContentPage>

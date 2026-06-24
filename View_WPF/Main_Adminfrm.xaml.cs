@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-// এরর সমাধানের জন্য নিচের Alias-টি যোগ করা হলো
+// Alias added to resolve potential naming conflicts
 using MessageBox = System.Windows.MessageBox;
 
 namespace View_WPF
@@ -22,30 +22,29 @@ namespace View_WPF
     /// </summary>
     public partial class Main_Adminfrm : Window
     {
-        // লগইন করা ইউজার আইডি এবং নাম ধরে রাখার জন্য প্রাইভেট ভেরিয়েবল
+        // Private variables to hold logged-in user ID and name
         private string _uid;
         private string _userName;
 
-        // ডিফল্ট কনস্ট্রাক্টর
+        // Default constructor
         public Main_Adminfrm()
         {
             InitializeComponent();
         }
 
-        // MainWindow থেকে UID এবং Name রিসিভ করার জন্য এই কনস্ট্রাক্টরটি ব্যবহার হবে
+        // Constructor to receive UID and Name from MainWindow
         public Main_Adminfrm(string uid, string name)
         {
             InitializeComponent();
             _uid = uid;
-            _userName = name; // প্যারামিটার থেকে আসা নাম সেভ করে রাখা হলো
+            _userName = name;
         }
 
-        // Department বাটনের ক্লিক ইভেন্ট
+        // Department button click event
         private void BtnDepartment_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                // frmAdmin_Department উইন্ডোটি ওপেন করা হচ্ছে
                 frmAdmin_Department deptWin = new frmAdmin_Department();
                 deptWin.Show();
             }
@@ -55,12 +54,11 @@ namespace View_WPF
             }
         }
 
-        // Designation বাটনের ক্লিক ইভেন্ট (নতুন যোগ করা হয়েছে)
+        // Designation button click event
         private void BtnDesignation_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                // frmAdmin_Designation উইন্ডোটি ওপেন করা হচ্ছে
                 frmAdmin_Designation desigWin = new frmAdmin_Designation();
                 desigWin.Show();
             }
@@ -70,12 +68,11 @@ namespace View_WPF
             }
         }
 
-        // STEM বাটনের ক্লিক ইভেন্ট
+        // STEM button click event
         private void BtnSTEM_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                // frm_STEM উইন্ডোতে লগইন করা ইউজার আইডি (_uid) পাস করা হচ্ছে
                 frm_STEM stemWin = new frm_STEM(_uid);
                 stemWin.Show();
             }
@@ -85,12 +82,11 @@ namespace View_WPF
             }
         }
 
-        // Employee Info বাটনের ক্লিক ইভেন্ট
+        // Employee Info button click event
         private void BtnEmployeeInfo_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                // frmAdmin_EmpInfo উইন্ডোটি ওপেন করা হচ্ছে
                 frmAdmin_EmpInfo empWin = new frmAdmin_EmpInfo();
                 empWin.Show();
             }
@@ -100,12 +96,11 @@ namespace View_WPF
             }
         }
 
-        // User Table বাটনের ক্লিক ইভেন্ট
+        // User Table button click event
         private void BtnUserTable_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                // frmAdmin_User উইন্ডোটি ওপেন করা হচ্ছে
                 frmAdmin_User userWin = new frmAdmin_User();
                 userWin.Show();
             }
@@ -115,18 +110,32 @@ namespace View_WPF
             }
         }
 
-        // Create Docx বাটনের ক্লিক ইভেন্ট
+        // Create Docx button click event
         private void BtnCreateDocx_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                // এখানে _uid এর পাশাপাশি _userName ও পাঠানো হচ্ছে
                 frm_createdocx docxWin = new frm_createdocx(_uid, _userName);
                 docxWin.Show();
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error opening Document Interface: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // Message button click event to open chatBox
+        private void BtnMessage_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Opening chatBox and passing the current _uid
+                ChatBox chatWin = new ChatBox(_uid);
+                chatWin.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error opening Message Interface: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

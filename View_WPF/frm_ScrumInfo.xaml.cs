@@ -20,12 +20,22 @@ namespace View_WPF
     /// </summary>
     public partial class frm_ScrumInfo : Window
     {
+        private string _loggedInUID = string.Empty;
+
         public frm_ScrumInfo()
         {
             InitializeComponent();
 
             // Set the DataContext to establish connection with the ViewModel
             this.DataContext = new ScrumInfoViewModel();
+        }
+
+        // Overloaded constructor to receive the UID from Main_ScrumWindow and pass it to ViewModel
+        public frm_ScrumInfo(string uid)
+        {
+            InitializeComponent();
+            _loggedInUID = uid;
+            this.DataContext = new ScrumInfoViewModel(uid);
         }
     }
 }

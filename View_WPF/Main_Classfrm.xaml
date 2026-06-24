@@ -200,6 +200,21 @@
             </Grid>
         </Grid>
 
+        <Grid HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,40,40">
+            <Button Width="70" Height="70" Cursor="Hand" Click="BtnMessage_Click">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Ellipse Fill="Transparent"/>
+                            <Viewbox Height="30" Width="30">
+                                <Path Fill="#212121" Data="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                            </Viewbox>
+                        </Grid>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </Grid>
+
         <Grid.Triggers>
             <EventTrigger RoutedEvent="Loaded">
                 <BeginStoryboard>
