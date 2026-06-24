@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="View_MAUI.frm_createdocs"
+             Title="Document Creation"
+             BackgroundColor="#FFF7F7F7">
+
+    <ScrollView>
+        <Grid>
+            <Ellipse InputTransparent="True" Fill="#156200EE" WidthRequest="700" HeightRequest="700" HorizontalOptions="End" VerticalOptions="End" Margin="0,0,-150,-150">
+            </Ellipse>
+
+            <Grid Margin="20" VerticalOptions="Start">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" Text="Document Creation Form" FontSize="30" TextColor="Black" Margin="0,20,0,20" HorizontalOptions="Center" FontAttributes="Bold"/>
+
+                <Border Grid.Row="1" WidthRequest="850" HorizontalOptions="Center" VerticalOptions="Start" StrokeShape="RoundRectangle 20,20,20,20" Padding="2">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#FF0000" Offset="0.0"/>
+                            <GradientStop Color="#FFFF00" Offset="0.2"/>
+                            <GradientStop Color="#00FF00" Offset="0.4"/>
+                            <GradientStop Color="#00FFFF" Offset="0.6"/>
+                            <GradientStop Color="#0000FF" Offset="0.8"/>
+                            <GradientStop Color="#FF00FF" Offset="1.0"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+
+                    <Border Background="#FFEBEAE9" StrokeShape="RoundRectangle 18,18,18,18" Padding="25">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Row="0" Grid.Column="0" Text="User ID" Margin="10,0,0,2" FontAttributes="Bold"/>
+                            <Entry x:Name="txtUserID" Grid.Row="1" Grid.Column="0" Margin="10,0,10,10" IsReadOnly="True" BackgroundColor="#F0F0F0"/>
+
+                            <Label Grid.Row="0" Grid.Column="1" Text="User Name" Margin="10,0,0,2" FontAttributes="Bold"/>
+                            <Entry x:Name="txtUserName" Grid.Row="1" Grid.Column="1" Margin="10,0,10,10" IsReadOnly="True" BackgroundColor="#F0F0F0"/>
+
+                            <Label Grid.Row="2" Grid.Column="0" Text="Document Type" Margin="10,0,0,2" FontAttributes="Bold"/>
+                            <Picker x:Name="cmbDocType" Grid.Row="3" Grid.Column="0" Margin="10,0,10,10" SelectedIndexChanged="cmbDocType_SelectedIndexChanged">
+                                <Picker.ItemsSource>
+                                    <x:Array Type="{x:Type x:String}">
+                                        <x:String>CPT</x:String>
+                                        <x:String>OPT</x:String>
+                                        <x:String>STEM OPT</x:String>
+                                    </x:Array>
+                                </Picker.ItemsSource>
+                            </Picker>
+
+                            <Label Grid.Row="2" Grid.Column="1" Text="Candidate ID" Margin="10,0,0,2" FontAttributes="Bold"/>
+                            <Entry x:Name="cmbCandidateID" Grid.Row="3" Grid.Column="1" Margin="10,0,10,10" Completed="cmbCandidateID_Completed"/>
+
+                            <Label Grid.Row="4" Grid.ColumnSpan="2" Text="Job Designation" Margin="10,0,0,2" FontAttributes="Bold"/>
+                            <Entry x:Name="txtDesignation" Grid.Row="5" Grid.ColumnSpan="2" Margin="10,0,10,10"/>
+
+                            <Label Grid.Row="6" Grid.ColumnSpan="2" Text="Job Responsibility" Margin="10,5,0,2" FontAttributes="Bold"/>
+                            <Editor x:Name="txtResponsibility" Grid.Row="7" Grid.ColumnSpan="2" Margin="10,0,10,10" HeightRequest="70"/>
+
+                            <Label Grid.Row="8" Grid.Column="0" Text="Job Start Date" Margin="10,0,0,2" FontAttributes="Bold"/>
+                            <DatePicker x:Name="dtpStartDate" Grid.Row="9" Grid.Column="0" Margin="10,0,10,10" DateSelected="dtpStartDate_DateSelected"/>
+
+                            <Label Grid.Row="8" Grid.Column="1" Text="Job End Date" Margin="10,0,0,2" FontAttributes="Bold"/>
+                            <DatePicker x:Name="dtpEndDate" Grid.Row="9" Grid.Column="1" Margin="10,0,10,10"/>
+
+                            <Label Grid.Row="10" Grid.Column="0" Text="Hourly Rate ($)" Margin="10,0,0,2" FontAttributes="Bold"/>
+                            <Entry x:Name="txtHourlyRate" Grid.Row="11" Grid.Column="0" Margin="10,0,10,10"/>
+
+                            <Label Grid.Row="10" Grid.Column="1" Text="Weekly Hours (H)" Margin="10,0,0,2" FontAttributes="Bold"/>
+                            <Entry x:Name="txtWeeklyHours" Grid.Row="11" Grid.Column="1" Margin="10,0,10,10"/>
+
+                            <Label Grid.Row="12" Grid.Column="0" Text="Email" Margin="10,0,0,2" FontAttributes="Bold"/>
+                            <Entry x:Name="txtEmail" Grid.Row="13" Grid.Column="0" Margin="10,0,10,10"/>
+
+                            <Label Grid.Row="12" Grid.Column="1" Text="CC Email" Margin="10,0,0,2" FontAttributes="Bold"/>
+                            <Entry x:Name="txtCCEmail" Grid.Row="13" Grid.Column="1" Margin="10,0,10,10" IsReadOnly="True" BackgroundColor="#F0F0F0"/>
+
+                            <Button x:Name="btnCreateDocument" Grid.Row="14" Grid.ColumnSpan="2" Text="CREATE DOCUMENT" 
+                                    WidthRequest="280" HeightRequest="50" Margin="0,20,0,20"
+                                    Clicked="btnCreateDocument_Clicked"
+                                    BackgroundColor="Black" TextColor="White" FontAttributes="Bold"/>
+                        </Grid>
+                    </Border>
+                </Border>
+            </Grid>
+        </Grid>
+    </ScrollView>
+</ContentPage>

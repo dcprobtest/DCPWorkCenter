@@ -275,5 +275,26 @@
                 </Button>
             </Grid>
         </Grid>
+
+        <Button x:Name="BtnMessage" Width="60" Height="60" 
+                HorizontalAlignment="Right" VerticalAlignment="Bottom" 
+                Margin="0,0,40,40" Cursor="Hand" Click="BtnMessage_Click">
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Grid>
+                        <Border x:Name="BtnBackground" Background="Transparent" CornerRadius="30"/>
+
+                        <Viewbox Width="45" Height="45" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Path Fill="#212121" Data="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.2L4 17.2V4h16v12zM7 9h10v2H7zm0-3h10v2H7zm0 6h7v2H7z"/>
+                        </Viewbox>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Opacity" Value="0.7"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
     </Grid>
 </Window>

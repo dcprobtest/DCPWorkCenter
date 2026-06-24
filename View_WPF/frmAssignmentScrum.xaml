@@ -21,6 +21,17 @@
             <Setter Property="Margin" Value="10,0,10,15"/>
         </Style>
 
+        <Style TargetType="ComboBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="10,0,10,15"/>
+        </Style>
+
         <Style TargetType="DatePicker">
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Padding" Value="2"/>
@@ -144,16 +155,21 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="Assign ID" Foreground="#555555" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                            <TextBox Text="{Binding Scrum.AssignID, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource SmallFieldStyle}" Grid.Row="1" Grid.Column="0"/>
+                            <ComboBox ItemsSource="{Binding AvailableAssignIDs}" 
+                                      SelectedValue="{Binding Scrum.AssignID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                      Style="{StaticResource SmallFieldStyle}" Grid.Row="1" Grid.Column="0"/>
 
                             <TextBlock Grid.Row="0" Grid.Column="1" Text="Scrum ID" Foreground="#555555" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                            <TextBox Text="{Binding Scrum.ScrumID, UpdateSourceTrigger=PropertyChanged}" MaxLength="5" Style="{StaticResource SmallFieldStyle}" Grid.Row="1" Grid.Column="1"/>
+                            <ComboBox ItemsSource="{Binding AvailableScrumIDs}" 
+                                      SelectedValue="{Binding Scrum.ScrumID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                      Style="{StaticResource SmallFieldStyle}" Grid.Row="1" Grid.Column="1"/>
 
                             <TextBlock Grid.Row="2" Grid.Column="0" Text="Assign By UID" Foreground="#555555" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                            <TextBox Text="{Binding Scrum.AssignByUID, UpdateSourceTrigger=PropertyChanged}" MaxLength="6" Style="{StaticResource SmallFieldStyle}" Grid.Row="3" Grid.Column="0"/>
+                            <TextBox Text="{Binding Scrum.AssignByUID, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" MaxLength="6" Style="{StaticResource SmallFieldStyle}" Grid.Row="3" Grid.Column="0"/>
 
                             <TextBlock Grid.Row="2" Grid.Column="1" Text="Assign For UID" Foreground="#555555" FontWeight="SemiBold" Margin="0,0,0,5"/>
                             <TextBox Text="{Binding Scrum.AssignForUID, UpdateSourceTrigger=PropertyChanged}" MaxLength="6" Style="{StaticResource SmallFieldStyle}" Grid.Row="3" Grid.Column="1"/>

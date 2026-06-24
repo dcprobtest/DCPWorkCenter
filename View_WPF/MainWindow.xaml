@@ -10,8 +10,8 @@
         <Style x:Key="OptionCardStyle" TargetType="Button">
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Margin" Value="10"/>
-            <Setter Property="Width" Value="320"/>
-            <Setter Property="Height" Value="200"/>
+            <Setter Property="Width" Value="210"/>
+            <Setter Property="Height" Value="150"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -19,50 +19,88 @@
                             <Grid.RenderTransform>
                                 <ScaleTransform ScaleX="1" ScaleY="1"/>
                             </Grid.RenderTransform>
-                            <Border x:Name="GradientBorder" CornerRadius="25" Padding="3">
+
+                            <Border x:Name="GradientBorder" CornerRadius="20" Padding="3">
                                 <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <LinearGradientBrush x:Name="BorderBrush" StartPoint="0,0" EndPoint="1,1">
                                         <LinearGradientBrush.RelativeTransform>
                                             <RotateTransform x:Name="BorderRotate" CenterX="0.5" CenterY="0.5" Angle="0" />
                                         </LinearGradientBrush.RelativeTransform>
-                                        <GradientStop Color="#FF0000" Offset="0.0"/>
-                                        <GradientStop Color="#FFFF00" Offset="0.25"/>
-                                        <GradientStop Color="#FFFFFF" Offset="0.5"/>
-                                        <GradientStop Color="#00FFFF" Offset="0.75"/>
-                                        <GradientStop Color="#FF00FF" Offset="1.0"/>
+                                        <GradientStop x:Name="Color1" Color="#E0E0E0" Offset="0.0"/>
+                                        <GradientStop x:Name="Color2" Color="#E0E0E0" Offset="0.25"/>
+                                        <GradientStop x:Name="Color3" Color="#E0E0E0" Offset="0.5"/>
+                                        <GradientStop x:Name="Color4" Color="#E0E0E0" Offset="0.75"/>
+                                        <GradientStop x:Name="Color5" Color="#E0E0E0" Offset="1.0"/>
                                     </LinearGradientBrush>
                                 </Border.Background>
-                                <Border Background="White" CornerRadius="22">
+                                <Border Background="White" CornerRadius="17">
                                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
                             </Border>
                         </Grid>
+
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Trigger.EnterActions>
                                     <BeginStoryboard x:Name="HoverStoryboard">
                                         <Storyboard>
-                                            <!-- মাউস উপরে আনলে কার্ড বড় হবে -->
                                             <DoubleAnimation Storyboard.TargetName="CardContainer" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.05" Duration="0:0:0.2"/>
                                             <DoubleAnimation Storyboard.TargetName="CardContainer" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.05" Duration="0:0:0.2"/>
-                                            <!-- মাউস উপরে আনলে বর্ডার ঘোরা শুরু হবে -->
+
+                                            <ColorAnimation Storyboard.TargetName="Color1" Storyboard.TargetProperty="Color" To="#FF0000" Duration="0:0:0.2"/>
+                                            <ColorAnimation Storyboard.TargetName="Color2" Storyboard.TargetProperty="Color" To="#FFFF00" Duration="0:0:0.2"/>
+                                            <ColorAnimation Storyboard.TargetName="Color3" Storyboard.TargetProperty="Color" To="#FFFFFF" Duration="0:0:0.2"/>
+                                            <ColorAnimation Storyboard.TargetName="Color4" Storyboard.TargetProperty="Color" To="#00FFFF" Duration="0:0:0.2"/>
+                                            <ColorAnimation Storyboard.TargetName="Color5" Storyboard.TargetProperty="Color" To="#FF00FF" Duration="0:0:0.2"/>
+
                                             <DoubleAnimation Storyboard.TargetName="BorderRotate" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:4" RepeatBehavior="Forever" />
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.EnterActions>
                                 <Trigger.ExitActions>
-                                    <!-- মাউস সরিয়ে নিলে অ্যানিমেশন বন্ধ হয়ে যাবে -->
                                     <StopStoryboard BeginStoryboardName="HoverStoryboard"/>
                                     <BeginStoryboard>
                                         <Storyboard>
-                                            <!-- কার্ড আগের সাইজে ফেরত যাবে -->
                                             <DoubleAnimation Storyboard.TargetName="CardContainer" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1" Duration="0:0:0.2"/>
                                             <DoubleAnimation Storyboard.TargetName="CardContainer" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1" Duration="0:0:0.2"/>
-                                            <!-- বর্ডার ঘূর্ণন ০ ডিগ্রিতে সেট হয়ে স্থির হবে -->
+
                                             <DoubleAnimation Storyboard.TargetName="BorderRotate" Storyboard.TargetProperty="Angle" To="0" Duration="0:0:0.2"/>
+
+                                            <ColorAnimation Storyboard.TargetName="Color1" Storyboard.TargetProperty="Color" To="#E0E0E0" Duration="0:0:0.2"/>
+                                            <ColorAnimation Storyboard.TargetName="Color2" Storyboard.TargetProperty="Color" To="#E0E0E0" Duration="0:0:0.2"/>
+                                            <ColorAnimation Storyboard.TargetName="Color3" Storyboard.TargetProperty="Color" To="#E0E0E0" Duration="0:0:0.2"/>
+                                            <ColorAnimation Storyboard.TargetName="Color4" Storyboard.TargetProperty="Color" To="#E0E0E0" Duration="0:0:0.2"/>
+                                            <ColorAnimation Storyboard.TargetName="Color5" Storyboard.TargetProperty="Color" To="#E0E0E0" Duration="0:0:0.2"/>
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="MessageButtonStyle" TargetType="Button">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Width" Value="60"/>
+            <Setter Property="Height" Value="60"/>
+            <Setter Property="Background" Value="#CC6200EE"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder" Background="{TemplateBinding Background}" CornerRadius="30" SnapsToDevicePixels="True">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="15" Direction="270" ShadowDepth="3" Opacity="0.2"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#FF6200EE"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#FF3700B3"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -83,8 +121,9 @@
             </Ellipse.Effect>
         </Ellipse>
 
-        <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Grid VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
@@ -95,19 +134,8 @@
                 </TextBlock.RenderTransform>
             </TextBlock>
 
-            <Grid Grid.Row="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-
-                <Button Grid.Row="0" Grid.Column="0" Style="{StaticResource OptionCardStyle}" x:Name="btnVideoClass" Click="btnVideoClass_Click">
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Style="{StaticResource OptionCardStyle}" x:Name="btnVideoClass" Click="btnVideoClass_Click">
                     <Button.RenderTransform>
                         <TranslateTransform x:Name="Card1Move" Y="100"/>
                     </Button.RenderTransform>
@@ -116,12 +144,12 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <Image Source="/Untitled_design-removebg-preview.png" Height="100" Width="130" Margin="0,0,0,10"/>
-                        <TextBlock Grid.Row="1" Text="Video Class" FontSize="22" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center"/>
+                        <Image Source="/Untitled_design-removebg-preview.png" Height="70" Width="100" Margin="0,0,0,8"/>
+                        <TextBlock Grid.Row="1" Text="Video Class" FontSize="18" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center"/>
                     </Grid>
                 </Button>
 
-                <Button Grid.Row="0" Grid.Column="1" Style="{StaticResource OptionCardStyle}">
+                <Button Style="{StaticResource OptionCardStyle}">
                     <Button.RenderTransform>
                         <TranslateTransform x:Name="Card2Move" Y="100"/>
                     </Button.RenderTransform>
@@ -130,12 +158,12 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <Image Source="/4859897-removebg-preview.png" Height="100" Width="130" Margin="0,0,0,10"/>
-                        <TextBlock Grid.Row="1" Text="Video Conference" FontSize="22" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center"/>
+                        <Image Source="/4859897-removebg-preview.png" Height="70" Width="100" Margin="0,0,0,8"/>
+                        <TextBlock Grid.Row="1" Text="Video Conference" FontSize="18" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center"/>
                     </Grid>
                 </Button>
 
-                <Button Grid.Row="0" Grid.Column="2" x:Name="btnFileManager" Style="{StaticResource OptionCardStyle}" Click="btnFileManager_Click">
+                <Button x:Name="btnFileManager" Style="{StaticResource OptionCardStyle}" Click="btnFileManager_Click">
                     <Button.RenderTransform>
                         <TranslateTransform x:Name="Card3Move" Y="100"/>
                     </Button.RenderTransform>
@@ -144,12 +172,12 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <Image Source="/numix-circle-for-windows-file-manager-blue-icon-png-icon-thumbnail-removebg-preview.png" Height="100" Width="130" Margin="0,0,0,10"/>
-                        <TextBlock Grid.Row="1" Text="File Manager" FontSize="22" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center"/>
+                        <Image Source="/numix-circle-for-windows-file-manager-blue-icon-png-icon-thumbnail-removebg-preview.png" Height="70" Width="100" Margin="0,0,0,8"/>
+                        <TextBlock Grid.Row="1" Text="File Manager" FontSize="18" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center"/>
                     </Grid>
                 </Button>
 
-                <Button Grid.Row="0" Grid.Column="3" x:Name="btnAccounts" Style="{StaticResource OptionCardStyle}" Click="btnAccounts_Click">
+                <Button x:Name="btnAccounts" Style="{StaticResource OptionCardStyle}" Click="btnAccounts_Click">
                     <Button.RenderTransform>
                         <TranslateTransform x:Name="Card7Move" Y="100"/>
                     </Button.RenderTransform>
@@ -158,14 +186,32 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <Viewbox Height="90" Width="90" Margin="0,0,0,10">
+                        <Viewbox Height="65" Width="65" Margin="0,0,0,8">
                             <Path Fill="#007AFF" Data="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/>
                         </Viewbox>
-                        <TextBlock Grid.Row="1" Text="Accounts" FontSize="22" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center"/>
+                        <TextBlock Grid.Row="1" Text="Accounts" FontSize="18" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center"/>
                     </Grid>
                 </Button>
 
-                <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource OptionCardStyle}">
+                <Button x:Name="btnScrum" Style="{StaticResource OptionCardStyle}" Click="btnScrum_Click">
+                    <Button.RenderTransform>
+                        <TranslateTransform x:Name="Card9Move" Y="100"/>
+                    </Button.RenderTransform>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Viewbox Height="65" Width="65" Margin="0,0,0,8">
+                            <Path Fill="#FF5722" Data="M12,5.5A3.5,3.5 0 0,1 15.5,9A3.5,3.5 0 0,1 12,12.5A3.5,3.5 0 0,1 8.5,9A3.5,3.5 0 0,1 12,5.5M5,20V18C5,15.79 8.13,14 12,14C15.87,14 19,15.79 19,18V20H5M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
+                        </Viewbox>
+                        <TextBlock Grid.Row="1" Text="Scrum" FontSize="18" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center"/>
+                    </Grid>
+                </Button>
+            </StackPanel>
+
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Style="{StaticResource OptionCardStyle}">
                     <Button.RenderTransform>
                         <TranslateTransform x:Name="Card4Move" Y="100"/>
                     </Button.RenderTransform>
@@ -174,12 +220,12 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <Image Source="/mentor-laptop-icon-vector-isolated-contour-symbol-illustration-2AW9E0R-removebg-preview.png" Height="100" Width="130" Margin="0,0,0,10"/>
-                        <TextBlock Grid.Row="1" Text="Remote Access" FontSize="22" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center"/>
+                        <Image Source="/mentor-laptop-icon-vector-isolated-contour-symbol-illustration-2AW9E0R-removebg-preview.png" Height="70" Width="100" Margin="0,0,0,8"/>
+                        <TextBlock Grid.Row="1" Text="Remote Access" FontSize="18" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center"/>
                     </Grid>
                 </Button>
 
-                <Button Grid.Row="1" Grid.Column="1" x:Name="btnAdminForms" Style="{StaticResource OptionCardStyle}" Click="btnAdminForms_Click">
+                <Button x:Name="btnAdminForms" Style="{StaticResource OptionCardStyle}" Click="btnAdminForms_Click">
                     <Button.RenderTransform>
                         <TranslateTransform x:Name="Card5Move" Y="100"/>
                     </Button.RenderTransform>
@@ -188,14 +234,14 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <Viewbox Height="90" Width="90" Margin="0,0,0,10">
+                        <Viewbox Height="65" Width="65" Margin="0,0,0,8">
                             <Path Fill="#FF9800" Data="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
                         </Viewbox>
-                        <TextBlock Grid.Row="1" Text="Admin Forms" FontSize="22" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center"/>
+                        <TextBlock Grid.Row="1" Text="Admin Forms" FontSize="18" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center"/>
                     </Grid>
                 </Button>
 
-                <Button Grid.Row="1" Grid.Column="2" x:Name="btnClassForms" Style="{StaticResource OptionCardStyle}" Click="btnClassForms_Click">
+                <Button x:Name="btnClassForms" Style="{StaticResource OptionCardStyle}" Click="btnClassForms_Click">
                     <Button.RenderTransform>
                         <TranslateTransform x:Name="Card6Move" Y="100"/>
                     </Button.RenderTransform>
@@ -204,14 +250,14 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <Viewbox Height="90" Width="90" Margin="0,0,0,10">
+                        <Viewbox Height="65" Width="65" Margin="0,0,0,8">
                             <Path Fill="#BD00FF" Data="M19,3H5C3.89,3 3,3.9 3,5V19C3,20.1 3.89,21 5,21H19C20.11,21 21,20.1 21,19V5C21,3.9 20.11,3 19,3M19,19H5V5H19V19M7,10H9V12H7V10M7,14H9V16H7V14M7,6H9V8H7V6M11,10H17V12H11V10M11,14H17V16H11V14M11,6H17V8H11V6Z"/>
                         </Viewbox>
-                        <TextBlock Grid.Row="1" Text="Class Forms" FontSize="22" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center"/>
+                        <TextBlock Grid.Row="1" Text="Class Forms" FontSize="18" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center"/>
                     </Grid>
                 </Button>
 
-                <Button Grid.Row="1" Grid.Column="3" x:Name="btnUSAccounts" Style="{StaticResource OptionCardStyle}" Click="btnUSAccounts_Click">
+                <Button x:Name="btnUSAccounts" Style="{StaticResource OptionCardStyle}" Click="btnUSAccounts_Click">
                     <Button.RenderTransform>
                         <TranslateTransform x:Name="Card8Move" Y="100"/>
                     </Button.RenderTransform>
@@ -220,14 +266,25 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <Viewbox Height="90" Width="90" Margin="0,0,0,10">
+                        <Viewbox Height="65" Width="65" Margin="0,0,0,8">
                             <Path Fill="#007AFF" Data="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/>
                         </Viewbox>
-                        <TextBlock Grid.Row="1" Text="US Accounts" FontSize="22" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center"/>
+                        <TextBlock Grid.Row="1" Text="US Accounts" FontSize="18" FontWeight="SemiBold" Foreground="Black" HorizontalAlignment="Center"/>
                     </Grid>
                 </Button>
-            </Grid>
+            </StackPanel>
         </Grid>
+
+        <Button x:Name="btnMessage" 
+                Style="{StaticResource MessageButtonStyle}" 
+                HorizontalAlignment="Right" 
+                VerticalAlignment="Bottom" 
+                Margin="0,0,30,30"
+                Click="btnMessage_Click">
+            <Viewbox Width="30" Height="30">
+                <Path Fill="White" Data="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4A2,2 0 0,0 20,2M20,16H5.17L4,17.17V4H20V16M16,11H8V9H16V11M14,14H8V12H14V14M16,8H8V6H16V8Z"/>
+            </Viewbox>
+        </Button>
 
         <Grid.Triggers>
             <EventTrigger RoutedEvent="Loaded">
@@ -274,6 +331,11 @@
                             </DoubleAnimation.EasingFunction>
                         </DoubleAnimation>
                         <DoubleAnimation Storyboard.TargetName="Card8Move" Storyboard.TargetProperty="Y" To="0" BeginTime="0:0:0.8" Duration="0:0:0.8">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetName="Card9Move" Storyboard.TargetProperty="Y" To="0" BeginTime="0:0:0.9" Duration="0:0:0.8">
                             <DoubleAnimation.EasingFunction>
                                 <CubicEase EasingMode="EaseOut"/>
                             </DoubleAnimation.EasingFunction>
