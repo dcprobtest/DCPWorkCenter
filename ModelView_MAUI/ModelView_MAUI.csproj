@@ -24,4 +24,8 @@
 		<PackageReference Include="System.Net.Http.Json" Version="8.0.1" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\Model_MAUI\Model_MAUI.csproj" />
+	</ItemGroup>
+
 </Project>

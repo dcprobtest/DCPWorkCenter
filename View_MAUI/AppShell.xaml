@@ -5,15 +5,26 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:View_MAUI">
 
-    <ShellContent
-        Title="Scrum Information"
-        ContentTemplate="{DataTemplate local:frm_ScrumInfo}"
-        Route="frm_ScrumInfo" />
 
+    <ShellContent
+        Title="Accounts Login"
+        ContentTemplate="{DataTemplate local:AccountsLogin}"
+        Route="AccountsLogin" />
+
+    <ShellContent
+        Title="Class Module"
+        ContentTemplate="{DataTemplate local:frm_ClassModule}"
+        Route="frm_ClassModule" />
+    
     <ShellContent
         Title="Document Creation"
         ContentTemplate="{DataTemplate local:frm_createdocs}"
         Route="frm_createdocs" />
+
+    <ShellContent
+        Title="Scrum Information"
+        ContentTemplate="{DataTemplate local:frm_ScrumInfo}"
+        Route="frm_ScrumInfo" />
 
     <ShellContent
         Title="STEM Management"

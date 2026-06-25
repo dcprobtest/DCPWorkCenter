@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ModelView_MAUI;assembly=ModelView_MAUI"
+             x:Class="View_MAUI.frm_ClassModule"
+             Title="Class Module Management"
+             BackgroundColor="White">
+
+    <!--<ContentPage.BindingContext>
+        --><!--<vm:ClassModuleViewModel />--><!--
+    </ContentPage.BindingContext>-->
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style TargetType="Entry">
+                <Setter Property="BackgroundColor" Value="White"/>
+                <Setter Property="TextColor" Value="Black"/>
+                <Setter Property="PlaceholderColor" Value="Gray"/>
+                <Setter Property="FontSize" Value="14"/>
+            </Style>
+
+            <LinearGradientBrush x:Key="RainbowGradient" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#FF0000" Offset="0.0"/>
+                <GradientStop Color="#FFFF00" Offset="0.2"/>
+                <GradientStop Color="#00FF00" Offset="0.4"/>
+                <GradientStop Color="#00FFFF" Offset="0.6"/>
+                <GradientStop Color="#0000FF" Offset="0.8"/>
+                <GradientStop Color="#FF00FF" Offset="1.0"/>
+            </LinearGradientBrush>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <Grid BackgroundColor="White" Padding="20">
+
+            <BoxView WidthRequest="300" HeightRequest="300"
+                     HorizontalOptions="End" VerticalOptions="End"
+                     Margin="0,0,-50,-50" CornerRadius="150"
+                     Color="#15FF9100"/>
+
+            <VerticalStackLayout Spacing="20" HorizontalOptions="Center" WidthRequest="650">
+
+                <Label Text="Class Module" 
+                       FontSize="32" 
+                       FontAttributes="Bold" 
+                       TextColor="#1A1A1C" 
+                       HorizontalOptions="Center" 
+                       Margin="0,0,0,10"/>
+
+                <Border Padding="2" StrokeThickness="0" Background="{StaticResource RainbowGradient}">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="25" />
+                    </Border.StrokeShape>
+
+                    <Border BackgroundColor="#FFEBEAE9" Padding="30" StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="23" />
+                        </Border.StrokeShape>
+
+                        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+                              ColumnDefinitions="*,*,*">
+
+                            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" 
+                                   Text="Course Code" TextColor="#666666" Margin="10,0,10,5"/>
+                            <Entry Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" 
+                                   Margin="10,0,10,15"
+                                   Text="{Binding CurrentModule.CourseCode, Mode=TwoWay}"/>
+
+                            <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" 
+                                   Text="Course Description" TextColor="#666666" Margin="10,0,10,5"/>
+                            <Editor Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" 
+                                    HeightRequest="80" AutoSize="Disabled"
+                                    Margin="10,0,10,15" BackgroundColor="White" TextColor="Black"
+                                    Text="{Binding CurrentModule.CourseDesc, Mode=TwoWay}"/>
+
+                            <Label Grid.Row="4" Grid.Column="0" 
+                                   Text="Entry Date" TextColor="#666666" FontSize="12" Margin="10,5,10,2"/>
+                            <DatePicker Grid.Row="5" Grid.Column="0" 
+                                        Margin="10,0,10,15" Format="yyyy-MM-dd"
+                                        Date="{Binding CurrentModule.EntryDate, Mode=TwoWay}"/>
+
+                            <Label Grid.Row="4" Grid.Column="1" 
+                                   Text="Start Date" TextColor="#666666" FontSize="12" Margin="10,5,10,2"/>
+                            <DatePicker Grid.Row="5" Grid.Column="1" 
+                                        Margin="10,0,10,15" Format="yyyy-MM-dd"
+                                        Date="{Binding CurrentModule.StartDate, Mode=TwoWay}"/>
+
+                            <Label Grid.Row="4" Grid.Column="2" 
+                                   Text="End Date" TextColor="#666666" FontSize="12" Margin="10,5,10,2"/>
+                            <DatePicker Grid.Row="5" Grid.Column="2" 
+                                        Margin="10,0,10,15" Format="yyyy-MM-dd"
+                                        Date="{Binding CurrentModule.EndDate, Mode=TwoWay}"/>
+
+                            <HorizontalStackLayout Grid.Row="6" Grid.ColumnSpan="3" 
+                                                   Margin="10,10,0,20" VerticalOptions="Center" Spacing="10">
+                                <CheckBox IsChecked="{Binding IsActiveChecked}" Color="#FF9100"/>
+                                <Label Text="Activate Class Module" TextColor="Black" FontSize="16" VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+
+                            <Border Grid.Row="7" Grid.ColumnSpan="3" 
+                                    HeightRequest="50" WidthRequest="280" 
+                                    HorizontalOptions="Center" Padding="2" StrokeThickness="0"
+                                    Background="{StaticResource RainbowGradient}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10" />
+                                </Border.StrokeShape>
+
+                                <Button Text="SAVE CLASS INFO" 
+                                        TextColor="White" 
+                                        FontAttributes="Bold"
+                                        BackgroundColor="#0B0B0D"
+                                        CornerRadius="8"
+                                        Command="{Binding SaveCommand}"/>
+                            </Border>
+
+                        </Grid>
+                    </Border>
+                </Border>
+            </VerticalStackLayout>
+        </Grid>
+    </ScrollView>
+</ContentPage>

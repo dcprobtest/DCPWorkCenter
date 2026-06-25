@@ -67,6 +67,17 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\ModelView_MAUI\ModelView_MAUI.csproj" />
+	  <ProjectReference Include="..\Model_MAUI\Model_MAUI.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="AccountsLogin.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="frm_ClassModule.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="frm_createdocs.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
