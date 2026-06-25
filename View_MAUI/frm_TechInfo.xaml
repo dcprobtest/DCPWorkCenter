@@ -2,11 +2,79 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="View_MAUI.frm_TechInfo"
-             Title="frm_TechInfo">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="Technology Information"
+             BackgroundColor="White">
+
+    <Grid>
+        <Ellipse Fill="#15007AFF" WidthRequest="700" HeightRequest="700" HorizontalOptions="End" VerticalOptions="Start" Margin="0,-250,-250,0">
+            <Ellipse.Opacity>0.5</Ellipse.Opacity>
+        </Ellipse>
+
+        <ScrollView>
+            <Grid Margin="40">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Label Text="Technology Information" FontSize="32" FontAttributes="Bold" TextColor="Black" Margin="0,0,0,30" HorizontalOptions="Center"/>
+
+                <Border Grid.Row="1" WidthRequest="1100" HorizontalOptions="Center" VerticalOptions="Start" StrokeShape="RoundRectangle 25" Padding="2">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#FF0000" Offset="0.0"/>
+                            <GradientStop Color="#FFFF00" Offset="0.2"/>
+                            <GradientStop Color="#00FF00" Offset="0.4"/>
+                            <GradientStop Color="#00FFFF" Offset="0.6"/>
+                            <GradientStop Color="#0000FF" Offset="0.8"/>
+                            <GradientStop Color="#FF00FF" Offset="1.0"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+
+                    <Border Background="#FFEBEAE9" StrokeShape="RoundRectangle 23" Padding="30">
+                        <Grid ColumnDefinitions="*,*,*,*,2.5*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+
+                            <Label Text="Tech ID" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" TextColor="Gray"/>
+                            <Entry Text="{Binding Tech.TechId}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="White" Margin="10,0"/>
+
+                            <Label Text="Entry By UID" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" TextColor="Gray"/>
+                            <Entry Text="{Binding Tech.EntryByUid}" IsReadOnly="True" BackgroundColor="#FFE0E0E0" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Margin="10,0"/>
+
+                            <Label Text="Technology Description" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" TextColor="Gray"/>
+                            <Entry Text="{Binding Tech.TechDesc}" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" HeightRequest="80" BackgroundColor="White" Margin="10,0"/>
+
+                            <Label Text="Entry Date" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" TextColor="Gray"/>
+                            <DatePicker Date="{Binding Tech.EntryDate}" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Margin="10,0"/>
+
+                            <Label Text="Start Date" Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" TextColor="Gray"/>
+                            <DatePicker Date="{Binding Tech.StartDate}" Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2" Margin="10,0"/>
+
+                            <Label Text="End Date" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" TextColor="Gray"/>
+                            <DatePicker Date="{Binding Tech.EndDate}" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Margin="10,0"/>
+
+                            <Label Text="Last Update" Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="2" TextColor="Gray"/>
+                            <DatePicker Date="{Binding Tech.LastUpdate}" Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="2" Margin="10,0"/>
+
+                            <CheckBox IsChecked="{Binding Tech.IsActivated}" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="4"/>
+                            <Label Text="Activate Technology" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="4" Margin="50,15,0,0" VerticalOptions="Start"/>
+
+                            <Label Text="Technology Data List" Grid.Row="0" Grid.Column="4" TextColor="Gray"/>
+                            <CollectionView ItemsSource="{Binding TechList}" SelectedItem="{Binding SelectedTech}" Grid.Row="1" Grid.RowSpan="8" Grid.Column="4" BackgroundColor="White" Margin="20,0">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Label Text="{Binding TechDesc}" Padding="10"/>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+
+                            <Button Text="ADD" Command="{Binding AddCommand}" Grid.Row="9" Grid.Column="0" Margin="5"/>
+                            <Button Text="SAVE" Command="{Binding SaveCommand}" Grid.Row="9" Grid.Column="1" Margin="5"/>
+                            <Button Text="EDIT" Command="{Binding EditCommand}" Grid.Row="9" Grid.Column="2" Margin="5"/>
+                            <Button Text="EXIT" Command="{Binding ExitCommand}" Grid.Row="9" Grid.Column="3" Margin="5"/>
+                        </Grid>
+                    </Border>
+                </Border>
+            </Grid>
+        </ScrollView>
+    </Grid>
 </ContentPage>

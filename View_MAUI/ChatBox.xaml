@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="View_MAUI.ChatBox"
+             Title="DCPBD Operation"
+             BackgroundColor="#F8F9FA">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="White" StrokeShape="RoundRectangle 0" Padding="20,0" VerticalOptions="Fill">
+            <Label Text="DCPBD Operation" VerticalOptions="Center" FontAttributes="Bold" FontSize="18" TextColor="#2C3E50"/>
+        </Border>
+
+        <ScrollView Grid.Row="1" Margin="0,10">
+            <CollectionView x:Name="ChatCollectionView" ItemsSource="{Binding ChatMessages}" Margin="15,0">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <VerticalStackLayout Margin="0,8">
+                            <Label Text="{Binding DateSeparator}" IsVisible="{Binding DateVisibility}" 
+                                   HorizontalOptions="Center" TextColor="#AAB8C2" FontSize="10" Margin="5"/>
+
+                            <Border StrokeShape="RoundRectangle 10" 
+                                    BackgroundColor="{Binding BubbleColor}" 
+                                    Padding="14,10" 
+                                    HorizontalOptions="{Binding Alignment}" 
+                                    WidthRequest="320">
+                                <VerticalStackLayout>
+                                    <Label Text="{Binding Message}" TextColor="{Binding TextColor}" FontSize="14" LineBreakMode="WordWrap"/>
+                                    <Label Text="{Binding StatusText}" TextColor="#B0B0B0" FontSize="9" HorizontalOptions="End" Margin="0,4,0,0"/>
+                                </VerticalStackLayout>
+                            </Border>
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </ScrollView>
+
+        <Border Grid.Row="2" Background="White" Padding="15" Stroke="#E1E1E1" StrokeThickness="1">
+            <Grid ColumnDefinitions="*, 80">
+                <Entry x:Name="InputEntry" Placeholder="Type a message..." VerticalOptions="Center" 
+                       Margin="0,0,10,0" HeightRequest="45"/>
+
+                <Button Grid.Column="1" Text="Send" BackgroundColor="#6264A7" TextColor="White" 
+                        CornerRadius="8" HeightRequest="45" Clicked="SendButton_Clicked"/>
+            </Grid>
+        </Border>
+    </Grid>
+</ContentPage>

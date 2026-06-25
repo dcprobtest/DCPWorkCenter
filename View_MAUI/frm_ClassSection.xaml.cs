@@ -8,5 +8,21 @@ namespace View_MAUI
         {
             InitializeComponent();
         }
+
+        private void OnPointerEntered(object sender, PointerEventArgs e)
+        {
+            if (sender is Button btn)
+            {
+                btn.ScaleTo(1.1, 150);
+            }
+        }
+
+        private void OnPointerExited(object sender, PointerEventArgs e)
+        {
+            if (sender is Button btn)
+            {
+                btn.ScaleTo(1.0, 150);
+            }
+        }
     }
 }

@@ -36,11 +36,31 @@
                         </Grid>
 
                         <FlexLayout Grid.Row="2" JustifyContent="Center" Wrap="Wrap">
-                            <Button Text="ADD" Command="{Binding AddCommand}" Margin="5" BackgroundColor="#6366F1" CornerRadius="6"/>
-                            <Button Text="SAVE" Command="{Binding SaveCommand}" Margin="5" BackgroundColor="#6366F1" CornerRadius="6"/>
-                            <Button Text="DELETE" Command="{Binding DeleteCommand}" Margin="5" BackgroundColor="#6366F1" CornerRadius="6"/>
-                            <Button Text="EDIT" Command="{Binding EditCommand}" Margin="5" BackgroundColor="#6366F1" CornerRadius="6"/>
-                            <Button Text="EXIT" Command="{Binding ExitCommand}" Margin="5" BackgroundColor="#6366F1" CornerRadius="6"/>
+                            <Button Text="ADD" Command="{Binding AddCommand}" WidthRequest="100" Margin="5" BackgroundColor="#6366F1" CornerRadius="6">
+                                <Button.GestureRecognizers>
+                                    <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited"/>
+                                </Button.GestureRecognizers>
+                            </Button>
+                            <Button Text="SAVE" Command="{Binding SaveCommand}" WidthRequest="100" Margin="5" BackgroundColor="#6366F1" CornerRadius="6">
+                                <Button.GestureRecognizers>
+                                    <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited"/>
+                                </Button.GestureRecognizers>
+                            </Button>
+                            <Button Text="DELETE" Command="{Binding DeleteCommand}" WidthRequest="100" Margin="5" BackgroundColor="#6366F1" CornerRadius="6">
+                                <Button.GestureRecognizers>
+                                    <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited"/>
+                                </Button.GestureRecognizers>
+                            </Button>
+                            <Button Text="EDIT" Command="{Binding EditCommand}" WidthRequest="100" Margin="5" BackgroundColor="#6366F1" CornerRadius="6">
+                                <Button.GestureRecognizers>
+                                    <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited"/>
+                                </Button.GestureRecognizers>
+                            </Button>
+                            <Button Text="EXIT" Command="{Binding ExitCommand}" WidthRequest="100" Margin="5" BackgroundColor="#6366F1" CornerRadius="6">
+                                <Button.GestureRecognizers>
+                                    <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited"/>
+                                </Button.GestureRecognizers>
+                            </Button>
                         </FlexLayout>
                     </Grid>
 

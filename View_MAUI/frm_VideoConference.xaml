@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="View_MAUI.frm_VideoConference"
+             Title="DCP Video Conference"
+             BackgroundColor="#121212">
+
+    <ContentPage.Resources>
+        <Style x:Key="ControlButtonStyle" TargetType="Button">
+            <Setter Property="BackgroundColor" Value="#2D2D2D"/>
+            <Setter Property="TextColor" Value="White"/>
+            <Setter Property="CornerRadius" Value="25"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="6"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+
+        <Style x:Key="MediaToggleButtonStyle" TargetType="CheckBox">
+        </Style>
+
+        <Style x:Key="VideoCardStyle" TargetType="Border">
+            <Setter Property="BackgroundColor" Value="#1E1E1E"/>
+            <Setter Property="StrokeShape" Value="RoundRectangle 12"/>
+            <Setter Property="Margin" Value="8"/>
+            <Setter Property="Stroke" Value="#333"/>
+            <Setter Property="StrokeThickness" Value="1"/>
+        </Style>
+    </ContentPage.Resources>
+
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0,0,0,15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Label Text="[DCP-Video Conference]" TextColor="White" FontSize="18" FontAttributes="Bold" VerticalOptions="Center"/>
+            <HorizontalStackLayout Grid.Column="1">
+                <Border BackgroundColor="#D32F2F" StrokeShape="RoundRectangle 4" Padding="8,4" Margin="5,0">
+                    <Label Text="● LIVE" TextColor="White" FontAttributes="Bold" FontSize="12"/>
+                </Border>
+                <Image WidthRequest="35" HeightRequest="35" Margin="10,0" Source="https://via.placeholder.com/35">
+                    <Image.Clip>
+                        <EllipseGeometry Center="17.5,17.5" RadiusX="17.5" RadiusY="17.5"/>
+                    </Image.Clip>
+                </Image>
+            </HorizontalStackLayout>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <CollectionView ItemsSource="{Binding Participants}">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical" Span="2"/>
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource VideoCardStyle}">
+                            <Grid>
+                                <Image Source="https://via.placeholder.com/300" Aspect="AspectFill" Margin="2"/>
+                                <Label Text="{Binding Name}" TextColor="White" VerticalOptions="End" Margin="10"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Border x:Name="ChatSidebar" Grid.Column="1" WidthRequest="320" BackgroundColor="#1E1E1E" StrokeShape="RoundRectangle 15" Margin="10,8,8,8" IsVisible="False">
+                <Grid Margin="15">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <HorizontalStackLayout Grid.Row="0" Margin="0,0,0,15">
+                        <Button Text="Chat" BackgroundColor="#2D2D2D" TextColor="White" HeightRequest="35" Style="{StaticResource ControlButtonStyle}"/>
+                        <Button Text="Participants" BackgroundColor="Transparent" TextColor="#888" HeightRequest="35" Style="{StaticResource ControlButtonStyle}"/>
+                    </HorizontalStackLayout>
+
+                    <CollectionView Grid.Row="1" ItemsSource="{Binding ChatMessages}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Border BackgroundColor="{Binding BubbleColor}" StrokeShape="RoundRectangle 12" Margin="0,4" HorizontalOptions="{Binding Alignment}">
+                                    <VerticalStackLayout Padding="12,8">
+                                        <Label Text="{Binding Sender}" TextColor="#A0A0A0" FontSize="11" FontAttributes="Bold"/>
+                                        <Label Text="{Binding Message}" TextColor="White" FontSize="13"/>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                    <Border Grid.Row="2" BackgroundColor="#2D2D2D" StrokeShape="RoundRectangle 10" Margin="0,10,0,0">
+                        <Grid ColumnDefinitions="*, Auto">
+                            <Entry Text="{Binding ChatInput}" BackgroundColor="Transparent" Placeholder="Send a message..." TextColor="White"/>
+                            <Button Grid.Column="1" Text="➤" TextColor="#4CAF50" BackgroundColor="Transparent" Command="{Binding SendMessageCommand}"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <HorizontalStackLayout Grid.Row="2" HorizontalOptions="Center" Margin="0,15,0,0">
+            <Button Text="🎙️ Mic" Command="{Binding ToggleMicCommand}" Style="{StaticResource ControlButtonStyle}" WidthRequest="75"/>
+            <Button Text="📹 Cam" Command="{Binding ToggleCamCommand}" Style="{StaticResource ControlButtonStyle}" WidthRequest="75"/>
+            <Button Text="📤 Share" Style="{StaticResource ControlButtonStyle}" WidthRequest="85"/>
+            <Button x:Name="btnToggleChat" Text="💬 Chat" Clicked="ChatToggle_Clicked" Style="{StaticResource ControlButtonStyle}" WidthRequest="75"/>
+            <Button Text="🛑 Leave" Command="{Binding LeaveSessionCommand}" BackgroundColor="#FF5252" Style="{StaticResource ControlButtonStyle}" WidthRequest="90"/>
+        </HorizontalStackLayout>
+    </Grid>
+</ContentPage>

@@ -12,6 +12,11 @@
         Route="AccountsLogin" />
 
     <ShellContent
+        Title="Chat Box"
+        ContentTemplate="{DataTemplate local:ChatBox}"
+        Route="ChatBox" />
+
+    <ShellContent
         Title="Class Module"
         ContentTemplate="{DataTemplate local:frm_ClassModule}"
         Route="frm_ClassModule" />
@@ -35,4 +40,29 @@
         Title="STEM Management"
         ContentTemplate="{DataTemplate local:frm_STEM}"
         Route="frm_STEM" />
+    <ShellContent
+        Title="Technology Info"
+        ContentTemplate="{DataTemplate local:frm_TechInfo}"
+        Route="frm_TechInfo" />
+
+    <ShellContent
+        Title="Video Conference"
+        ContentTemplate="{DataTemplate local:frm_VideoConference}"
+        Route="frm_VideoConference" />
+
+    <ShellContent
+        Title="Salary Management"
+        ContentTemplate="{DataTemplate local:frmAccEmpSalary}"
+        Route="frmAccEmpSalary" />
+
+    <ShellContent
+        Title="Expense Head Setup"
+        ContentTemplate="{DataTemplate local:frmAccExpBub}"
+        Route="frmAccExpBub" />
+
+    <ShellContent
+        Title="Expense Head"
+        ContentTemplate="{DataTemplate local:frmAccExpendHead}"
+        Route="frmAccExpendHead" />
+
 </Shell>

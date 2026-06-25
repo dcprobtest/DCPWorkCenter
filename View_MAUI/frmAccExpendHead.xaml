@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="View_MAUI.frmAccExpendHead"
+             Title="Expense Head Setup"
+             BackgroundColor="#F4F7F9">
+
+    <ContentPage.Resources>
+        <Style x:Key="PremiumButtonStyle" TargetType="Button">
+            <Setter Property="TextColor" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontAttributes" Value="Bold"/>
+            <Setter Property="HeightRequest" Value="40"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Background" Value="#764ba2"/>
+        </Style>
+
+        <Style x:Key="ModernEntry" TargetType="Entry">
+            <Setter Property="HeightRequest" Value="35"/>
+            <Setter Property="BackgroundColor" Value="White"/>
+        </Style>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <Grid Margin="12">
+            <Border StrokeShape="RoundRectangle 10" StrokeThickness="3" BackgroundColor="White" Padding="2">
+                <Border.Stroke>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#FF4B2B" Offset="0"/>
+                        <GradientStop Color="#FFB22C" Offset="0.3"/>
+                        <GradientStop Color="#2ECC71" Offset="0.6"/>
+                        <GradientStop Color="#3498DB" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Stroke>
+
+                <Grid RowDefinitions="*, Auto" Margin="10">
+
+                    <Grid Grid.Row="0" ColumnDefinitions="260, *" ColumnSpacing="10" Margin="0,0,0,10">
+
+                        <Border Grid.Column="0" BackgroundColor="White" StrokeShape="RoundRectangle 8" Padding="15">
+                            <VerticalStackLayout Spacing="10">
+                                <Label Text="Exp Code" TextColor="Gray" FontAttributes="Bold" FontSize="12"/>
+                                <Entry x:Name="txtExpCode" Style="{StaticResource ModernEntry}" Text="{Binding ExpCode}"/>
+
+                                <Label Text="Exp Detail" TextColor="Gray" FontAttributes="Bold" FontSize="12"/>
+                                <Entry x:Name="txtExpDetail" Style="{StaticResource ModernEntry}" Text="{Binding ExpDetail}"/>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border Grid.Column="1" BackgroundColor="White" StrokeShape="RoundRectangle 8" Padding="5">
+                            <CollectionView x:Name="dgExpenses" ItemsSource="{Binding ExpenseList}" SelectedItem="{Binding SelectedExpense}">
+                                <CollectionView.Header>
+                                    <Grid ColumnDefinitions="80, *" BackgroundColor="#EEE" Padding="5">
+                                        <Label Text="Exp Code" FontAttributes="Bold"/>
+                                        <Label Grid.Column="1" Text="Expense Detail" FontAttributes="Bold"/>
+                                    </Grid>
+                                </CollectionView.Header>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid ColumnDefinitions="80, *" Padding="5">
+                                            <Label Text="{Binding ExpCode}"/>
+                                            <Label Grid.Column="1" Text="{Binding ExpDetail}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Row="1" ColumnDefinitions="*, Auto">
+                        <HorizontalStackLayout Grid.Column="0">
+                            <Button Text="ADD" Style="{StaticResource PremiumButtonStyle}" Command="{Binding AddCommand}"/>
+                            <Button Text="SAVE" Style="{StaticResource PremiumButtonStyle}" Command="{Binding SaveCommand}"/>
+                            <Button Text="EDIT" Style="{StaticResource PremiumButtonStyle}" Command="{Binding EditCommand}"/>
+                            <Button Text="EXIT" Style="{StaticResource PremiumButtonStyle}" Command="{Binding ExitCommand}"/>
+                        </HorizontalStackLayout>
+
+                        <HorizontalStackLayout Grid.Column="1" Spacing="5" VerticalOptions="Center">
+                            <Entry x:Name="txtUid" WidthRequest="70" IsReadOnly="True" BackgroundColor="#F0F0F0" Text="{Binding UID}"/>
+                            <DatePicker x:Name="dtEntryDate" Date="{Binding EntryDate}"/>
+                        </HorizontalStackLayout>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+    </ScrollView>
+</ContentPage>

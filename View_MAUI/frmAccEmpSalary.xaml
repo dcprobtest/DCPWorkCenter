@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="View_MAUI.frmAccEmpSalary"
+             Title="Employee Salary Management"
+             BackgroundColor="#F5F6F7">
+
+    <ContentPage.Resources>
+        <Style x:Key="ModernButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#764ba2"/>
+            <Setter Property="TextColor" Value="White"/>
+            <Setter Property="FontAttributes" Value="Bold"/>
+            <Setter Property="HeightRequest" Value="40"/>
+            <Setter Property="CornerRadius" Value="6"/>
+        </Style>
+
+        <Style x:Key="ModernEntry" TargetType="Entry">
+            <Setter Property="HeightRequest" Value="40"/>
+            <Setter Property="Margin" Value="0,4"/>
+        </Style>
+
+        <Style x:Key="LabelStyle" TargetType="Label">
+            <Setter Property="TextColor" Value="#555"/>
+            <Setter Property="VerticalOptions" Value="Center"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+    </ContentPage.Resources>
+
+    <Grid Margin="10">
+        <Border StrokeShape="RoundRectangle 12" StrokeThickness="1.5" BackgroundColor="White">
+            <Grid ColumnDefinitions="280, *">
+
+                <Border Grid.Column="0" BackgroundColor="#FAFBFC" StrokeShape="RoundRectangle 11,0,0,11" Padding="15">
+                    <ScrollView>
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="Salary Expenditure" FontSize="16" FontAttributes="Bold" TextColor="#764ba2"/>
+
+                            <Label Text="Exp Sub Code" Style="{StaticResource LabelStyle}"/>
+                            <Picker x:Name="cmbExpSubCode" Title="Select Sub Code" HeightRequest="40"/>
+
+                            <Label Text="Month" Style="{StaticResource LabelStyle}"/>
+                            <Picker x:Name="cmbMonth" HeightRequest="40">
+                                <Picker.ItemsSource>
+                                    <x:Array Type="{x:Type x:String}">
+                                        <x:String>1</x:String>
+                                        <x:String>2</x:String>
+                                        <x:String>3</x:String>
+                                        <x:String>4</x:String>
+                                        <x:String>5</x:String>
+                                        <x:String>6</x:String>
+                                        <x:String>7</x:String>
+                                        <x:String>8</x:String>
+                                        <x:String>9</x:String>
+                                        <x:String>10</x:String>
+                                        <x:String>11</x:String>
+                                        <x:String>12</x:String>
+                                    </x:Array>
+                                </Picker.ItemsSource>
+                            </Picker>
+
+                            <Label Text="Exp Date" Style="{StaticResource LabelStyle}"/>
+                            <Entry IsReadOnly="True" Style="{StaticResource ModernEntry}"/>
+
+                            <Label Text="User ID (UID)" Style="{StaticResource LabelStyle}"/>
+                            <Entry Style="{StaticResource ModernEntry}"/>
+
+                            <Label Text="Employee UID" Style="{StaticResource LabelStyle}"/>
+                            <Entry Style="{StaticResource ModernEntry}"/>
+
+                            <Label Text="Entry Date" Style="{StaticResource LabelStyle}"/>
+                            <DatePicker HorizontalOptions="Fill"/>
+
+                            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" Margin="0,10,0,0">
+                                <Button Grid.Row="0" Grid.Column="0" Text="ADD" Style="{StaticResource ModernButtonStyle}" Margin="2"/>
+                                <Button Grid.Row="0" Grid.Column="1" Text="SAVE" Style="{StaticResource ModernButtonStyle}" Margin="2"/>
+                                <Button Grid.Row="1" Grid.Column="0" Text="EDIT" Style="{StaticResource ModernButtonStyle}" Margin="2"/>
+                                <Button Grid.Row="1" Grid.Column="1" Text="EXIT" Style="{StaticResource ModernButtonStyle}" Margin="2"/>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </ScrollView>
+                </Border>
+
+                <VerticalStackLayout Grid.Column="1" Margin="15">
+                    <Label Text="Salary Record List" FontSize="16" FontAttributes="Bold" TextColor="#333" Margin="0,0,0,10"/>
+
+                    <CollectionView x:Name="dgSalary" ItemsSource="{Binding SalaryList}">
+                        <CollectionView.Header>
+                            <Grid ColumnDefinitions="40,80,50,90,90,*" BackgroundColor="#EEE" Padding="5">
+                                <Label Text="ID" FontAttributes="Bold"/>
+                                <Label Grid.Column="1" Text="Sub Code" FontAttributes="Bold"/>
+                                <Label Grid.Column="2" Text="Month" FontAttributes="Bold"/>
+                                <Label Grid.Column="3" Text="Exp Date" FontAttributes="Bold"/>
+                                <Label Grid.Column="4" Text="Emp UID" FontAttributes="Bold"/>
+                            </Grid>
+                        </CollectionView.Header>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="40,80,50,90,90,*" Padding="5">
+                                    <Label Text="{Binding ExpenditurID}"/>
+                                    <Label Grid.Column="1" Text="{Binding ExpSubCode}"/>
+                                    <Label Grid.Column="2" Text="{Binding MonthID}"/>
+                                    <Label Grid.Column="3" Text="{Binding ExpDate, StringFormat='{0:dd-MM-yyyy}'}"/>
+                                    <Label Grid.Column="4" Text="{Binding EmpUID}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
+    </Grid>
+</ContentPage>
