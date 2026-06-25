@@ -17,6 +17,11 @@
         Route="frm_ClassModule" />
     
     <ShellContent
+        Title="Class Section Management"
+        ContentTemplate="{DataTemplate local:frm_ClassSection}"
+        Route="frm_ClassSection" />
+    
+    <ShellContent
         Title="Document Creation"
         ContentTemplate="{DataTemplate local:frm_createdocs}"
         Route="frm_createdocs" />

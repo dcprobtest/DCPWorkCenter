@@ -10,10 +10,8 @@ public partial class frm_STEM : ContentPage
         this.Loaded += (s, e) => StartMainBorderAnimation();
     }
 
-    // Animation for the main border to rotate the rainbow colors
     private void StartMainBorderAnimation()
     {
-        // Check if MainBorder exists and has a LinearGradientBrush
         if (MainBorder != null && MainBorder.Stroke is LinearGradientBrush gradient)
         {
             var rotation = new Animation(v =>
@@ -26,33 +24,43 @@ public partial class frm_STEM : ContentPage
         }
     }
 
-    // Event handler for the Exit button
     private void btnExit_Clicked(object sender, EventArgs e)
     {
-        // Closes the current page
         Navigation.PopAsync();
     }
 
-    // You can add your command logic here or in your ViewModel
     public void StartButtonAnimation(object sender, EventArgs e)
     {
-        if (sender is Button btn && btn.Background is LinearGradientBrush gradient)
+        if (sender is Border border)
         {
+            var gradient = new LinearGradientBrush();
+            gradient.GradientStops.Add(new GradientStop(Colors.Red, 0.0f));
+            gradient.GradientStops.Add(new GradientStop(Colors.Yellow, 0.2f));
+            gradient.GradientStops.Add(new GradientStop(Colors.Green, 0.4f));
+            gradient.GradientStops.Add(new GradientStop(Colors.Cyan, 0.6f));
+            gradient.GradientStops.Add(new GradientStop(Colors.Blue, 0.8f));
+            gradient.GradientStops.Add(new GradientStop(Colors.Magenta, 1.0f));
+
+            border.Stroke = gradient;
+            border.ScaleTo(1.1, 100);
+
             var rotation = new Animation(v =>
             {
                 gradient.StartPoint = new Point(0.5 + 0.5 * Math.Cos(v), 0.5 + 0.5 * Math.Sin(v));
                 gradient.EndPoint = new Point(0.5 - 0.5 * Math.Cos(v), 0.5 - 0.5 * Math.Sin(v));
             }, 0, 2 * Math.PI);
 
-            rotation.Commit(btn, "BtnAnim", 16, 2000, Easing.Linear, null, () => true);
+            rotation.Commit(border, "BtnAnim", 16, 2000, Easing.Linear, null, () => true);
         }
     }
 
     public void StopButtonAnimation(object sender, EventArgs e)
     {
-        if (sender is Button btn)
+        if (sender is Border border)
         {
-            btn.AbortAnimation("BtnAnim");
+            border.ScaleTo(1.0, 100);
+            border.AbortAnimation("BtnAnim");
+            border.Stroke = Colors.Transparent;
         }
     }
 }

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="View_MAUI.frm_ClassSection"
+             Title="Class Section Management"
+             BackgroundColor="#F4F7F9">
+
+    <Grid Margin="20">
+        <Border StrokeShape="RoundRectangle 15" Padding="2">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#FF0000" Offset="0.0"/>
+                    <GradientStop Color="#00FF00" Offset="0.5"/>
+                    <GradientStop Color="#0000FF" Offset="1.0"/>
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <Border Background="White" StrokeShape="RoundRectangle 13" Padding="25">
+                <Grid ColumnDefinitions="1.8*, 1*">
+                    <Grid Grid.Column="0" RowDefinitions="*, Auto, Auto" Margin="0,0,25,0">
+
+                        <CollectionView ItemsSource="{Binding ClassSectionList}" SelectedItem="{Binding SelectedClassSection}" SelectionMode="Single">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Padding="10" ColumnDefinitions="100, *">
+                                        <Label Text="{Binding SectionId}" FontAttributes="Bold"/>
+                                        <Label Grid.Column="1" Text="{Binding SectionDesc}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+
+                        <Grid Grid.Row="1" ColumnDefinitions="*, *" Margin="0,20">
+                            <Entry Text="{Binding ClassSection.SectionId}" Placeholder="Section ID" HeightRequest="40"/>
+                            <Entry Grid.Column="1" Text="{Binding ClassSection.SectionDesc}" Placeholder="Description" Margin="10,0,0,0"/>
+                        </Grid>
+
+                        <FlexLayout Grid.Row="2" JustifyContent="Center" Wrap="Wrap">
+                            <Button Text="ADD" Command="{Binding AddCommand}" Margin="5" BackgroundColor="#6366F1" CornerRadius="6"/>
+                            <Button Text="SAVE" Command="{Binding SaveCommand}" Margin="5" BackgroundColor="#6366F1" CornerRadius="6"/>
+                            <Button Text="DELETE" Command="{Binding DeleteCommand}" Margin="5" BackgroundColor="#6366F1" CornerRadius="6"/>
+                            <Button Text="EDIT" Command="{Binding EditCommand}" Margin="5" BackgroundColor="#6366F1" CornerRadius="6"/>
+                            <Button Text="EXIT" Command="{Binding ExitCommand}" Margin="5" BackgroundColor="#6366F1" CornerRadius="6"/>
+                        </FlexLayout>
+                    </Grid>
+
+                    <Border Grid.Column="1" BackgroundColor="#FAFAFA" StrokeShape="RoundRectangle 12" Padding="20">
+                        <VerticalStackLayout Spacing="15">
+                            <Entry Text="{Binding ClassSection.EntryByUid}" Placeholder="User ID (Entry By)" HeightRequest="40"/>
+
+                            <HorizontalStackLayout Spacing="10">
+                                <CheckBox IsChecked="{Binding ClassSection.Activate}"/>
+                                <Label Text="Is Active" VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+
+                            <Button Text="Active Now" Command="{Binding ActiveClickCommand}" BackgroundColor="#6366F1"/>
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+            </Border>
+        </Border>
+    </Grid>
+</ContentPage>
