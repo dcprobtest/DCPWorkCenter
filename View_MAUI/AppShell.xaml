@@ -65,4 +65,115 @@
         ContentTemplate="{DataTemplate local:frmAccExpendHead}"
         Route="frmAccExpendHead" />
 
+    <ShellContent
+        Title="Income Head"
+        ContentTemplate="{DataTemplate local:frmAccIncomeHead}"
+        Route="frmAccIncomeHead" />
+
+    <ShellContent
+        Title="Income Sub Head"
+        ContentTemplate="{DataTemplate local:frmAccIncSub}"
+        Route="frmAccIncSub" />
+
+    <ShellContent
+        Title="US Expend Sub"
+        ContentTemplate="{DataTemplate local:frmAccUSExpBub}"
+        Route="frmAccUSExpBub" />
+
+    <ShellContent
+        Title="US Expense Head Setup"
+        ContentTemplate="{DataTemplate local:frmAccUSExpendHead}"
+        Route="frmAccUSExpendHead" />
+
+    <ShellContent
+    Title="US Income Head Setup"
+    ContentTemplate="{DataTemplate local:frmAccUSIncomeHead}"
+    Route="frmAccUSIncomeHead" />
+
+    <ShellContent
+    Title="US Income Sub"
+    ContentTemplate="{DataTemplate local:frmAccUSIncSub}"
+    Route="frmAccUSIncSub" />
+
+    <ShellContent
+        Title="Department Management"
+        ContentTemplate="{DataTemplate local:frmAdmin_Department}"
+        Route="frmAdmin_Department" />
+
+    <ShellContent
+        Title="Designation Management"
+        ContentTemplate="{DataTemplate local:frmAdmin_Designation}"
+        Route="frmAdmin_Designation" />
+
+    <ShellContent
+        Title="Document Manager"
+        ContentTemplate="{DataTemplate local:frmAdmin_DocInfo}"
+        Route="frmAdmin_DocInfo" />
+
+    <ShellContent
+        Title="Employee Information"
+        ContentTemplate="{DataTemplate local:frmAdmin_EmpInfo}"
+        Route="frmAdmin_EmpInfo" />
+
+    <ShellContent
+        Title="User Information"
+        ContentTemplate="{DataTemplate local:frmAdmin_User}"
+        Route="frmAdmin_User" />
+
+    <ShellContent
+    Title="Assignment Scrum"
+    ContentTemplate="{DataTemplate local:frmAssignmentScrum}"
+    Route="frmAssignmentScrum" />
+
+    <ShellContent
+        Title="Assign Tech Info Management"
+        ContentTemplate="{DataTemplate local:frmAssignTechInfo}"
+        Route="frmAssignTechInfo" />
+    
+    <ShellContent
+        Title="DCP EduTrack Player"
+        ContentTemplate="{DataTemplate local:frmClass_ClassPlayer}"
+        Route="frmClass_ClassPlayer" />
+
+    <ShellContent
+        Title="Class Subject Management"
+        ContentTemplate="{DataTemplate local:frmClass_ClassSubject}"
+        Route="ClassSubjectPage" />
+
+    <ShellContent
+        Title="Class Video Text"
+        ContentTemplate="{DataTemplate local:frmClass_ClassVideoText}"
+        Route="frmClass_ClassVideoText" />
+
+    <ShellContent
+        Title="Class Subject Assign"
+        ContentTemplate="{DataTemplate local:frmClass_SubjectWiseClassAssign}"
+        Route="frmClass_SubjectWiseClassAssign" />
+
+    <ShellContent
+        Title="Login"
+        ContentTemplate="{DataTemplate local:Login}"
+        Route="Login" />
+
+    <ShellContent
+        Title="Accounts Management"
+        ContentTemplate="{DataTemplate local:Main_Accountsfrm}"
+        Route="Main_Accountsfrm" />
+
+    <ShellContent
+        Title="Administrative Management"
+        ContentTemplate="{DataTemplate local:Main_Adminfrm}"
+        Route="Main_Adminfrm" />
+
+    <ShellContent
+        Title="Class Management"
+        ContentTemplate="{DataTemplate local:Main_Classfrm}"
+        Route="Main_Classfrm" />
+
+
+
+
+
+
+
 </Shell>

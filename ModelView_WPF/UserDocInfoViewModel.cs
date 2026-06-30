@@ -18,8 +18,8 @@ namespace View_WPF.ModelView_WPF
 {
     public class UserDocInfoViewModel : INotifyPropertyChanged
     {
-        private readonly string _apiUrl = "http://74.208.227.170:8050//api/Data/SaveUserDoc";
-        private readonly string _empDetailApiUrl = "http://74.208.227.170:8050//api/Data/GetEmployeeDetail/";
+        private readonly string _apiUrl = "https://localhost:7073/api/Data/SaveUserDoc";
+        private readonly string _empDetailApiUrl = "https://localhost:7073/api/Data/GetEmployeeDetail/";
 
         // --- Properties for Main Window ---
         private string _uid;
@@ -28,7 +28,7 @@ namespace View_WPF.ModelView_WPF
         private string _serverStatus = "Online";
         private DateTime _startDate = DateTime.Now;
         private DateTime _endDate = DateTime.Now;
-        private string _selectedDocType; // নতুন প্রপার্টি ব্যাকলাইন লজিকের জন্য
+        private string _selectedDocType; // Property for backend logic
 
         public string UID
         {
@@ -56,7 +56,7 @@ namespace View_WPF.ModelView_WPF
         public DateTime StartDate { get => _startDate; set { _startDate = value; OnPropertyChanged(); } }
         public DateTime EndDate { get => _endDate; set { _endDate = value; OnPropertyChanged(); } }
 
-        // ComboBox এর সিলেক্টেড আইটেমের জন্য প্রপার্টি
+        // Property for ComboBox selected item
         public string SelectedDocType
         {
             get => _selectedDocType;
@@ -64,7 +64,7 @@ namespace View_WPF.ModelView_WPF
             {
                 _selectedDocType = value;
                 OnPropertyChanged();
-                SetDatesByDocumentType(_selectedDocType); // টাইপ চেঞ্জ হলে ডেট সেট হবে
+                SetDatesByDocumentType(_selectedDocType); // Sets dates when type changes
             }
         }
 
@@ -115,7 +115,7 @@ namespace View_WPF.ModelView_WPF
             SaveCommand = new RelayCommand(async (obj) => await ExecuteSave());
 
             AddCommand = new RelayCommand(async (obj) => {
-                string docType = obj as string ?? SelectedDocType; // টাইপ না থাকলে সিলেক্টেড টাইপ নিবে
+                string docType = obj as string ?? SelectedDocType; // Use passed type or selected type
                 if (string.IsNullOrEmpty(UID)) { MessageBox.Show("Please enter or select a UID first!"); return; }
                 if (string.IsNullOrEmpty(docType)) { MessageBox.Show("Please select a Document Type!"); return; }
 
@@ -139,7 +139,7 @@ namespace View_WPF.ModelView_WPF
                 PopupTitle = obj as string ?? SelectedDocType;
                 IsPopupVisible = true;
 
-                // পপআপ খোলার সময়ও ডেট সেট করে দেওয়া
+                // Set default dates when opening popup
                 PopupStartDate = this.StartDate;
                 PopupEndDate = this.EndDate;
             });
@@ -202,30 +202,30 @@ namespace View_WPF.ModelView_WPF
             });
         }
 
-        // --- তারিখ ক্যালকুলেশন লজিক ---
+        // --- Date Calculation Logic ---
         private void SetDatesByDocumentType(string docType)
         {
             if (string.IsNullOrEmpty(docType)) return;
 
-            StartDate = DateTime.Now; // এন্ট্রি ডেট বা আজ থেকেই শুরু
+            StartDate = DateTime.Now; // Default start date is today
 
             switch (docType)
             {
                 case "Passport":
-                    EndDate = StartDate.AddYears(10); // সাধারণত ১০ বছর
+                    EndDate = StartDate.AddYears(10); // Usually 10 years
                     break;
                 case "Driving Licence":
-                    EndDate = StartDate.AddYears(5); // সাধারণত ৫ বছর
+                    EndDate = StartDate.AddYears(5); // Usually 5 years
                     break;
                 case "I-20":
                 case "EAD":
                 case "I-983":
-                    EndDate = StartDate.AddYears(1); // ১ বছর মেয়াদ
+                    EndDate = StartDate.AddYears(1); // 1-year validity
                     break;
                 case "Resume":
                 case "Picture":
                 case "Certificate":
-                    EndDate = StartDate.AddYears(1); // এইগুলোর ফিক্সড মেয়াদ না থাকলেও ডিফল্ট ১ বছর
+                    EndDate = StartDate.AddYears(1); // Default 1 year
                     break;
                 default:
                     EndDate = StartDate.AddYears(1);

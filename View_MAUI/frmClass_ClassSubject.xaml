@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="View_MAUI.frmClass_ClassSubject"
+             Title="Class Subject Management"
+             BackgroundColor="#F4F7F9">
+
+    <Grid Margin="15">
+        <Border Background="#6366F1" StrokeShape="RoundRectangle 20" Padding="2.5">
+            <Border Background="White" StrokeShape="RoundRectangle 18" Padding="20">
+                <Grid ColumnDefinitions="2*, 1*" ColumnSpacing="20">
+
+                    <Grid Grid.Column="0" RowDefinitions="Auto, *, Auto, Auto">
+                        <Label Text="Class Subject Directory" FontSize="22" FontAttributes="Bold" TextColor="#1F2937" Margin="0,0,0,15"/>
+
+                        <Border Grid.Row="1" Stroke="#E5E7EB" StrokeThickness="1" StrokeShape="RoundRectangle 8">
+                            <Grid RowDefinitions="Auto, *">
+                                <Grid BackgroundColor="#F3F4F6" Padding="10" ColumnDefinitions="150, *">
+                                    <Label Grid.Column="0" Text="Subject Code" FontAttributes="Bold" FontSize="12"/>
+                                    <Label Grid.Column="1" Text="Subject Desc" FontAttributes="Bold" FontSize="12"/>
+                                </Grid>
+                                <CollectionView Grid.Row="1" ItemsSource="{Binding SubjectList}" SelectionMode="Single"
+                                                SelectedItem="{Binding SelectedSubject}">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid ColumnDefinitions="150, *" Padding="10" BackgroundColor="White">
+                                                <Label Grid.Column="0" Text="{Binding SubjectCode}" FontAttributes="Bold" VerticalOptions="Center"/>
+                                                <Label Grid.Column="1" Text="{Binding SubjectDesc}" VerticalOptions="Center"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </Grid>
+                        </Border>
+
+                        <Grid Grid.Row="2" ColumnDefinitions="160, *" RowDefinitions="Auto, Auto" Margin="0,15,0,15">
+                            <Label Text="Subject Code" FontSize="11" TextColor="#6B7280"/>
+                            <Entry Grid.Row="1" Text="{Binding CurrentSubject.SubjectCode}" HeightRequest="40" FontAttributes="Bold" BackgroundColor="White"/>
+
+                            <Label Grid.Column="1" Text="Subject Description" FontSize="11" TextColor="#6B7280" Margin="10,0,0,0"/>
+                            <Entry Grid.Row="1" Grid.Column="1" Text="{Binding CurrentSubject.SubjectDesc}" HeightRequest="40" Margin="10,0,0,0" BackgroundColor="White"/>
+                        </Grid>
+
+                        <HorizontalStackLayout Grid.Row="3" Spacing="5" HeightRequest="45">
+                            <Button Text="ADD" WidthRequest="90" BackgroundColor="#10B981" TextColor="White" Command="{Binding AddCommand}"/>
+                            <Button Text="SAVE" WidthRequest="90" BackgroundColor="#2563EB" TextColor="White" Command="{Binding SaveCommand}"/>
+                            <Button Text="DELETE" WidthRequest="90" BackgroundColor="#E11D48" TextColor="White" Command="{Binding DeleteCommand}"/>
+                            <Button Text="EDIT" WidthRequest="90" BackgroundColor="#F59E0B" TextColor="White" Command="{Binding EditCommand}"/>
+                            <Button Text="EXIT" WidthRequest="90" BackgroundColor="#475569" TextColor="White" Command="{Binding ExitCommand}"/>
+                        </HorizontalStackLayout>
+                    </Grid>
+
+                    <Border Grid.Column="1" Background="#F9FAFB" StrokeShape="RoundRectangle 12" Padding="20">
+                        <VerticalStackLayout Spacing="15">
+                            <Label Text="Entry By (User UID)" FontSize="11" TextColor="#6B7280"/>
+                            <Entry Text="{Binding CurrentSubject.EntryByUid}" IsReadOnly="True" BackgroundColor="#F3F4F6"/>
+
+                            <HorizontalStackLayout Spacing="10">
+                                <CheckBox IsChecked="{Binding IsActiveChecked}"/>
+                                <Label Text="Active" VerticalOptions="Center" FontAttributes="Bold"/>
+                            </HorizontalStackLayout>
+
+                            <Button Text="Update Status" BackgroundColor="#6366F1" TextColor="White" Command="{Binding ToggleStatusCommand}"/>
+
+                            <toolkit:Expander>
+                                <toolkit:Expander.Header>
+                                    <Label Text="Scheduling Timeline" FontAttributes="Bold" TextColor="#6366F1" Padding="5"/>
+                                </toolkit:Expander.Header>
+                                <VerticalStackLayout Spacing="5" Margin="0,10,0,0">
+                                    <Label Text="Entry Date" FontSize="10" TextColor="Gray"/>
+                                    <Entry Text="{Binding CurrentSubject.EntryDate, StringFormat='{0:dd-MMM-yyyy}'}" IsReadOnly="True" BackgroundColor="#FAFAFA"/>
+                                    <Label Text="Start Date" FontSize="10" TextColor="Gray"/>
+                                    <Entry Text="{Binding CurrentSubject.StartDate, StringFormat='{0:dd-MMM-yyyy}'}" IsReadOnly="True" BackgroundColor="#FAFAFA"/>
+                                    <Label Text="End Date" FontSize="10" TextColor="Gray"/>
+                                    <Entry Text="{Binding CurrentSubject.EndDate, StringFormat='{0:dd-MMM-yyyy}'}" IsReadOnly="True" BackgroundColor="#FAFAFA"/>
+                                    <Label Text="Last Update" FontSize="10" TextColor="Gray"/>
+                                    <Entry Text="{Binding CurrentSubject.LastUpdate, StringFormat='{0:dd-MMM-yyyy}'}" IsReadOnly="True" BackgroundColor="#FAFAFA"/>
+                                </VerticalStackLayout>
+                            </toolkit:Expander>
+
+                            <Label Text="DCP Work Center System" VerticalOptions="End" HorizontalOptions="Center" TextColor="#D1D5DB" FontSize="10" Margin="0,20,0,0"/>
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+            </Border>
+        </Border>
+    </Grid>
+</ContentPage>

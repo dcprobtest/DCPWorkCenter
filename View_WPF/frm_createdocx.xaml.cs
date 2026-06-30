@@ -1,4 +1,4 @@
-﻿using View_WPF.Model; // আপনার মডেলের সঠিক নেমস্পেস
+﻿using View_WPF.Model; // Ensure the correct namespace for your model
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,15 +9,15 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
-using Spire.Doc; // FreeSpire.Doc লাইব্রেরি ব্যবহার করা হয়েছে
+using Spire.Doc; // FreeSpire.Doc library is used
 
 namespace View_WPF
 {
     public partial class frm_createdocx : Window
     {
-        private readonly string _baseUrl = "http://74.208.227.170:8050//api/Data/";
+        private readonly string _baseUrl = "https://localhost:7073/api/Data/";
 
-        // আপনার মডেল অনুযায়ী 'EmployeeInfo' কে পরিবর্তন করে 'EmpInfoModel' করা হলো
+        // Changed 'EmployeeInfo' to 'EmpInfoModel' according to your model
         private List<EmpInfoModel> _allEmployees = new List<EmpInfoModel>();
 
         private string _currentLoggedInUID;
@@ -39,7 +39,7 @@ namespace View_WPF
                 txtUserID.Text = _currentLoggedInUID;
                 using HttpClient client = new HttpClient();
 
-                // --- লগইন করা ইউজারের নাম নিয়ে আসা ---
+                // --- Fetch logged-in user name ---
                 try
                 {
                     var nameResponse = await client.GetAsync(_baseUrl + $"GetUserName/{_currentLoggedInUID}");
@@ -64,14 +64,14 @@ namespace View_WPF
                     txtUserName.Text = _currentLoggedInName;
                 }
 
-                // --- ক্যান্ডিডেট ডাটা লোড (GetEmployeeInfo ব্যবহার করে) ---
+                // --- Load candidate data (using GetEmployeeInfo) ---
                 var response = await client.GetAsync(_baseUrl + "GetEmployeeInfo");
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonString = await response.Content.ReadAsStringAsync();
                     var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
-                    // এখানেও 'EmpInfoModel' ব্যবহার করা হলো
+                    // Using 'EmpInfoModel' here
                     var employees = JsonSerializer.Deserialize<List<EmpInfoModel>>(jsonString, options);
 
                     if (employees != null)
@@ -87,37 +87,37 @@ namespace View_WPF
             }
         }
 
-        // --- নতুন যোগ করা অংশ: ড্রপডাউন পরিবর্তন হলে Hourly Rate কন্ট্রোল করা ---
+        // --- Handle Hourly Rate control based on dropdown change ---
         private void cmbDocType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cmbDocType.SelectedItem is ComboBoxItem selectedItem)
             {
                 string selectedDocType = selectedItem.Content.ToString();
 
-                // যদি STEM OPT হয়, তবে Hourly Rate ইনপুট দেওয়া যাবে (Enable)
+                // If STEM OPT, allow Hourly Rate input (Enable)
                 if (selectedDocType == "STEM OPT")
                 {
                     txtHourlyRate.IsEnabled = true;
-                    txtHourlyRate.Opacity = 1.0; // দেখতে উজ্জ্বল লাগবে
+                    txtHourlyRate.Opacity = 1.0;
                 }
-                else // CPT বা OPT এর জন্য ব্লক হয়ে যাবে (Disable)
+                else // For CPT or OPT, block the input (Disable)
                 {
                     txtHourlyRate.IsEnabled = false;
-                    txtHourlyRate.Text = "0"; // অটোমেটিক ০ সেট করে দিতে পারেন
-                    txtHourlyRate.Opacity = 0.5; // দেখতে আবছা লাগবে যাতে ইউজার বোঝে এটি বন্ধ
+                    txtHourlyRate.Text = "0";
+                    txtHourlyRate.Opacity = 0.5;
                 }
             }
         }
 
         private void cmbCandidateID_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // এখানেও 'EmpInfoModel' ব্যবহার করা হলো এবং আপনার মডেলের FName ও LName প্রপার্টি ব্যবহার করা হয়েছে
+            // Using 'EmpInfoModel' and accessing FName/LName properties
             if (cmbCandidateID.SelectedItem is EmpInfoModel selectedEmp)
             {
-                // ক্যান্ডিডেটের পূর্ণ নাম সেট করা
+                // Set full candidate name
                 _selectedCandidateName = $"{selectedEmp.FName} {selectedEmp.LName}".Trim();
 
-                // সিলেকশন হওয়ার পর টেক্সটবক্সে শুধু আইডি দেখানোর জন্য
+                // Show only ID in the textbox after selection
                 Dispatcher.BeginInvoke(new Action(() => {
                     cmbCandidateID.Text = selectedEmp.UID;
                 }), System.Windows.Threading.DispatcherPriority.Input);
@@ -141,18 +141,18 @@ namespace View_WPF
         {
             try
             {
-                // --- টেমপ্লেট সিলেকশন লজিক আপডেট করা হয়েছে ---
+                // --- Updated template selection logic ---
                 string selectedDocType = (cmbDocType.SelectedItem as ComboBoxItem)?.Content.ToString();
-                string templateFileName = "cpt-opt offer letter.docx"; // ডিফল্ট
+                string templateFileName = "cpt-opt offer letter.docx"; // Default
 
-                // কন্ডিশনাল টেমপ্লেট সিলেকশন
+                // Conditional template selection
                 if (selectedDocType == "CPT" || selectedDocType == "OPT")
                 {
                     templateFileName = "cpt-opt offer letter.docx";
                 }
                 else if (selectedDocType == "STEM OPT")
                 {
-                    templateFileName = "STEM opt offer letter.docx"; // আপনার নতুন টেমপ্লেট
+                    templateFileName = "STEM opt offer letter.docx"; // New template
                 }
 
                 string templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Asset", templateFileName);
@@ -164,21 +164,21 @@ namespace View_WPF
                 }
 
                 string candidateID = cmbCandidateID.Text;
-                string docType = selectedDocType; // ড্রপডাউন থেকে নেওয়া ভ্যালু
+                string docType = selectedDocType;
                 string fileName = $"{candidateID}_{docType}.docx";
                 string tempFilePath = Path.Combine(Path.GetTempPath(), fileName);
 
                 Document document = new Document();
                 document.LoadFromFile(templatePath);
 
-                // তারিখ ক্যালকুলেশন (Start Date এর ৩ দিন আগে Submission Date)
+                // Date calculation (Submission Date is 3 days before Start Date)
                 DateTime startDateValue = dtpStartDate.SelectedDate ?? DateTime.Now;
                 DateTime submissionDateValue = startDateValue.AddDays(-3);
 
-                // ডাটা রিপ্লেস লজিক
+                // Data replacement logic
                 document.Replace("<Date>", DateTime.Now.ToString("MMMM dd, yyyy"), true, true);
                 document.Replace("<EmployeeName>", _selectedCandidateName, true, true);
-                document.Replace("< Employee Name>", _selectedCandidateName, true, true); // স্পেসসহ ট্যাগ থাকলে
+                document.Replace("< Employee Name>", _selectedCandidateName, true, true);
                 document.Replace("<Designation>", txtDesignation.Text, true, true);
                 document.Replace("<DocumentType>", docType ?? "", true, true);
                 document.Replace("<JobResponsibility>", txtResponsibility.Text, true, true);
@@ -187,7 +187,7 @@ namespace View_WPF
                 document.Replace("<EndDate>", dtpEndDate.SelectedDate?.ToString("MMMM dd, yyyy") ?? "", true, true);
                 document.Replace("<HourlyRate>", txtHourlyRate.Text, true, true);
 
-                // Submission Date সকল টেমপ্লেটের জন্যই রিপ্লেস হবে (যেহেতু আপনি STEM OPT-তেও এটি চেয়েছেন)
+                // Submission Date will be replaced for all templates
                 document.Replace("<SubmissionDate>", submissionDateValue.ToString("MMMM dd, yyyy"), true, true);
 
                 document.SaveToFile(tempFilePath, FileFormat.Docx);

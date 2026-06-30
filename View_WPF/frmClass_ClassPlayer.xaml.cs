@@ -9,8 +9,8 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
-using System.Net.Http; // এপিআই কলের জন্য যোগ করা হয়েছে
-using System.Text.Json; // জেপিওন পার্সিংয়ের জন্য যোগ করা হয়েছে
+using System.Net.Http; // Added for API calls
+using System.Text.Json; // Added for JSON parsing
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -25,7 +25,7 @@ namespace View_WPF
         private string _rawUID;
         private string _backendUID;
         private string _screenshotRootPath = @"C:\DCP_UserActivity";
-        private readonly HttpClient _httpClient = new HttpClient(); // HttpClient ইনস্ট্যান্স
+        private readonly HttpClient _httpClient = new HttpClient(); // HttpClient instance
 
         public ObservableCollection<SubjectViewModel> CourseContent { get; set; } = new ObservableCollection<SubjectViewModel>();
 
@@ -38,28 +38,28 @@ namespace View_WPF
             this.DataContext = this;
 
             SetupTimer();
-            // এখন এপিআই থেকে ডাটা লোড হবে
+            // Data will now be loaded from API
             _ = LoadDataFromApi();
 
             CleanupOldScreenshots();
             StartScreenshotTracking();
         }
 
-        // এপিআই থেকে ডাটা লোড করার নতুন মেথড
+        // New method to load data from API
         private async Task LoadDataFromApi()
         {
             try
             {
                 CourseContent.Clear();
-                // আপনার টেস্ট করা সফল URL
-                string url = $"http://74.208.227.170:8050/api/Data/GetAssignedVideos/{_rawUID}";
+                // Updated URL to match the localhost:7073 from your screenshot
+                string url = $"https://localhost:7073/api/Data/GetAssignedVideos/{_rawUID}";
 
                 var response = await _httpClient.GetAsync(url);
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonString = await response.Content.ReadAsStringAsync();
 
-                    // এপিআই থেকে আসা ভিডিওর লিস্ট
+                    // List of videos coming from API
                     var apiVideos = JsonSerializer.Deserialize<List<ApiVideoResponse>>(jsonString, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
@@ -67,7 +67,7 @@ namespace View_WPF
 
                     if (apiVideos != null && apiVideos.Count > 0)
                     {
-                        // আপনার বর্তমান TreeView স্ট্রাকচার (Subject -> Section -> Video) বজায় রাখার জন্য ম্যাপিং
+                        // Mapping to maintain your current TreeView structure (Subject -> Section -> Video)
                         var subject = new SubjectViewModel { SubjectDesc = "My Enrolled Courses" };
                         var section = new SectionViewModel { SectionDesc = "Assigned Lessons" };
 
@@ -75,8 +75,8 @@ namespace View_WPF
                         {
                             section.Videos.Add(new VideoTreeItem
                             {
-                                VideoTitle = v.ClassContent, // এপিআই এর কলাম নাম অনুযায়ী
-                                FilePath = v.ClassPath      // এপিআই এর কলাম নাম অনুযায়ী
+                                VideoTitle = v.ClassContent, // According to API column name
+                                FilePath = v.ClassPath      // According to API column name
                             });
                         }
 
@@ -86,12 +86,12 @@ namespace View_WPF
                 }
                 else
                 {
-                    System.Windows.MessageBox.Show("এপিআই থেকে ডাটা পাওয়া যায়নি। স্ট্যাটাস কোড: " + response.StatusCode);
+                    System.Windows.MessageBox.Show("Data not found from API. Status Code: " + response.StatusCode);
                 }
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show("এপিআই কানেকশনে সমস্যা: " + ex.Message);
+                System.Windows.MessageBox.Show("Problem with API connection: " + ex.Message);
             }
         }
 
@@ -176,7 +176,7 @@ namespace View_WPF
                 }
                 else
                 {
-                    System.Windows.MessageBox.Show("ভিডিও ফাইলটি খুঁজে পাওয়া যায়নি। পাথ চেক করুন: " + selectedVideo.FilePath);
+                    System.Windows.MessageBox.Show("Video file not found. Check path: " + selectedVideo.FilePath);
                 }
             }
         }
@@ -208,12 +208,12 @@ namespace View_WPF
 
         private void Previous_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.MessageBox.Show("প্রিভিয়াস ভিডিও ফিচারটি এখনো ইমপ্লিমেন্ট করা হয়নি।");
+            System.Windows.MessageBox.Show("The Previous Video feature has not been implemented yet.");
         }
 
         private void Next_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.MessageBox.Show("নেক্সট ভিডিও ফিচারটি এখনো ইমপ্লিমেন্ট করা হয়নি।");
+            System.Windows.MessageBox.Show("The Next Video feature has not been implemented yet.");
         }
 
         private void TimelineSlider_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e) => _timer.Stop();
@@ -240,7 +240,7 @@ namespace View_WPF
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
-    // এপিআই রেসপন্স মডেল
+    // API response model
     public class ApiVideoResponse
     {
         public string ClassContent { get; set; }

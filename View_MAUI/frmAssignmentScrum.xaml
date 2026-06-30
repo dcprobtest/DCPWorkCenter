@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="View_MAUI.frmAssignmentScrum"
+             Title="Assignment Scrum Information"
+             BackgroundColor="White">
+
+    <ContentPage.Resources>
+        <Style TargetType="Entry">
+            <Setter Property="BackgroundColor" Value="White"/>
+            <Setter Property="TextColor" Value="Black"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="10,0,10,15"/>
+            <Setter Property="VerticalOptions" Value="Center"/>
+        </Style>
+
+        <Style x:Key="RainbowButtonStyle" TargetType="Button">
+            <Setter Property="TextColor" Value="Black"/>
+            <Setter Property="FontAttributes" Value="Bold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderColor" Value="DeepSkyBlue"/>
+            <Setter Property="BorderWidth" Value="2"/>
+            <Setter Property="WidthRequest" Value="120"/>
+            <Setter Property="HeightRequest" Value="45"/>
+        </Style>
+    </ContentPage.Resources>
+
+    <Grid>
+        <Ellipse Fill="#15007AFF" WidthRequest="700" HeightRequest="700" 
+                 HorizontalOptions="End" VerticalOptions="Start" 
+                 Margin="0,-250,-250,0" Opacity="0.3"/>
+
+        <ScrollView>
+            <Grid Margin="30,40,30,40" RowDefinitions="Auto, *">
+                <Label Grid.Row="0" Text="Assignment Scrum Management" FontSize="32" FontAttributes="Bold" 
+                       TextColor="Black" Margin="0,0,0,30" HorizontalOptions="Center"/>
+
+                <Border Grid.Row="1" StrokeShape="RoundRectangle 25" Padding="2" StrokeThickness="0">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#FF0000" Offset="0.0"/>
+                            <GradientStop Color="#FFFF00" Offset="0.2"/>
+                            <GradientStop Color="#00FF00" Offset="0.4"/>
+                            <GradientStop Color="#00FFFF" Offset="0.6"/>
+                            <GradientStop Color="#0000FF" Offset="0.8"/>
+                            <GradientStop Color="#FF00FF" Offset="1.0"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+
+                    <Border BackgroundColor="#F0EBE9" StrokeShape="RoundRectangle 23" Padding="25">
+                        <Grid ColumnDefinitions="165, 165, 15, *" 
+                              RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto">
+
+                            <Label Grid.Row="0" Grid.Column="0" Text="Assign ID" TextColor="#555555" FontAttributes="Bold"/>
+                            <Picker Grid.Row="1" Grid.Column="0" ItemsSource="{Binding AvailableAssignIDs}" SelectedItem="{Binding Scrum.AssignID}" Margin="10,0,10,15"/>
+
+                            <Label Grid.Row="0" Grid.Column="1" Text="Scrum ID" TextColor="#555555" FontAttributes="Bold"/>
+                            <Picker Grid.Row="1" Grid.Column="1" ItemsSource="{Binding AvailableScrumIDs}" SelectedItem="{Binding Scrum.ScrumID}" Margin="10,0,10,15"/>
+
+                            <Label Grid.Row="2" Grid.Column="0" Text="Assign By UID" TextColor="#555555" FontAttributes="Bold"/>
+                            <Entry Grid.Row="3" Grid.Column="0" Text="{Binding Scrum.AssignByUID}" IsReadOnly="True"/>
+
+                            <Label Grid.Row="2" Grid.Column="1" Text="Assign For UID" TextColor="#555555" FontAttributes="Bold"/>
+                            <Entry Grid.Row="3" Grid.Column="1" Text="{Binding Scrum.AssignForUID}"/>
+
+                            <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Text="Assign By Description" TextColor="#555555" FontAttributes="Bold"/>
+                            <Entry Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Scrum.AssignByDesc}" HeightRequest="55"/>
+
+                            <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Text="Assign For Description" TextColor="#555555" FontAttributes="Bold"/>
+                            <Entry Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Scrum.AssignForDesc}" HeightRequest="55"/>
+
+                            <Label Grid.Row="8" Grid.Column="0" Text="Start Status" TextColor="#555555" FontAttributes="Bold"/>
+                            <Entry Grid.Row="9" Grid.Column="0" Text="{Binding Scrum.StartStatus}"/>
+
+                            <Label Grid.Row="8" Grid.Column="1" Text="Start Date" TextColor="#555555" FontAttributes="Bold"/>
+                            <DatePicker Grid.Row="9" Grid.Column="1" Date="{Binding Scrum.StartDate}" Margin="10,0,10,15"/>
+
+                            <Label Grid.Row="10" Grid.Column="0" Text="Progress Status" TextColor="#555555" FontAttributes="Bold"/>
+                            <Entry Grid.Row="11" Grid.Column="0" Text="{Binding Scrum.ProgressStatus}"/>
+
+                            <Label Grid.Row="10" Grid.Column="1" Text="Progress Date" TextColor="#555555" FontAttributes="Bold"/>
+                            <DatePicker Grid.Row="11" Grid.Column="1" Date="{Binding Scrum.ProgressDate}" Margin="10,0,10,15"/>
+
+                            <Label Grid.Row="12" Grid.Column="0" Text="Complete Status" TextColor="#555555" FontAttributes="Bold"/>
+                            <Entry Grid.Row="13" Grid.Column="0" Text="{Binding Scrum.CompleteStatus}"/>
+
+                            <Label Grid.Row="12" Grid.Column="1" Text="Complete Date" TextColor="#555555" FontAttributes="Bold"/>
+                            <DatePicker Grid.Row="13" Grid.Column="1" Date="{Binding Scrum.CompleteDate}" Margin="10,0,10,15"/>
+
+                            <CheckBox Grid.Row="14" Grid.Column="0" IsChecked="{Binding IsActivated}" Color="Black"/>
+                            <Label Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="2" Text="Activate Assignment" VerticalOptions="Center" Margin="40,0,0,0" TextColor="Black"/>
+
+                            <Label Grid.Row="0" Grid.Column="3" Text="Scrum Assignment List" TextColor="#555555" FontAttributes="Bold"/>
+                            <Border Grid.Row="1" Grid.RowSpan="13" Grid.Column="3" Margin="5,0,10,15" Stroke="#CCCCCC" StrokeThickness="1" StrokeShape="RoundRectangle 8" Background="White">
+                                <CollectionView ItemsSource="{Binding ScrumList}" SelectedItem="{Binding SelectedScrum}">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Label Text="{Binding AssignForDesc}" FontSize="14" Padding="10" TextColor="Black"/>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </Border>
+
+                            <HorizontalStackLayout Grid.Row="15" Grid.Column="0" Grid.ColumnSpan="4" Spacing="10" Margin="5">
+                                <Button Text="ADD" Command="{Binding AddCommand}" Style="{StaticResource RainbowButtonStyle}"/>
+                                <Button Text="SAVE" Command="{Binding SaveCommand}" Style="{StaticResource RainbowButtonStyle}"/>
+                                <Button Text="EDIT" Command="{Binding EditCommand}" Style="{StaticResource RainbowButtonStyle}"/>
+                                <Button Text="EXIT" Command="{Binding ExitCommand}" Style="{StaticResource RainbowButtonStyle}"/>
+                            </HorizontalStackLayout>
+
+                        </Grid>
+                    </Border>
+                </Border>
+            </Grid>
+        </ScrollView>
+    </Grid>
+</ContentPage>
