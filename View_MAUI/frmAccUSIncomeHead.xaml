@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="View_MAUI.frmAccUSIncomeHead"
+             Title="US Income Head Setup"
+             BackgroundColor="#F4F7F9">
+
+    <ContentPage.Resources>
+        <Style x:Key="PremiumAnimatedButton" TargetType="Button">
+            <Setter Property="TextColor" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontAttributes" Value="Bold"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="HeightRequest" Value="35"/>
+            <Setter Property="WidthRequest" Value="85"/>
+            <Setter Property="CornerRadius" Value="5"/>
+            <Setter Property="BackgroundColor" Value="#764ba2"/>
+        </Style>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <Grid Margin="12">
+            <Border StrokeShape="RoundRectangle 10" StrokeThickness="3" BackgroundColor="White" Padding="2">
+                <Border.Stroke>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#FF4B2B" Offset="0"/>
+                        <GradientStop Color="#FFB22C" Offset="0.3"/>
+                        <GradientStop Color="#2ECC71" Offset="0.6"/>
+                        <GradientStop Color="#3498DB" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Stroke>
+
+                <Grid RowDefinitions="*, Auto" Margin="10">
+                    <Grid Grid.Row="0" ColumnDefinitions="260, *" ColumnSpacing="10" Margin="0,0,0,10">
+                        <Border Grid.Column="0" BackgroundColor="White" StrokeShape="RoundRectangle 8" Padding="12">
+                            <VerticalStackLayout Spacing="10">
+                                <Label Text="Inc Code" FontAttributes="Bold" TextColor="Gray" FontSize="12"/>
+                                <Entry x:Name="txtIncCode" HeightRequest="30" Text="{Binding IncCode}"/>
+
+                                <Label Text="Inc Detail" FontAttributes="Bold" TextColor="Gray" FontSize="12"/>
+                                <Entry x:Name="txtIncDetail" HeightRequest="30" Text="{Binding IncDetail}"/>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border Grid.Column="1" BackgroundColor="White" StrokeShape="RoundRectangle 8" Padding="5">
+                            <CollectionView x:Name="dgUSIncomes" ItemsSource="{Binding USIncomeList}" SelectionMode="Single">
+                                <CollectionView.Header>
+                                    <Grid ColumnDefinitions="80, *" BackgroundColor="#F9F9F9" Padding="5">
+                                        <Label Text="Inc Code" FontAttributes="Bold" FontSize="12"/>
+                                        <Label Grid.Column="1" Text="Income Detail" FontAttributes="Bold" FontSize="12"/>
+                                    </Grid>
+                                </CollectionView.Header>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid ColumnDefinitions="80, *" Padding="5">
+                                            <Label Text="{Binding IncCode}"/>
+                                            <Label Grid.Column="1" Text="{Binding IncDetail}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Row="1" ColumnDefinitions="*, Auto">
+                        <HorizontalStackLayout Grid.Column="0">
+                            <Button Text="ADD" Style="{StaticResource PremiumAnimatedButton}" Command="{Binding AddCommand}"/>
+                            <Button Text="SAVE" Style="{StaticResource PremiumAnimatedButton}" Command="{Binding SaveCommand}"/>
+                            <Button Text="EDIT" Style="{StaticResource PremiumAnimatedButton}" Command="{Binding EditCommand}"/>
+                            <Button Text="EXIT" Style="{StaticResource PremiumAnimatedButton}" Clicked="Exit_Clicked"/>
+                        </HorizontalStackLayout>
+
+                        <HorizontalStackLayout Grid.Column="1" Spacing="5" VerticalOptions="Center">
+                            <Entry x:Name="txtUid" WidthRequest="70" HeightRequest="30" IsReadOnly="True" BackgroundColor="#F0F0F0" Text="{Binding UID}"/>
+                            <DatePicker x:Name="dtEntryDate" HeightRequest="30" Date="{Binding EntryDate}"/>
+                        </HorizontalStackLayout>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+    </ScrollView>
+</ContentPage>

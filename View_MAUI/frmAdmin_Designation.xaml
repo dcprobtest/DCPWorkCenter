@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="View_MAUI.frmAdmin_Designation"
+             Title="Designation Management"
+             BackgroundColor="White">
+
+    <ContentPage.Resources>
+        <Style x:Key="RainbowButtonStyle" TargetType="Button">
+            <Setter Property="TextColor" Value="White"/>
+            <Setter Property="FontAttributes" Value="Bold"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="HeightRequest" Value="50"/>
+            <Setter Property="BackgroundColor" Value="#0B0B0D"/>
+        </Style>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <Grid>
+            <Ellipse Fill="#1500FF95" WidthRequest="500" HeightRequest="500" HorizontalOptions="Start" VerticalOptions="End" Margin="-150,0,0,-150"/>
+
+            <VerticalStackLayout Spacing="30" Margin="40">
+                <Label Text="Designation Setup" FontSize="32" FontAttributes="Bold" TextColor="Black" HorizontalOptions="Center"/>
+
+                <Border StrokeThickness="3" StrokeShape="RoundRectangle 20" Padding="2" WidthRequest="750" HorizontalOptions="Center">
+                    <Border.Stroke>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#FF0000" Offset="0.0"/>
+                            <GradientStop Color="#FFFF00" Offset="0.2"/>
+                            <GradientStop Color="#00FF00" Offset="0.4"/>
+                            <GradientStop Color="#00FFFF" Offset="0.6"/>
+                            <GradientStop Color="#0000FF" Offset="0.8"/>
+                            <GradientStop Color="#FF00FF" Offset="1.0"/>
+                        </LinearGradientBrush>
+                    </Border.Stroke>
+
+                    <Border BackgroundColor="#FFEBEAE9" StrokeShape="RoundRectangle 18" Padding="30">
+                        <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*, *" RowSpacing="15" ColumnSpacing="15">
+
+                            <VerticalStackLayout Grid.Row="0" Grid.Column="0">
+                                <Label Text="Designation Code" TextColor="#AAAAAA"/>
+                                <Entry Text="{Binding Designation.DesigCode}" BackgroundColor="White" TextColor="Black"/>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Row="0" Grid.Column="1">
+                                <Label Text="Entry Date" TextColor="#AAAAAA"/>
+                                <DatePicker Date="{Binding Designation.EntryDate}"/>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Row="1" Grid.ColumnSpan="2">
+                                <Label Text="Description" TextColor="#AAAAAA"/>
+                                <Entry Text="{Binding Designation.Description}" HeightRequest="80" BackgroundColor="White" TextColor="Black"/>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Row="2" Grid.ColumnSpan="2">
+                                <Label Text="Responsibility" TextColor="#AAAAAA"/>
+                                <Entry Text="{Binding Designation.Responsiblity}" BackgroundColor="White" TextColor="Black"/>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Row="3" Grid.Column="0">
+                                <Label Text="Start Date" TextColor="#AAAAAA"/>
+                                <DatePicker Date="{Binding Designation.StartDate}"/>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Row="3" Grid.Column="1">
+                                <Label Text="End Date" TextColor="#AAAAAA"/>
+                                <DatePicker Date="{Binding Designation.EndDate}"/>
+                            </VerticalStackLayout>
+
+                            <HorizontalStackLayout Grid.Row="4" Grid.ColumnSpan="2" Spacing="10">
+                                <CheckBox IsChecked="{Binding IsActiveChecked}"/>
+                                <Label Text="Mark as Active" VerticalOptions="Center" TextColor="Black"/>
+                            </HorizontalStackLayout>
+
+                            <Button Grid.Row="5" Grid.ColumnSpan="2" Text="SAVE DESIGNATION" Style="{StaticResource RainbowButtonStyle}" 
+                                    Command="{Binding SaveCommand}" WidthRequest="250" HorizontalOptions="Center" x:Name="btnSave"/>
+                        </Grid>
+                    </Border>
+                </Border>
+            </VerticalStackLayout>
+        </Grid>
+    </ScrollView>
+</ContentPage>

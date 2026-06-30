@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="View_MAUI.frmAdmin_DocInfo"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="clr-namespace:CommunityToolkit.Maui.Converters;assembly=CommunityToolkit.Maui"
+    Title="DCP Document Manager">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <toolkit:BoolToObjectConverter x:Key="BooleanToVisibilityConverter" 
+                                         TrueObject="Visible" 
+                                         FalseObject="Collapsed"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid>
+        <Grid RowDefinitions="65, 130, *, 60">
+
+            <Border Grid.Row="0" BackgroundColor="#2C3E50" StrokeShape="RoundRectangle 8,8,8,8" Margin="10,5">
+                <Label Text="DCP Document Manager" VerticalOptions="Center" HorizontalOptions="Center" FontSize="26" FontAttributes="Bold" TextColor="White"/>
+            </Border>
+
+            <Grid Grid.Row="1" ColumnDefinitions="Auto, *, 280" Margin="15,0">
+                <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
+                    <HorizontalStackLayout Margin="5,10,5,5">
+                        <Label Text="UID: " FontSize="16" FontAttributes="Bold" VerticalOptions="Center" TextColor="#2C3E50"/>
+                        <Label Text="{Binding UID}" FontSize="16" FontAttributes="Bold" Margin="0,0,25,0"/>
+                        <Label Text="Emp Name: " FontSize="16" FontAttributes="Bold" VerticalOptions="Center" TextColor="#2C3E50"/>
+                        <Label Text="{Binding EmployeeName}" FontSize="16" FontAttributes="Bold"/>
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Margin="0,12,0,0">
+                        <Picker x:Name="cmbDocType" Title="Document Type" WidthRequest="150" HeightRequest="45" BackgroundColor="#E0E0E0"
+                                SelectedItem="{Binding SelectedDocType, Mode=TwoWay}">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>Driving Licence</x:String>
+                                    <x:String>SSN</x:String>
+                                    <x:String>I-20</x:String>
+                                    <x:String>I-9</x:String>
+                                    <x:String>EAD</x:String>
+                                    <x:String>I-983</x:String>
+                                    <x:String>Certificate</x:String>
+                                    <x:String>Passport</x:String>
+                                    <x:String>Resume</x:String>
+                                    <x:String>Picture</x:String>
+                                    <x:String>Offer Letter</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+
+                        <HorizontalStackLayout Margin="10,0,0,0">
+                            <Button Text="+" Command="{Binding OpenContextMenuCommand}" WidthRequest="40" HeightRequest="40" CornerRadius="20" BackgroundColor="#4CAF50"/>
+                            <Button Text="↑" Command="{Binding AddCommand}" WidthRequest="40" HeightRequest="40" CornerRadius="20" BackgroundColor="#4CAF50" Margin="10,0"/>
+                            <Button Text="↓" Command="{Binding DownloadCommand}" WidthRequest="40" HeightRequest="40" CornerRadius="20" BackgroundColor="#4CAF50"/>
+                        </HorizontalStackLayout>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" HorizontalOptions="End">
+                    <HorizontalStackLayout Margin="5">
+                        <Label Text="Start Date: " FontSize="15" FontAttributes="Bold"/>
+                        <Label Text="{Binding StartDate, StringFormat='{0:dd-MM-yyyy}'}" TextColor="Blue" FontSize="15" FontAttributes="Bold"/>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Margin="5">
+                        <Label Text="End Date: " FontSize="15" FontAttributes="Bold"/>
+                        <Label Text="{Binding EndDate, StringFormat='{0:dd-MM-yyyy}'}" TextColor="Red" FontSize="15" FontAttributes="Bold"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Grid>
+
+            <Grid Grid.Row="2" ColumnDefinitions="1*, 1.4*" Margin="15,10">
+                <Border Grid.Column="0" Stroke="#BDC3C7" BackgroundColor="White">
+                </Border>
+
+                <Border Grid.Column="1" BackgroundColor="#EAECEE" Margin="15,0,0,0" Stroke="#BDC3C7">
+                    <Grid>
+                        <Image Source="{Binding SelectedDocument.Path}" Aspect="AspectFit"/>
+                        <WebView x:Name="docPreview" IsVisible="False"/>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Row="3" Margin="25,0,25,10" ColumnDefinitions="*, Auto">
+                <HorizontalStackLayout Grid.Column="0" VerticalOptions="Center">
+                    <BoxView WidthRequest="10" HeightRequest="10" Color="#2ECC71" CornerRadius="5"/>
+                    <Label Text="Server Status: Online" Margin="8,0,0,0" VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+
+                <HorizontalStackLayout Grid.Column="1">
+                    <Button Text="Back" Command="{Binding BackCommand}" WidthRequest="120" HeightRequest="40" BackgroundColor="#34495E" CornerRadius="5"/>
+                    <Button Text="Logout" Command="{Binding LogoutCommand}" WidthRequest="120" HeightRequest="40" BackgroundColor="#2C3E50" Margin="10,0,0,0" CornerRadius="5"/>
+                </HorizontalStackLayout>
+            </Grid>
+        </Grid>
+    </Grid>
+</ContentPage>

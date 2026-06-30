@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="View_MAUI.frmAdmin_User"
+             Title="User Account Information"
+             BackgroundColor="White">
+
+    <Grid>
+        <Ellipse Fill="#156200FF" WidthRequest="500" HeightRequest="500" HorizontalOptions="Start" VerticalOptions="End" Margin="-150,0,0,-150">
+        </Ellipse>
+
+        <Grid Margin="40">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Label Text="User Information" FontSize="32" FontAttributes="Bold" TextColor="#FF1A1A1C" Margin="0,0,0,30" HorizontalOptions="Center"/>
+
+            <Border x:Name="MainBorder" Grid.Row="1" WidthRequest="650" HorizontalOptions="Center" VerticalOptions="Start" StrokeShape="RoundRectangle 25,25,25,25" Padding="2">
+                <Border.Background>
+                    <LinearGradientBrush x:Name="MainGradientBrush" StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#FF0000" Offset="0.0"/>
+                        <GradientStop Color="#FFFF00" Offset="0.2"/>
+                        <GradientStop Color="#00FF00" Offset="0.4"/>
+                        <GradientStop Color="#00FFFF" Offset="0.6"/>
+                        <GradientStop Color="#0000FF" Offset="0.8"/>
+                        <GradientStop Color="#FF00FF" Offset="1.0"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+
+                <Border Background="#FFEBEAE9" StrokeShape="RoundRectangle 23,23,23,23" Padding="30">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Row="0" Grid.Column="0" Text="User ID (UID)" TextColor="Gray" Margin="10,0,10,5"/>
+                        <Entry Text="{Binding UID}" Grid.Row="1" Grid.Column="0" Margin="10,0,10,15"/>
+
+                        <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Password" TextColor="Gray" Margin="10,0,10,5"/>
+                        <Entry Text="{Binding Password}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="10,0,10,15"/>
+
+                        <Label Grid.Row="2" Grid.ColumnSpan="3" Text="Phone Number" TextColor="Gray" Margin="10,0,10,5"/>
+                        <Entry Text="{Binding Phone}" Grid.Row="3" Grid.ColumnSpan="3" Margin="10,0,10,15"/>
+
+                        <Label Grid.Row="4" Grid.ColumnSpan="3" Text="Email Address" TextColor="Gray" Margin="10,0,10,5"/>
+                        <Entry Text="{Binding Email}" Grid.Row="5" Grid.ColumnSpan="3" Margin="10,0,10,15"/>
+
+                        <Label Grid.Row="6" Grid.Column="0" Text="Entry Date" TextColor="Gray" FontSize="12" Margin="10,5,10,2"/>
+                        <DatePicker Date="{Binding EntryDate}" Grid.Row="7" Grid.Column="0" Margin="10,0,10,15"/>
+
+                        <Label Grid.Row="6" Grid.Column="1" Text="Start Date" TextColor="Gray" FontSize="12" Margin="10,5,10,2"/>
+                        <DatePicker Date="{Binding StartDate}" Grid.Row="7" Grid.Column="1" Margin="10,0,10,15"/>
+
+                        <Label Grid.Row="6" Grid.Column="2" Text="End Date" TextColor="Gray" FontSize="12" Margin="10,5,10,2"/>
+                        <DatePicker Date="{Binding EndDate}" Grid.Row="7" Grid.Column="2" Margin="10,0,10,15"/>
+
+                        <CheckBox IsChecked="{Binding IsActive}" Grid.Row="8" Grid.ColumnSpan="3" Margin="10,10,0,20"/>
+                        <Label Grid.Row="8" Grid.ColumnSpan="3" Text="Activate User Account" TextColor="Black" VerticalOptions="Center" Margin="50,10,0,20"/>
+
+                        <Button Command="{Binding SaveCommand}" Grid.Row="9" Grid.ColumnSpan="3" HeightRequest="50" WidthRequest="250" 
+                                Text="SAVE USER INFO" FontAttributes="Bold" TextColor="White" BackgroundColor="#0B0B0D" HorizontalOptions="Center"/>
+                    </Grid>
+                </Border>
+            </Border>
+        </Grid>
+    </Grid>
+</ContentPage>

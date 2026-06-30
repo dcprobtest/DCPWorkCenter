@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
+             x:Class="View_MAUI.frmClass_ClassPlayer"
+             Title="DCP EduTrack Player"
+             BackgroundColor="#1E1E1E">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" BackgroundColor="#252526" Stroke="#3F3F46" StrokeThickness="0,0,1,0">
+            <VerticalStackLayout>
+                <Label Text="Course Content" FontSize="18" FontAttributes="Bold" Margin="15" TextColor="#007ACC"/>
+
+                <CollectionView ItemsSource="{Binding CourseContent}" SelectionMode="Single">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <VerticalStackLayout Margin="5">
+                                <Label Text="{Binding SubjectDesc, StringFormat='📚 {0}'}" TextColor="#DCDCDC" FontAttributes="Bold"/>
+                            </VerticalStackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </Border>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" BackgroundColor="Black">
+                <toolkit:MediaElement x:Name="Player"
+                                      ShouldShowPlaybackControls="False"
+                                      HorizontalOptions="Fill"
+                                      VerticalOptions="Fill"/>
+
+                <Button Text="☰ Playlist" HorizontalOptions="Start" VerticalOptions="Start" 
+                        Margin="10" BackgroundColor="#333" TextColor="White"/>
+            </Grid>
+
+            <Slider Grid.Row="1" x:Name="TimelineSlider" 
+                    Minimum="0" Maximum="1" Margin="10,5"/>
+
+            <HorizontalStackLayout Grid.Row="2" HorizontalOptions="Center" Margin="0,10,0,20" Spacing="10">
+                <Button Text="⏮" WidthRequest="50" BackgroundColor="#333" TextColor="White"/>
+                <Button Text="⏵" WidthRequest="60" HeightRequest="40" BackgroundColor="#007ACC" TextColor="White"/>
+                <Button Text="⏸" WidthRequest="50" BackgroundColor="#333" TextColor="White"/>
+                <Button Text="⏹" WidthRequest="50" BackgroundColor="#333" TextColor="White"/>
+                <Button Text="⏭" WidthRequest="50" BackgroundColor="#333" TextColor="White"/>
+            </HorizontalStackLayout>
+        </Grid>
+    </Grid>
+</ContentPage>
