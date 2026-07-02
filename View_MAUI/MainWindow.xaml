@@ -62,6 +62,7 @@
                 <Border x:Name="Card4" Style="{StaticResource OptionCardStyle}">
                     <Border.GestureRecognizers>
                         <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                        <TapGestureRecognizer Tapped="btnAccounts_Tapped" />
                     </Border.GestureRecognizers>
                     <VerticalStackLayout VerticalOptions="Center" Spacing="10">
                         <Path Fill="#007AFF" HeightRequest="65" WidthRequest="65" Data="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" Aspect="Uniform"/>
@@ -112,7 +113,7 @@
                     </VerticalStackLayout>
                 </Border>
 
-                <Border x:Name="Card9" Style="{StaticResource OptionCardStyle}" HorizontalOptions="Center">
+                <Border x:Name="Card4_US" Style="{StaticResource OptionCardStyle}" HorizontalOptions="Center">
                     <Border.GestureRecognizers>
                         <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
                         <TapGestureRecognizer Tapped="btnUSAccounts_Tapped" />

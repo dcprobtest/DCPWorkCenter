@@ -1,3 +1,5 @@
+using System;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Shapes;
 
 namespace View_MAUI
@@ -8,10 +10,24 @@ namespace View_MAUI
         private Border _activeBorder;
         private double _angle = 0;
 
-        public MainWindow()
+        // Properties to hold logged-in user details if needed later
+        public string LoggedInUserId { get; private set; }
+        public string LoggedInUserName { get; private set; }
+        public int UserActivateStatus { get; private set; }
+
+        // Parameterized Constructor to accept login data
+        public MainWindow(string userId, string userName, int status)
         {
             InitializeComponent();
 
+            LoggedInUserId = userId;
+            LoggedInUserName = userName;
+            UserActivateStatus = status;
+
+            // Welcome message update based on authenticated user name
+            lblTitle.Text = $"Welcome, {LoggedInUserName}";
+
+            // Initialize Animation Timer
             _timer = Dispatcher.CreateTimer();
             _timer.Interval = TimeSpan.FromMilliseconds(30);
             _timer.Tick += (s, e) => UpdateRainbowBorder();
@@ -67,20 +83,46 @@ namespace View_MAUI
             );
         }
 
-        private void btnVideoClass_Tapped(object sender, TappedEventArgs e) { }
+        // --- Event Handlers for Navigation/Actions ---
 
-        private void btnFileManager_Tapped(object sender, TappedEventArgs e) { }
+        private void btnVideoClass_Tapped(object sender, TappedEventArgs e)
+        {
+            // Navigate to Video Class page here
+        }
 
-        private void btnAdminForms_Tapped(object sender, TappedEventArgs e) { }
+        private void btnFileManager_Tapped(object sender, TappedEventArgs e)
+        {
+            // Navigate to File Manager page here
+        }
 
-        private void btnClassForms_Tapped(object sender, TappedEventArgs e) { }
+        private void btnAdminForms_Tapped(object sender, TappedEventArgs e)
+        {
+            // Navigate to Admin Forms dashboard here
+        }
 
-        private void btnAccounts_Tapped(object sender, TappedEventArgs e) { }
+        private void btnClassForms_Tapped(object sender, TappedEventArgs e)
+        {
+            // Navigate to Class Forms dashboard here
+        }
 
-        private void btnUSAccounts_Tapped(object sender, TappedEventArgs e) { }
+        private void btnAccounts_Tapped(object sender, TappedEventArgs e)
+        {
+            // Navigate to Accounts Form here
+        }
 
-        private void btnScrum_Tapped(object sender, TappedEventArgs e) { }
+        private void btnUSAccounts_Tapped(object sender, TappedEventArgs e)
+        {
+            // Navigate to US Accounts login/form here
+        }
 
-        private void btnMessage_Clicked(object sender, EventArgs e) { }
+        private void btnScrum_Tapped(object sender, TappedEventArgs e)
+        {
+            // Navigate to Scrum section here
+        }
+
+        private void btnMessage_Clicked(object sender, EventArgs e)
+        {
+            // Chat/Notification system click action
+        }
     }
 }

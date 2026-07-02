@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:toolkit="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
              x:Class="View_MAUI.frmClass_ClassPlayer"
              Title="DCP EduTrack Player"
              BackgroundColor="#1E1E1E">
@@ -12,7 +11,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" BackgroundColor="#252526" Stroke="#3F3F46" StrokeThickness="0,0,1,0">
+        <Border Grid.Column="0" BackgroundColor="#252526" Stroke="#3F3F46">
             <VerticalStackLayout>
                 <Label Text="Course Content" FontSize="18" FontAttributes="Bold" Margin="15" TextColor="#007ACC"/>
 
@@ -36,10 +35,7 @@
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0" BackgroundColor="Black">
-                <toolkit:MediaElement x:Name="Player"
-                                      ShouldShowPlaybackControls="False"
-                                      HorizontalOptions="Fill"
-                                      VerticalOptions="Fill"/>
+                <BoxView Color="Black" HorizontalOptions="Fill" VerticalOptions="Fill"/>
 
                 <Button Text="☰ Playlist" HorizontalOptions="Start" VerticalOptions="Start" 
                         Margin="10" BackgroundColor="#333" TextColor="White"/>

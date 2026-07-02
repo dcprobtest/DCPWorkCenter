@@ -3,10 +3,18 @@
     public partial class MainPage : ContentPage
     {
         int count = 0;
+        private string authenticatedName;
+        private int activateStatus;
 
-        public MainPage()
+        public MainPage(string authenticatedUID)
         {
             InitializeComponent();
+        }
+
+        public MainPage(string authenticatedUID, string authenticatedName, int activateStatus) : this(authenticatedUID)
+        {
+            this.authenticatedName = authenticatedName;
+            this.activateStatus = activateStatus;
         }
 
         private void OnCounterClicked(object? sender, EventArgs e)
