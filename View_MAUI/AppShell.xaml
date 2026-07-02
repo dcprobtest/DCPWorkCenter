@@ -129,66 +129,7 @@
         Title="Assign Tech Info Management"
         ContentTemplate="{DataTemplate local:frmAssignTechInfo}"
         Route="frmAssignTechInfo" />
-    
-    <ShellContent
-        Title="DCP EduTrack Player"
-        ContentTemplate="{DataTemplate local:frmClass_ClassPlayer}"
-        Route="frmClass_ClassPlayer" />
 
-    <ShellContent
-        Title="Class Subject Management"
-        ContentTemplate="{DataTemplate local:frmClass_ClassSubject}"
-        Route="ClassSubjectPage" />
-
-    <ShellContent
-        Title="Class Video Text"
-        ContentTemplate="{DataTemplate local:frmClass_ClassVideoText}"
-        Route="frmClass_ClassVideoText" />
-
-    <ShellContent
-        Title="Class Subject Assign"
-        ContentTemplate="{DataTemplate local:frmClass_SubjectWiseClassAssign}"
-        Route="frmClass_SubjectWiseClassAssign" />
-
-    <ShellContent
-        Title="Login"
-        ContentTemplate="{DataTemplate local:Login}"
-        Route="Login" />
-
-    <ShellContent
-        Title="Accounts Management"
-        ContentTemplate="{DataTemplate local:Main_Accountsfrm}"
-        Route="Main_Accountsfrm" />
-
-    <ShellContent
-        Title="Administrative Management"
-        ContentTemplate="{DataTemplate local:Main_Adminfrm}"
-        Route="Main_Adminfrm" />
-
-    <ShellContent
-        Title="Class Management"
-        ContentTemplate="{DataTemplate local:Main_Classfrm}"
-        Route="Main_Classfrm" />
-
-    <ShellContent
-        Title="US Accounts Management"
-        ContentTemplate="{DataTemplate local:Main_frmUSAccounts}"
-        Route="Main_frmUSAccounts" />
-
-    <ShellContent
-        Title="Scrum Window Management"
-        ContentTemplate="{DataTemplate local:Main_ScrumWindow}"
-        Route="Main_ScrumWindow" />
-
-    <ShellContent
-    Title="Main Window"
-    ContentTemplate="{DataTemplate local:MainWindow}"
-    Route="MainWindow" />
-
-    <ShellContent
-    Title="US Accounts Login"
-    ContentTemplate="{DataTemplate local:US_AccountsLogin}"
-    Route="US_AccountsLogin" />
 
 
 
