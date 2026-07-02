@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="View_MAUI.Main_ScrumWindow"
+             BackgroundColor="White"
+             Title="Scrum &amp; Technology Management">
+
+    <Grid>
+        <Ellipse Fill="#22FF5722" WidthRequest="800" HeightRequest="800" HorizontalOptions="Start" VerticalOptions="Start" TranslationX="-100" TranslationY="-200" />
+        <Ellipse Fill="#1500C853" WidthRequest="1000" HeightRequest="900" HorizontalOptions="End" VerticalOptions="End" TranslationX="200" TranslationY="200" />
+
+        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="50">
+            <Label Text="Scrum &amp; Tech Control Center" FontSize="50" FontAttributes="Bold" HorizontalOptions="Center" />
+
+            <Grid ColumnDefinitions="180, 180, 180, 180" RowDefinitions="220" ColumnSpacing="20" HorizontalOptions="Center">
+
+                <Border x:Name="btnAssignmentScrum" Grid.Column="0" WidthRequest="160" HeightRequest="200" StrokeShape="RoundRectangle 25" StrokeThickness="0" Background="White" Padding="10">
+                    <Border.GestureRecognizers>
+                        <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                        <TapGestureRecognizer Tapped="btnAssignmentScrum_Clicked" />
+                    </Border.GestureRecognizers>
+                    <VerticalStackLayout VerticalOptions="Center">
+                        <Path Fill="#2196F3" Data="M12,5.5A3.5,3.5 0 0,1 15.5,9A3.5,3.5 0 0,1 12,12.5A3.5,3.5 0 0,1 8.5,9A3.5,3.5 0 0,1 12,5.5M5,20V18C5,15.79 8.13,14 12,14C15.87,14 19,15.79 19,18V20H5M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" HorizontalOptions="Center" HeightRequest="65"/>
+                        <Label Text="Assignment Scrum" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" Margin="0,10,0,0"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border x:Name="btnAssignTechInfo" Grid.Column="1" WidthRequest="160" HeightRequest="200" StrokeShape="RoundRectangle 25" StrokeThickness="0" Background="White" Padding="10">
+                    <Border.GestureRecognizers>
+                        <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                        <TapGestureRecognizer Tapped="btnAssignTechInfo_Clicked" />
+                    </Border.GestureRecognizers>
+                    <VerticalStackLayout VerticalOptions="Center">
+                        <Path Fill="#E91E63" Data="M19,3H5C3.89,3 3,3.9 3,5V19C3,20.1 3.89,21 5,21H19C20.1,21 21,20.1 21,19V5C21,3.9 20.1,3 19,3M19,19H5V5H19V19M11,7H13V9H11V7M11,11H13V17H11V11Z" HorizontalOptions="Center" HeightRequest="65"/>
+                        <Label Text="Assign Tech Info" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" Margin="0,10,0,0"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border x:Name="btnScrumInfo" Grid.Column="2" WidthRequest="160" HeightRequest="200" StrokeShape="RoundRectangle 25" StrokeThickness="0" Background="White" Padding="10">
+                    <Border.GestureRecognizers>
+                        <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                        <TapGestureRecognizer Tapped="btnScrumInfo_Clicked" />
+                    </Border.GestureRecognizers>
+                    <VerticalStackLayout VerticalOptions="Center">
+                        <Path Fill="#FF9800" Data="M13,9V3.5L18.5,9M6,2H14L20,8V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V4A2,2 0 0,1 6,2M11,15V13H8V15H11M16,15V13H13V15H16M11,19V17H8V19H11M16,19V17H13V19H16Z" HorizontalOptions="Center" HeightRequest="65"/>
+                        <Label Text="Scrum Info" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" Margin="0,10,0,0"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border x:Name="btnTechInfo" Grid.Column="3" WidthRequest="160" HeightRequest="200" StrokeShape="RoundRectangle 25" StrokeThickness="0" Background="White" Padding="10">
+                    <Border.GestureRecognizers>
+                        <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                        <TapGestureRecognizer Tapped="btnTechInfo_Clicked" />
+                    </Border.GestureRecognizers>
+                    <VerticalStackLayout VerticalOptions="Center">
+                        <Path Fill="#4CAF50" Data="M12,18.54L19.37,12.8L21,14.07L12,21.07L3,14.07L4.62,12.81L12,18.54M12,16L3,9L12,2L21,9L12,16M12,4.53L6.26,9L12,13.47L17.74,9L12,4.53Z" HorizontalOptions="Center" HeightRequest="65"/>
+                        <Label Text="Tech Info" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" Margin="0,10,0,0"/>
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

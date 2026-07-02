@@ -170,9 +170,25 @@
         ContentTemplate="{DataTemplate local:Main_Classfrm}"
         Route="Main_Classfrm" />
 
+    <ShellContent
+        Title="US Accounts Management"
+        ContentTemplate="{DataTemplate local:Main_frmUSAccounts}"
+        Route="Main_frmUSAccounts" />
 
+    <ShellContent
+        Title="Scrum Window Management"
+        ContentTemplate="{DataTemplate local:Main_ScrumWindow}"
+        Route="Main_ScrumWindow" />
 
+    <ShellContent
+    Title="Main Window"
+    ContentTemplate="{DataTemplate local:MainWindow}"
+    Route="MainWindow" />
 
+    <ShellContent
+    Title="US Accounts Login"
+    ContentTemplate="{DataTemplate local:US_AccountsLogin}"
+    Route="US_AccountsLogin" />
 
 
 
