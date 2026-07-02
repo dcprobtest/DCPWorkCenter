@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="View_MAUI.frmClass_SubjectWiseClassAssign"
+             Title="Class Subject Wise Assign"
+             BackgroundColor="White">
+
+    <Grid Margin="20" RowDefinitions="Auto, *, Auto">
+
+        <Grid Grid.Row="0" ColumnDefinitions="220, 220, *, 250" Margin="0,0,0,10" ColumnSpacing="10">
+            <Picker Grid.Column="0" Title="Subject" ItemsSource="{Binding SubjectList}" ItemDisplayBinding="{Binding SubjectDesc}" />
+            <Picker Grid.Column="1" Title="Section" ItemsSource="{Binding SectionList}" ItemDisplayBinding="{Binding SectionDesc}" SelectedItem="{Binding SelectedSection}" />
+            <Picker Grid.Column="3" Title="Select Group/User" ItemsSource="{Binding GroupList}" ItemDisplayBinding="{Binding DisplayName}" SelectedItem="{Binding SelectedGroup}" />
+        </Grid>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*, 60, *" ColumnSpacing="10">
+
+            <Border Grid.Column="0" Stroke="#2E86C1" StrokeThickness="1.5" StrokeShape="RoundRectangle 2" Padding="15">
+                <Grid RowDefinitions="Auto, *">
+                    <Button Grid.Row="0" Text="Select All" HorizontalOptions="End" BackgroundColor="#5DADE2" TextColor="White" HeightRequest="30" CornerRadius="5"/>
+                    <CollectionView Grid.Row="1" ItemsSource="{Binding ClassList}" Margin="0,10,0,0">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <HorizontalStackLayout Spacing="10" Margin="0,3">
+                                    <CheckBox IsChecked="{Binding IsSelected}" VerticalOptions="Center"/>
+                                    <Border BackgroundColor="#34495E" StrokeShape="RoundRectangle 5" Padding="10,8">
+                                        <Label Text="{Binding ClassContent}" TextColor="White" FontSize="16" FontAttributes="Bold"/>
+                                    </Border>
+                                </HorizontalStackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="2" Stroke="#2E86C1" StrokeThickness="1.5" StrokeShape="RoundRectangle 2" Padding="15">
+                <Grid RowDefinitions="Auto, *">
+                    <Button Grid.Row="0" Text="Select All" HorizontalOptions="End" BackgroundColor="#5DADE2" TextColor="White" HeightRequest="30" CornerRadius="5"/>
+                    <CollectionView Grid.Row="1" ItemsSource="{Binding StudentList}" Margin="0,10,0,0">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <HorizontalStackLayout Spacing="10" Margin="0,3">
+                                    <CheckBox IsChecked="{Binding IsSelected}" VerticalOptions="Center"/>
+                                    <Border BackgroundColor="#A9CCE3" Stroke="#2E86C1" StrokeShape="RoundRectangle 5" Padding="10,8">
+                                        <Label Text="{Binding StudentName}" TextColor="#1B4F72" FontSize="16" FontAttributes="Bold"/>
+                                    </Border>
+                                </HorizontalStackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Grid Grid.Row="2" ColumnDefinitions="*, 150, 150, *" ColumnSpacing="10" Margin="0,20,0,0">
+            <Button Grid.Column="1" Text="Assign" Command="{Binding SaveCommand}" BackgroundColor="#5DADE2" TextColor="White" HeightRequest="45" CornerRadius="8"/>
+            <Button Grid.Column="2" Text="Cancel" BackgroundColor="#5DADE2" TextColor="Red" HeightRequest="45" CornerRadius="8"/>
+        </Grid>
+    </Grid>
+</ContentPage>

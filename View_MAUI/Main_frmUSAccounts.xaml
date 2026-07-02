@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="View_MAUI.Main_frmUSAccounts"
+             BackgroundColor="White"
+             Title="Accounts Management">
+
+    <ContentPage.Resources>
+        <Style x:Key="OptionCardStyle" TargetType="Border">
+            <Setter Property="StrokeShape" Value="RoundRectangle 25" />
+            <Setter Property="StrokeThickness" Value="0" />
+            <Setter Property="Background" Value="White" />
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="HeightRequest" Value="200" />
+            <Setter Property="WidthRequest" Value="220" />
+        </Style>
+    </ContentPage.Resources>
+
+    <Grid>
+        <Ellipse Fill="#222196F3" WidthRequest="800" HeightRequest="800" HorizontalOptions="Start" VerticalOptions="Start" TranslationX="-100" TranslationY="-200" />
+        <Ellipse Fill="#159C27B0" WidthRequest="1000" HeightRequest="900" HorizontalOptions="End" VerticalOptions="End" TranslationX="200" TranslationY="200" />
+
+        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="40">
+            <Label Text="US Accounts Management" FontSize="50" FontAttributes="Bold" HorizontalOptions="Center" />
+
+            <Grid ColumnDefinitions="230, 230, 230, 230" RowDefinitions="220, 220" ColumnSpacing="20" RowSpacing="20" HorizontalOptions="Center">
+
+                <Border Grid.Column="0" Grid.Row="0" Style="{StaticResource OptionCardStyle}">
+                    <Border.GestureRecognizers>
+                        <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                    </Border.GestureRecognizers>
+                    <VerticalStackLayout VerticalOptions="Center">
+                        <Path Fill="#FF5722" Data="M11,2V22C5.9,21.5 2,17.2 2,12C2,6.8 5.9,2.5 11,2M13,2C14.8,2.2 16.4,2.9 17.8,4L13,8.8V2M22,12C22,13.8 21.5,15.4 20.6,16.8L15.8,12H22M13,15.2L17.8,20C16.4,21.1 14.8,21.8 13,22V15.2Z" HorizontalOptions="Center" HeightRequest="65"/>
+                        <Label Text="Acc US Exp Bub" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" Margin="0,10,0,0"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Grid.Column="1" Grid.Row="0" Style="{StaticResource OptionCardStyle}">
+                    <Border.GestureRecognizers>
+                        <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                    </Border.GestureRecognizers>
+                    <VerticalStackLayout VerticalOptions="Center">
+                        <Path Fill="#F44336" Data="M2,21V19H20V21H2M20,8V5H7V8H20M20,12V9H10V12H20M20,16V13H13V16H20M2,4H5V17H2V4Z" HorizontalOptions="Center" HeightRequest="65"/>
+                        <Label Text="Acc US Expend" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" Margin="0,10,0,0"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Grid.Column="2" Grid.Row="0" Style="{StaticResource OptionCardStyle}">
+                    <Border.GestureRecognizers>
+                        <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                    </Border.GestureRecognizers>
+                    <VerticalStackLayout VerticalOptions="Center">
+                        <Path Fill="#607D8B" Data="M3,5H9V11H3V5M5,7V9H7V7H5M11,5H17V11H11V5M13,7V9H15V7H13M3,13H9V19H3V13M5,15V17H7V15H5M11,13H17V19H11V13M13,15V17H15V15H13M19,5V19H21V5H19Z" HorizontalOptions="Center" HeightRequest="65"/>
+                        <Label Text="Acc US Expend Head" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" Margin="0,10,0,0"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Grid.Column="3" Grid.Row="0" Style="{StaticResource OptionCardStyle}">
+                    <Border.GestureRecognizers>
+                        <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                    </Border.GestureRecognizers>
+                    <VerticalStackLayout VerticalOptions="Center">
+                        <Path Fill="#00796B" Data="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z" HorizontalOptions="Center" HeightRequest="65"/>
+                        <Label Text="Acc US Expenditure" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" Margin="0,10,0,0"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Grid.Column="0" Grid.Row="1" Style="{StaticResource OptionCardStyle}">
+                    <Border.GestureRecognizers>
+                        <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                    </Border.GestureRecognizers>
+                    <VerticalStackLayout VerticalOptions="Center">
+                        <Path Fill="#2196F3" Data="M20,18H4V15H20M20,12H4V9H20M20,6H4V3H20M20,21H4V19H20M2,21V3H4V21H2M22,21H20V3H22V21Z" HorizontalOptions="Center" HeightRequest="65"/>
+                        <Label Text="Acc US Income" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" Margin="0,10,0,0"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Grid.Column="1" Grid.Row="1" Style="{StaticResource OptionCardStyle}">
+                    <Border.GestureRecognizers>
+                        <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                    </Border.GestureRecognizers>
+                    <VerticalStackLayout VerticalOptions="Center">
+                        <Path Fill="#3F51B5" Data="M13,3V9H19L13,3M6,2H14L20,8V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V4A2,2 0 0,1 6,2M12,18L16,14H13V10H11V14H8L12,18Z" HorizontalOptions="Center" HeightRequest="65"/>
+                        <Label Text="Acc US Income Head" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" Margin="0,10,0,0"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Grid.Column="2" Grid.Row="1" Style="{StaticResource OptionCardStyle}">
+                    <Border.GestureRecognizers>
+                        <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                    </Border.GestureRecognizers>
+                    <VerticalStackLayout VerticalOptions="Center">
+                        <Path Fill="#9C27B0" Data="M17,13H13V17H11V13H7V11H11V7H13V11H17M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" HorizontalOptions="Center" HeightRequest="65"/>
+                        <Label Text="Acc US Inc Sub" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" Margin="0,10,0,0"/>
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+        </VerticalStackLayout>
+
+        <ImageButton Source="message_icon.png" WidthRequest="60" HeightRequest="60" HorizontalOptions="End" VerticalOptions="End" Margin="40"/>
+    </Grid>
+</ContentPage>
