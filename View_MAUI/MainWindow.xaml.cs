@@ -10,12 +10,12 @@ namespace View_MAUI
         private Border _activeBorder;
         private double _angle = 0;
 
-        // Properties to hold logged-in user details if needed later
+        // Properties to hold logged-in user details
         public string LoggedInUserId { get; private set; }
         public string LoggedInUserName { get; private set; }
         public int UserActivateStatus { get; private set; }
 
-        // Parameterized Constructor to accept login data
+        // Parameterized Constructor
         public MainWindow(string userId, string userName, int status)
         {
             InitializeComponent();
@@ -95,19 +95,22 @@ namespace View_MAUI
             // Navigate to File Manager page here
         }
 
-        private void btnAdminForms_Tapped(object sender, TappedEventArgs e)
+        private async void btnAdminForms_Tapped(object sender, TappedEventArgs e)
         {
-            // Navigate to Admin Forms dashboard here
+            // Navigate to Main_Adminfrm page and pass the LoggedInUserId
+            await Navigation.PushAsync(new Main_Adminfrm(LoggedInUserId));
         }
 
-        private void btnClassForms_Tapped(object sender, TappedEventArgs e)
+        private async void btnClassForms_Tapped(object sender, TappedEventArgs e)
         {
-            // Navigate to Class Forms dashboard here
+            // Navigate to Main_Classfrm page and pass the LoggedInUserId
+            await Navigation.PushAsync(new Main_Classfrm(LoggedInUserId));
         }
 
-        private void btnAccounts_Tapped(object sender, TappedEventArgs e)
+        private async void btnAccounts_Tapped(object sender, TappedEventArgs e)
         {
-            // Navigate to Accounts Form here
+            // Navigate to AccountsLogin page and pass the LoggedInUserId
+            await Navigation.PushAsync(new AccountsLogin(LoggedInUserId));
         }
 
         private void btnUSAccounts_Tapped(object sender, TappedEventArgs e)

@@ -1,3 +1,5 @@
+using System;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Shapes;
 
 namespace View_MAUI
@@ -8,9 +10,16 @@ namespace View_MAUI
         private Border _activeBorder;
         private double _angle = 0;
 
-        public Main_Accountsfrm()
+        // Property to store the received user ID
+        public string AccountUserId { get; private set; }
+
+        // Updated Constructor to accept uid
+        public Main_Accountsfrm(string uid)
         {
             InitializeComponent();
+
+            // Assign the received uid
+            AccountUserId = uid;
 
             // Timer setup (updates color every 30 milliseconds)
             _timer = Dispatcher.CreateTimer();

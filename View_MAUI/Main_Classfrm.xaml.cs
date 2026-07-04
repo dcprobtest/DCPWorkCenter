@@ -1,3 +1,5 @@
+using System;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Shapes;
 
 namespace View_MAUI
@@ -8,9 +10,16 @@ namespace View_MAUI
         private Border _activeBorder;
         private double _angle = 0;
 
-        public Main_Classfrm()
+        // Property to store the received user ID
+        public string ClassUserId { get; private set; }
+
+        // Updated Constructor to accept uid
+        public Main_Classfrm(string uid)
         {
             InitializeComponent();
+
+            // Assign the received uid
+            ClassUserId = uid;
 
             // Timer setup (updates color every 30 milliseconds)
             _timer = Dispatcher.CreateTimer();
@@ -18,30 +27,30 @@ namespace View_MAUI
             _timer.Tick += (s, e) => UpdateRainbowBorder();
         }
 
-        // Pointer Entered: ???? ??????? ???? ???? ??????? ???? ???
+        // Pointer Entered: Triggered when the pointer enters the border
         private async void OnPointerEntered(object sender, PointerEventArgs e)
         {
             if (sender is Border border)
             {
                 _activeBorder = border;
 
-                // ????? ????? ???
+                // Scale up the border
                 await border.ScaleTo(1.05, 150, Easing.SpringOut);
 
                 border.StrokeThickness = 4;
-                _timer.Start(); // ?????? ??????? ????
+                _timer.Start(); // Start the animation timer
             }
         }
 
-        // Pointer Exited: ???? ??? ???? ??????? ???? ???
+        // Pointer Exited: Triggered when the pointer leaves the border
         private async void OnPointerExited(object sender, PointerEventArgs e)
         {
             if (sender is Border border)
             {
-                _timer.Stop(); // ?????? ??????? ????
+                _timer.Stop(); // Stop the animation timer
                 _activeBorder = null;
 
-                // ?????? ?????
+                // Reset angle
                 _angle = 0;
 
                 await border.ScaleTo(1.0, 150, Easing.SpringIn);
@@ -50,12 +59,12 @@ namespace View_MAUI
             }
         }
 
-        // ?????? ?????? ????? ????
+        // Update the border color dynamically
         private void UpdateRainbowBorder()
         {
             if (_activeBorder == null) return;
 
-            // ?????? ?????
+            // Increment angle
             _angle += 0.1;
 
             double x1 = 0.5 + Math.Cos(_angle) * 0.5;
@@ -63,6 +72,7 @@ namespace View_MAUI
             double x2 = 0.5 + Math.Cos(_angle + Math.PI) * 0.5;
             double y2 = 0.5 + Math.Sin(_angle + Math.PI) * 0.5;
 
+            // Apply the linear gradient brush to the border stroke
             _activeBorder.Stroke = new LinearGradientBrush(
                 new GradientStopCollection {
                     new GradientStop(Colors.Red, 0.0f),

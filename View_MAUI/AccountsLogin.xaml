@@ -1,107 +1,127 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="View_MAUI.AccountsLogin"
              Title="Accounts Security Login"
-             BackgroundColor="#F4F7F9"
+             BackgroundColor="White"
              NavigationPage.HasNavigationBar="False">
 
     <ContentPage.Resources>
         <ResourceDictionary>
-            <Style x:Key="AccInputStyle" TargetType="Entry">
-                <Setter Property="HeightRequest" Value="48"/>
-                <Setter Property="FontSize" Value="14"/>
-                <Setter Property="TextColor" Value="#1C1C1E"/>
-                <Setter Property="BackgroundColor" Value="Transparent"/>
-            </Style>
+            <LinearGradientBrush x:Key="RainbowGradient" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#FF0000" Offset="0.0"/>
+                <GradientStop Color="#FFFF00" Offset="0.2"/>
+                <GradientStop Color="#00FF00" Offset="0.4"/>
+                <GradientStop Color="#00FFFF" Offset="0.6"/>
+                <GradientStop Color="#0000FF" Offset="0.8"/>
+                <GradientStop Color="#FF00FF" Offset="1.0"/>
+            </LinearGradientBrush>
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <AbsoluteLayout HorizontalOptions="Fill" VerticalOptions="Fill">
+    <Grid IgnoreSafeArea="True">
 
-        <BoxView BackgroundColor="#AF52DE"
-                 Opacity="0.2"
-                 CornerRadius="300"
-                 AbsoluteLayout.LayoutBounds="-150, -100, 500, 500"
-                 AbsoluteLayout.LayoutFlags="None"/>
+        <BoxView BackgroundColor="#22AF52DE" WidthRequest="500" HeightRequest="500"
+                 HorizontalOptions="End" VerticalOptions="Start" Margin="0,-200,-150,0"
+                 CornerRadius="250"/>
 
-        <BoxView BackgroundColor="#007AFF"
-                 Opacity="0.15"
-                 CornerRadius="250"
-                 AbsoluteLayout.LayoutBounds="1.3, 1.2, 450, 450"
-                 AbsoluteLayout.LayoutFlags="None"/>
+        <BoxView BackgroundColor="#15007AFF" WidthRequest="400" HeightRequest="400"
+                 HorizontalOptions="Start" VerticalOptions="End" Margin="-100,0,0,-150"
+                 CornerRadius="200"/>
 
-        <FlexLayout JustifyContent="Center" AlignItems="Center"
-                    AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
-                    AbsoluteLayout.LayoutFlags="All">
+        <Border x:Name="LoginCard"
+                WidthRequest="400" 
+                HorizontalOptions="Center" 
+                VerticalOptions="Center"
+                BackgroundColor="#FFDFDFDF" 
+                StrokeThickness="1" 
+                Stroke="#252527"
+                Padding="40"
+                Opacity="0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="24"/>
+            </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="Black" Offset="0,0" Radius="50" Opacity="0.6"/>
+            </Border.Shadow>
 
-            <Border x:Name="LoginCard"
-                    WidthRequest="400"
-                    Padding="35, 45"
-                    BackgroundColor="White"
-                    Stroke="White"
-                    StrokeThickness="1"
-                    Opacity="0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="30"/>
-                </Border.StrokeShape>
-                <Border.Shadow>
-                    <Shadow Brush="#000000" Offset="0,10" Radius="30" Opacity="0.15"/>
-                </Border.Shadow>
+            <Grid RowSpacing="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                <VerticalStackLayout Spacing="0">
-                    <Label Text="Accounts Login" 
-                           FontSize="28" 
-                           FontAttributes="Bold" 
-                           TextColor="#1C1C1E"/>
+                <Label Grid.Row="0"
+                       Text="Accounts Login" 
+                       FontSize="28" 
+                       FontAttributes="Bold" 
+                       TextColor="Black" 
+                       HorizontalOptions="Center"/>
 
-                    <Label Text="Administrative portal for financial records." 
-                           FontSize="13" 
-                           TextColor="#8E8E93" 
-                           Margin="0,10,0,30"/>
+                <Label Grid.Row="1"
+                       Text="Administrative portal for financial records." 
+                       TextColor="#555557" 
+                       Margin="0,8,0,30" 
+                       HorizontalOptions="Center" 
+                       FontSize="13"/>
 
-                    <Label Text="ADMIN ID" FontSize="11" FontAttributes="Bold" TextColor="#8E8E93" Margin="5,0,0,8"/>
-                    <Border Stroke="#E5E5EA" StrokeThickness="1.5" BackgroundColor="White" Margin="0,0,0,20">
+                <Grid Grid.Row="2" RowSpacing="8" Margin="0,0,0,20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Text="ADMIN ID" FontSize="10" FontAttributes="Bold" TextColor="#555557" Margin="5,0,0,0"/>
+                    <Border Grid.Row="1" HeightRequest="45" BackgroundColor="White" Stroke="#333335" StrokeThickness="1">
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="10"/>
+                            <RoundRectangle CornerRadius="8"/>
                         </Border.StrokeShape>
-                        <Entry x:Name="txtAccountUserID"
-                               Style="{StaticResource AccInputStyle}"
-                               IsReadOnly="True"
-                               Margin="15,0"
-                               Text="{Binding AdminID}"/>
+                        <Entry x:Name="txtAccountUserID" IsReadOnly="True" TextColor="Black" BackgroundColor="White" Margin="5,0"/>
                     </Border>
+                </Grid>
 
-                    <Label Text="PASSWORD" FontSize="11" FontAttributes="Bold" TextColor="#8E8E93" Margin="5,0,0,8"/>
-                    <Border Stroke="#E5E5EA" StrokeThickness="1.5" BackgroundColor="White" Margin="0,0,0,35">
+                <Grid Grid.Row="3" RowSpacing="8" Margin="0,0,0,40">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Text="PASSWORD" FontSize="10" FontAttributes="Bold" TextColor="#555557" Margin="5,0,0,0"/>
+                    <Border Grid.Row="1" HeightRequest="45" BackgroundColor="White" Stroke="#333335" StrokeThickness="1">
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="10"/>
+                            <RoundRectangle CornerRadius="8"/>
                         </Border.StrokeShape>
-                        <Entry x:Name="pbAccountPassword"
-                               IsPassword="True"
-                               Style="{StaticResource AccInputStyle}"
-                               Margin="15,0"/>
+                        <Entry x:Name="pbAccountPassword" IsPassword="True" TextColor="Black" BackgroundColor="White" Margin="5,0"/>
+                    </Border>
+                </Grid>
+
+                <Grid Grid.Row="4" HeightRequest="50" WidthRequest="320" HorizontalOptions="Center">
+                    <Border StrokeThickness="0" BackgroundColor="Transparent" InputTransparent="True">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12"/>
+                        </Border.StrokeShape>
+                        <Grid IsClippedToBounds="True" WidthRequest="320" HeightRequest="50" InputTransparent="True">
+                            <BoxView x:Name="rainbowRotatingBorder"
+                                     WidthRequest="400" HeightRequest="400"
+                                     HorizontalOptions="Center" VerticalOptions="Center"
+                                     InputTransparent="True"
+                                     Background="{StaticResource RainbowGradient}"/>
+                        </Grid>
                     </Border>
 
                     <Button x:Name="btnAccountLogin"
-                            Text="SECURE ACCESS"
-                            TextColor="White"
+                            Text="SECURE ACCESS" 
+                            TextColor="Black"
+                            FontSize="15"
                             FontAttributes="Bold"
-                            FontSize="14"
-                            HeightRequest="55"
-                            CornerRadius="15"
+                            BackgroundColor="White"
+                            Margin="2"
+                            CornerRadius="10"
                             Clicked="btnAccountLogin_Click">
-                        <Button.Background>
-                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                <GradientStop Color="#007AFF" Offset="0.0"/>
-                                <GradientStop Color="#5856D6" Offset="0.5"/>
-                                <GradientStop Color="#AF52DE" Offset="1.0"/>
-                            </LinearGradientBrush>
-                        </Button.Background>
                     </Button>
-
-                </VerticalStackLayout>
-            </Border>
-        </FlexLayout>
-    </AbsoluteLayout>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
 </ContentPage>

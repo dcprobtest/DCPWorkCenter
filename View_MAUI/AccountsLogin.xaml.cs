@@ -6,32 +6,75 @@ namespace View_MAUI
 {
     public partial class AccountsLogin : ContentPage
     {
-        public AccountsLogin()
+        private bool isAnimationRunning = false;
+        public string LoginUserId { get; private set; }
+
+        public AccountsLogin(string uid)
         {
             InitializeComponent();
+            LoginUserId = uid;
+
+            // Updated: Removed lblUserId access as it was removed from XAML
+            txtAccountUserID.Text = LoginUserId;
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
 
-            // Set initial parameters for the animation
-            // LoginCard is accessible here directly as it is defined in XAML
-            LoginCard.TranslationY = 100;
-            LoginCard.Scale = 0.9;
-            LoginCard.Opacity = 0;
+            // Find references at runtime
+            var loginCard = this.FindByName<Border>("LoginCard");
+            var rotatingRainbow = this.FindByName<BoxView>("rainbowRotatingBorder");
 
-            // Execute the smooth EaseOut entry animation concurrently
-            await Task.WhenAll(
-                LoginCard.TranslateTo(0, 0, 800, Easing.CubicOut),
-                LoginCard.ScaleTo(1.0, 800, Easing.CubicOut),
-                LoginCard.FadeTo(1.0, 600, Easing.CubicOut)
-            );
+            // Setup animation
+            if (loginCard != null)
+            {
+                loginCard.TranslationY = 100;
+                loginCard.Opacity = 0;
+
+                // Staggered Slide-up effect
+                _ = loginCard.TranslateTo(0, 0, 800, Easing.CubicOut);
+                await loginCard.FadeTo(1.0, 600, Easing.CubicOut);
+            }
+
+            // Start rainbow border animation
+            if (!isAnimationRunning && rotatingRainbow != null)
+            {
+                isAnimationRunning = true;
+                StartRainbowAnimation(rotatingRainbow);
+            }
         }
 
-        private void btnAccountLogin_Click(object sender, EventArgs e)
+        private async void StartRainbowAnimation(BoxView rotatingRainbow)
         {
-            // Secure access logic goes here
+            // Loop for smooth rotation of the rainbow background
+            while (isAnimationRunning && rotatingRainbow != null)
+            {
+                await rotatingRainbow.RelRotateTo(360, 4000, Easing.Linear);
+            }
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            // Stop animation when page disappears to prevent memory leaks
+            isAnimationRunning = false;
+        }
+
+        private async void btnAccountLogin_Click(object sender, EventArgs e)
+        {
+            // Add password validation logic here
+            string password = pbAccountPassword.Text?.Trim() ?? string.Empty;
+
+            if (string.IsNullOrEmpty(password))
+            {
+                await DisplayAlert("Validation Error", "Please enter your password.", "OK");
+                return;
+            }
+
+            // Navigate to the next form upon successful authentication
+            isAnimationRunning = false;
+            await Navigation.PushAsync(new Main_Accountsfrm(LoginUserId));
         }
     }
 }
