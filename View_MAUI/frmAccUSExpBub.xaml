@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ModelView_MAUI;assembly=ModelView_MAUI"
              x:Class="View_MAUI.frmAccUSExpBub"
              Title="Service Expense Setup"
              BackgroundColor="#F0F2F5">
@@ -24,6 +25,10 @@
         </Style>
     </ContentPage.Resources>
 
+    <ContentPage.BindingContext>
+        <vm:AccUSExpBubViewModel />
+    </ContentPage.BindingContext>
+
     <ScrollView>
         <Grid Margin="15">
             <Border StrokeShape="RoundRectangle 20" StrokeThickness="3" BackgroundColor="White" Padding="2">
@@ -38,21 +43,25 @@
 
                 <Grid Margin="15" RowDefinitions="*, Auto">
                     <Grid Grid.Row="0" ColumnDefinitions="320, *" ColumnSpacing="10">
+
                         <Border Grid.Column="0" BackgroundColor="White" StrokeShape="RoundRectangle 15" Padding="20">
                             <VerticalStackLayout Spacing="15">
                                 <Label Text="ExpSub Code" FontAttributes="Bold" TextColor="Gray"/>
-                                <Entry x:Name="txtExpSubCode" Style="{StaticResource ModernEntry}" Text="{Binding CurrentEntry.ExpSubCode}"/>
+                                <Entry x:Name="txtExpSubCode" Style="{StaticResource ModernEntry}" Text="{Binding CurrentEntry.ExpSubCode, Mode=TwoWay}"/>
 
                                 <Label Text="Exp Code" FontAttributes="Bold" TextColor="Gray"/>
-                                <Picker x:Name="cmbExpCode" Title="Select Exp Code" ItemsSource="{Binding ExpCodeList}" SelectedItem="{Binding SelectedExpCode}"/>
+                                <Picker x:Name="cmbExpCode" Title="Select Exp Code" ItemsSource="{Binding ExpCodeList}" SelectedItem="{Binding SelectedExpCode, Mode=TwoWay}"/>
 
                                 <Label Text="Exp Detail" FontAttributes="Bold" TextColor="Gray"/>
-                                <Entry x:Name="txtExpDetail" Style="{StaticResource ModernEntry}" Text="{Binding CurrentEntry.ExpDetail}"/>
+                                <Entry x:Name="txtExpDetail" Style="{StaticResource ModernEntry}" Text="{Binding CurrentEntry.ExpDetail, Mode=TwoWay}"/>
                             </VerticalStackLayout>
                         </Border>
 
                         <Border Grid.Column="1" BackgroundColor="White" StrokeShape="RoundRectangle 15" Padding="5">
-                            <CollectionView x:Name="dgExpense" ItemsSource="{Binding ExpBubList}">
+                            <CollectionView x:Name="dgExpense" 
+                                            ItemsSource="{Binding ExpBubList}"
+                                            SelectedItem="{Binding SelectedExpBub, Mode=TwoWay}"
+                                            SelectionMode="Single">
                                 <CollectionView.Header>
                                     <Grid ColumnDefinitions="100, 80, *" BackgroundColor="#F9F9F9" Padding="5">
                                         <Label Text="ExpSub Code" FontAttributes="Bold"/>
@@ -62,10 +71,10 @@
                                 </CollectionView.Header>
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate>
-                                        <Grid ColumnDefinitions="100, 80, *" Padding="5">
-                                            <Label Text="{Binding ExpSubCode}"/>
-                                            <Label Grid.Column="1" Text="{Binding ExpCode}"/>
-                                            <Label Grid.Column="2" Text="{Binding ExpDetail}"/>
+                                        <Grid ColumnDefinitions="100, 80, *" Padding="5" HeightRequest="35">
+                                            <Label Text="{Binding ExpSubCode}" VerticalOptions="Center"/>
+                                            <Label Grid.Column="1" Text="{Binding ExpCode}" VerticalOptions="Center"/>
+                                            <Label Grid.Column="2" Text="{Binding ExpDetail}" VerticalOptions="Center"/>
                                         </Grid>
                                     </DataTemplate>
                                 </CollectionView.ItemTemplate>
@@ -78,12 +87,12 @@
                             <Button Text="ADD" Style="{StaticResource RainbowButtonStyle}" Command="{Binding AddCommand}"/>
                             <Button Text="SAVE" Style="{StaticResource RainbowButtonStyle}" Command="{Binding SaveCommand}"/>
                             <Button Text="EDIT" Style="{StaticResource RainbowButtonStyle}" Command="{Binding EditCommand}"/>
-                            <Button Text="EXIT" Style="{StaticResource RainbowButtonStyle}" Clicked="Exit_Clicked"/>
+                            <Button Text="EXIT" Style="{StaticResource RainbowButtonStyle}" Command="{Binding ExitCommand}"/>
                         </HorizontalStackLayout>
 
                         <HorizontalStackLayout Grid.Column="1" Spacing="5" VerticalOptions="Center">
-                            <Entry x:Name="txtUID" WidthRequest="70" IsReadOnly="True" BackgroundColor="#F0F0F0" Text="{Binding CurrentEntry.UID}"/>
-                            <DatePicker x:Name="dtpEntryDate" Date="{Binding CurrentEntry.EntryDate}"/>
+                            <Entry x:Name="txtUID" WidthRequest="70" IsReadOnly="True" BackgroundColor="#F0F0F0" Text="{Binding CurrentEntry.UID, Mode=TwoWay}"/>
+                            <DatePicker x:Name="dtpEntryDate" Date="{Binding CurrentEntry.EntryDate, Mode=TwoWay}"/>
                         </HorizontalStackLayout>
                     </Grid>
                 </Grid>

@@ -1,30 +1,43 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="View_MAUI.frmClass_ClassPlayer"
              Title="DCP EduTrack Player"
              BackgroundColor="#1E1E1E">
 
-    <Grid>
+    <Grid x:Name="MainGrid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="300"/>
+            <ColumnDefinition x:Name="PlaylistColumn" Width="300"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" BackgroundColor="#252526" Stroke="#3F3F46">
-            <VerticalStackLayout>
+        <Border x:Name="PlaylistBorder" Grid.Column="0" BackgroundColor="#252526" Stroke="#3F3F46">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
                 <Label Text="Course Content" FontSize="18" FontAttributes="Bold" Margin="15" TextColor="#007ACC"/>
 
-                <CollectionView ItemsSource="{Binding CourseContent}" SelectionMode="Single">
+                <CollectionView x:Name="CvPlaylist" Grid.Row="1" 
+                                SelectionMode="Single"
+                                SelectionChanged="CvPlaylist_SelectionChanged">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <VerticalStackLayout Margin="5">
-                                <Label Text="{Binding SubjectDesc, StringFormat='📚 {0}'}" TextColor="#DCDCDC" FontAttributes="Bold"/>
-                            </VerticalStackLayout>
+                            <Grid Padding="10" Margin="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Column="0" Text="{Binding Icon}" VerticalOptions="Center"/>
+                                <Label Grid.Column="1" Text="{Binding VideoTitle}" TextColor="#9CDCFE" VerticalOptions="Center" Margin="5,0,0,0"/>
+                            </Grid>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
-            </VerticalStackLayout>
+            </Grid>
         </Border>
 
         <Grid Grid.Column="1">
@@ -35,21 +48,27 @@
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0" BackgroundColor="Black">
-                <BoxView Color="Black" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+                <toolkit:MediaElement x:Name="Player" 
+                                      ShouldAutoPlay="False"
+                                      Aspect="AspectFit"/>
 
-                <Button Text="☰ Playlist" HorizontalOptions="Start" VerticalOptions="Start" 
-                        Margin="10" BackgroundColor="#333" TextColor="White"/>
+                <Button x:Name="BtnTogglePlaylist" Text="☰ Playlist" 
+                        HorizontalOptions="Start" VerticalOptions="Start" 
+                        Margin="10" BackgroundColor="#333" TextColor="White"
+                        Clicked="BtnTogglePlaylist_Clicked"/>
             </Grid>
 
             <Slider Grid.Row="1" x:Name="TimelineSlider" 
-                    Minimum="0" Maximum="1" Margin="10,5"/>
+                    Minimum="0" Maximum="1" Margin="10,5"
+                    DragStarted="TimelineSlider_DragStarted"
+                    DragCompleted="TimelineSlider_DragCompleted"/>
 
             <HorizontalStackLayout Grid.Row="2" HorizontalOptions="Center" Margin="0,10,0,20" Spacing="10">
-                <Button Text="⏮" WidthRequest="50" BackgroundColor="#333" TextColor="White"/>
-                <Button Text="⏵" WidthRequest="60" HeightRequest="40" BackgroundColor="#007ACC" TextColor="White"/>
-                <Button Text="⏸" WidthRequest="50" BackgroundColor="#333" TextColor="White"/>
-                <Button Text="⏹" WidthRequest="50" BackgroundColor="#333" TextColor="White"/>
-                <Button Text="⏭" WidthRequest="50" BackgroundColor="#333" TextColor="White"/>
+                <Button Text="⏮" Clicked="Previous_Clicked" WidthRequest="50" BackgroundColor="#333" TextColor="White"/>
+                <Button x:Name="BtnPlay" Text="⏵" Clicked="Play_Clicked" WidthRequest="60" HeightRequest="40" FontSize="20" BackgroundColor="#007ACC" TextColor="White"/>
+                <Button Text="⏸" Clicked="Pause_Clicked" WidthRequest="50" BackgroundColor="#333" TextColor="White"/>
+                <Button Text="⏹" Clicked="Stop_Clicked" WidthRequest="50" BackgroundColor="#333" TextColor="White"/>
+                <Button Text="⏭" Clicked="Next_Clicked" WidthRequest="50" BackgroundColor="#333" TextColor="White"/>
             </HorizontalStackLayout>
         </Grid>
     </Grid>

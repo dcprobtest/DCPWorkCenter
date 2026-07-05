@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ModelView_MAUI;assembly=ModelView_MAUI"
              x:Class="View_MAUI.frmAccExpBub"
              Title="Expense Head Setup"
              BackgroundColor="#F0F2F5">
@@ -28,6 +29,10 @@
         </Style>
     </ContentPage.Resources>
 
+    <ContentPage.BindingContext>
+        <vm:AccExpBubViewModel />
+    </ContentPage.BindingContext>
+
     <ScrollView>
         <Grid Margin="15">
             <Border StrokeShape="RoundRectangle 20" StrokeThickness="3" BackgroundColor="White">
@@ -42,9 +47,9 @@
 
                 <Grid Margin="15" RowDefinitions="*, Auto">
 
-                    <Grid Grid.Row="0" ColumnDefinitions="320, *" IsVisible="{Binding IsEntryVisible}">
+                    <Grid Grid.Row="0" ColumnDefinitions="320, *">
 
-                        <Border Grid.Column="0" BackgroundColor="White" StrokeShape="RoundRectangle 15" Margin="5" Padding="20">
+                        <Border Grid.Column="0" BackgroundColor="White" StrokeShape="RoundRectangle 15" Margin="5" Padding="20" IsVisible="{Binding IsEntryVisible}">
                             <VerticalStackLayout Spacing="15">
                                 <Grid ColumnDefinitions="90, *">
                                     <Label Text="Exp Code" Style="{StaticResource LabelStyle}"/>

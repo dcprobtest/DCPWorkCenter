@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ModelView_MAUI;assembly=ModelView_MAUI"
              x:Class="View_MAUI.frmAccUSExpendHead"
              Title="US Expense Head Setup"
              BackgroundColor="#F4F7F9">
@@ -18,6 +19,10 @@
         </Style>
     </ContentPage.Resources>
 
+    <ContentPage.BindingContext>
+        <vm:AccUSExpendHeadViewModel />
+    </ContentPage.BindingContext>
+
     <ScrollView>
         <Grid Margin="12">
             <Border StrokeShape="RoundRectangle 10" StrokeThickness="3" BackgroundColor="White" Padding="2">
@@ -32,18 +37,22 @@
 
                 <Grid RowDefinitions="*, Auto" Margin="10">
                     <Grid Grid.Row="0" ColumnDefinitions="260, *" ColumnSpacing="10" Margin="0,0,0,10">
+
                         <Border Grid.Column="0" BackgroundColor="White" StrokeShape="RoundRectangle 8" Padding="12">
                             <VerticalStackLayout Spacing="10">
                                 <Label Text="Exp Code" FontAttributes="Bold" TextColor="Gray" FontSize="12"/>
-                                <Entry x:Name="txtExpCode" HeightRequest="30" Text="{Binding ExpCode}"/>
+                                <Entry x:Name="txtExpCode" HeightRequest="30" Text="{Binding ExpCode, Mode=TwoWay}"/>
 
                                 <Label Text="Exp Detail" FontAttributes="Bold" TextColor="Gray" FontSize="12"/>
-                                <Entry x:Name="txtExpDetail" HeightRequest="30" Text="{Binding ExpDetail}"/>
+                                <Entry x:Name="txtExpDetail" HeightRequest="30" Text="{Binding ExpDetail, Mode=TwoWay}"/>
                             </VerticalStackLayout>
                         </Border>
 
                         <Border Grid.Column="1" BackgroundColor="White" StrokeShape="RoundRectangle 8" Padding="5">
-                            <CollectionView x:Name="dgExpenses" ItemsSource="{Binding ExpenseList}" SelectionMode="Single">
+                            <CollectionView x:Name="dgExpenses" 
+                                            ItemsSource="{Binding ExpenseList}" 
+                                            SelectedItem="{Binding SelectedExpense, Mode=TwoWay}"
+                                            SelectionMode="Single">
                                 <CollectionView.Header>
                                     <Grid ColumnDefinitions="80, *" BackgroundColor="#F9F9F9" Padding="5">
                                         <Label Text="Code" FontAttributes="Bold" FontSize="12"/>
@@ -52,9 +61,9 @@
                                 </CollectionView.Header>
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate>
-                                        <Grid ColumnDefinitions="80, *" Padding="5">
-                                            <Label Text="{Binding ExpCode}"/>
-                                            <Label Grid.Column="1" Text="{Binding ExpDetail}"/>
+                                        <Grid ColumnDefinitions="80, *" Padding="5" HeightRequest="35">
+                                            <Label Text="{Binding ExpCode}" VerticalOptions="Center"/>
+                                            <Label Grid.Column="1" Text="{Binding ExpDetail}" VerticalOptions="Center"/>
                                         </Grid>
                                     </DataTemplate>
                                 </CollectionView.ItemTemplate>
@@ -67,12 +76,12 @@
                             <Button Text="ADD" Style="{StaticResource PremiumAnimatedButton}" Command="{Binding AddCommand}"/>
                             <Button Text="SAVE" Style="{StaticResource PremiumAnimatedButton}" Command="{Binding SaveCommand}"/>
                             <Button Text="EDIT" Style="{StaticResource PremiumAnimatedButton}" Command="{Binding EditCommand}"/>
-                            <Button Text="EXIT" Style="{StaticResource PremiumAnimatedButton}" Clicked="Exit_Clicked"/>
+                            <Button Text="EXIT" Style="{StaticResource PremiumAnimatedButton}" Command="{Binding ExitCommand}"/>
                         </HorizontalStackLayout>
 
                         <HorizontalStackLayout Grid.Column="1" Spacing="5" VerticalOptions="Center">
-                            <Entry x:Name="txtUid" WidthRequest="70" HeightRequest="30" IsReadOnly="True" BackgroundColor="#F0F0F0" Text="{Binding UID}"/>
-                            <DatePicker x:Name="dtEntryDate" HeightRequest="30" Date="{Binding EntryDate}"/>
+                            <Entry x:Name="txtUid" WidthRequest="70" HeightRequest="30" IsReadOnly="True" BackgroundColor="#F0F0F0" Text="{Binding UID, Mode=TwoWay}"/>
+                            <DatePicker x:Name="dtEntryDate" HeightRequest="30" Date="{Binding EntryDate, Mode=TwoWay}"/>
                         </HorizontalStackLayout>
                     </Grid>
                 </Grid>

@@ -11,6 +11,8 @@ namespace View_MAUI
             builder
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
+                // ভিডিও প্লেয়ারের এরর দূর করার জন্য এই নিচের লাইনটি যুক্ত করা হলো
+                .UseMauiCommunityToolkitMediaElement()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

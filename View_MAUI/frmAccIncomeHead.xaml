@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ModelView_MAUI;assembly=ModelView_MAUI"
              x:Class="View_MAUI.frmAccIncomeHead"
              Title="Income Head Setup"
              BackgroundColor="#F4F7F9">
@@ -16,6 +17,10 @@
             <Setter Property="BackgroundColor" Value="#764ba2"/>
         </Style>
     </ContentPage.Resources>
+
+    <ContentPage.BindingContext>
+        <vm:AccIncomeHeadViewModel />
+    </ContentPage.BindingContext>
 
     <ScrollView>
         <Grid Margin="12" x:Name="MainGrid">
@@ -35,20 +40,29 @@
                         <Border Grid.Column="0" BackgroundColor="White" StrokeShape="RoundRectangle 8" Padding="12">
                             <VerticalStackLayout Spacing="10">
                                 <Label Text="Inc Code" FontAttributes="Bold" FontSize="12" TextColor="Gray"/>
-                                <Entry x:Name="txtIncCode" HeightRequest="26" Text="{Binding IncCode}"/>
+                                <Entry x:Name="txtIncCode" HeightRequest="35" Text="{Binding IncCode, Mode=TwoWay}"/>
 
                                 <Label Text="Inc Detail" FontAttributes="Bold" FontSize="12" TextColor="Gray"/>
-                                <Entry x:Name="txtIncDetail" HeightRequest="26" Text="{Binding IncDetail}"/>
+                                <Entry x:Name="txtIncDetail" HeightRequest="35" Text="{Binding IncDetail, Mode=TwoWay}"/>
                             </VerticalStackLayout>
                         </Border>
 
-                        <Border Grid.Column="1" BackgroundColor="White" StrokeShape="RoundRectangle 8">
-                            <CollectionView x:Name="dgIncomes" ItemsSource="{Binding IncomeList}" SelectionMode="Single">
+                        <Border Grid.Column="1" BackgroundColor="White" StrokeShape="RoundRectangle 8" Padding="5">
+                            <CollectionView x:Name="dgIncomes" 
+                                            ItemsSource="{Binding IncomeList}" 
+                                            SelectedItem="{Binding SelectedIncome, Mode=TwoWay}"
+                                            SelectionMode="Single">
+                                <CollectionView.Header>
+                                    <Grid ColumnDefinitions="80, *" BackgroundColor="#EEE" Padding="5">
+                                        <Label Text="Inc Code" FontAttributes="Bold"/>
+                                        <Label Grid.Column="1" Text="Income Detail" FontAttributes="Bold"/>
+                                    </Grid>
+                                </CollectionView.Header>
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate>
-                                        <Grid ColumnDefinitions="80, *" Padding="5" HeightRequest="25">
-                                            <Label Text="{Binding IncCode}"/>
-                                            <Label Grid.Column="1" Text="{Binding IncDetail}"/>
+                                        <Grid ColumnDefinitions="80, *" Padding="5" HeightRequest="30">
+                                            <Label Text="{Binding IncCode}" VerticalOptions="Center"/>
+                                            <Label Grid.Column="1" Text="{Binding IncDetail}" VerticalOptions="Center"/>
                                         </Grid>
                                     </DataTemplate>
                                 </CollectionView.ItemTemplate>
@@ -61,12 +75,12 @@
                             <Button Text="ADD" Style="{StaticResource PremiumButtonStyle}" Command="{Binding AddCommand}"/>
                             <Button Text="SAVE" Style="{StaticResource PremiumButtonStyle}" Command="{Binding SaveCommand}"/>
                             <Button Text="EDIT" Style="{StaticResource PremiumButtonStyle}" Command="{Binding EditCommand}"/>
-                            <Button Text="EXIT" Style="{StaticResource PremiumButtonStyle}" Clicked="Exit_Clicked"/>
+                            <Button Text="EXIT" Style="{StaticResource PremiumButtonStyle}" Command="{Binding ExitCommand}"/>
                         </HorizontalStackLayout>
 
                         <HorizontalStackLayout Grid.Column="1" Spacing="5" VerticalOptions="Center">
                             <Entry x:Name="txtUid" WidthRequest="80" IsReadOnly="True" BackgroundColor="#F0F0F0" Text="{Binding UID}"/>
-                            <DatePicker x:Name="dtEntryDate" Date="{Binding EntryDate}"/>
+                            <DatePicker x:Name="dtEntryDate" Date="{Binding EntryDate, Mode=TwoWay}"/>
                         </HorizontalStackLayout>
                     </Grid>
                 </Grid>

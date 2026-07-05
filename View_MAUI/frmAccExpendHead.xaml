@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ModelView_MAUI;assembly=ModelView_MAUI"
              x:Class="View_MAUI.frmAccExpendHead"
              Title="Expense Head Setup"
              BackgroundColor="#F4F7F9">
@@ -21,6 +22,10 @@
             <Setter Property="BackgroundColor" Value="White"/>
         </Style>
     </ContentPage.Resources>
+
+    <ContentPage.BindingContext>
+        <vm:AccExpendHeadViewModel />
+    </ContentPage.BindingContext>
 
     <ScrollView>
         <Grid Margin="12">
@@ -49,7 +54,10 @@
                         </Border>
 
                         <Border Grid.Column="1" BackgroundColor="White" StrokeShape="RoundRectangle 8" Padding="5">
-                            <CollectionView x:Name="dgExpenses" ItemsSource="{Binding ExpenseList}" SelectedItem="{Binding SelectedExpense}">
+                            <CollectionView x:Name="dgExpenses" 
+                                            SelectionMode="Single"
+                                            ItemsSource="{Binding ExpenseList}" 
+                                            SelectedItem="{Binding _selectedExpenseItem}">
                                 <CollectionView.Header>
                                     <Grid ColumnDefinitions="80, *" BackgroundColor="#EEE" Padding="5">
                                         <Label Text="Exp Code" FontAttributes="Bold"/>
