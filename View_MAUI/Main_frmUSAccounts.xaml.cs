@@ -8,9 +8,12 @@ public partial class Main_frmUSAccounts : ContentPage
     private Border _activeBorder;
     private double _angle = 0;
 
-    public Main_frmUSAccounts()
+    public string LoggedInUserId { get; private set; }
+
+    public Main_frmUSAccounts(string userId)
     {
         InitializeComponent();
+        LoggedInUserId = userId;
 
         // Timer setup (updates color every 30 milliseconds)
         _timer = Dispatcher.CreateTimer();
@@ -80,9 +83,48 @@ public partial class Main_frmUSAccounts : ContentPage
         );
     }
 
-    // Handlers for button clicks (Optional navigation or logic)
-    private void btnAccUSExpBub_Click(object sender, EventArgs e) => DisplayAlert("Selected", "Acc US Exp Bub clicked", "OK");
-    private void btnAccUSExpendHead_Click(object sender, EventArgs e) => DisplayAlert("Selected", "Acc US Expend Head clicked", "OK");
-    private void btnAccUSIncomeHead_Click(object sender, EventArgs e) => DisplayAlert("Selected", "Acc US Income Head clicked", "OK");
-    private void btnAccUSIncSub_Click(object sender, EventArgs e) => DisplayAlert("Selected", "Acc US Inc Sub clicked", "OK");
+    // XAML ? ????? ??? TapGestureRecognizer ?? ???? ?????? ??????????
+    private async void OnCardTapped(object sender, TappedEventArgs e)
+    {
+        string parameter = e.Parameter?.ToString();
+
+        switch (parameter)
+        {
+            case "Acc_US_Exp_Bub":
+                await Navigation.PushAsync(new frmAccUSExpBub(LoggedInUserId));
+                break;
+            case "Acc_US_Expend_Head":
+                await Navigation.PushAsync(new frmAccUSExpendHead(LoggedInUserId));
+                break;
+            case "Acc_US_Income_Head":
+                await Navigation.PushAsync(new frmAccUSIncomeHead(LoggedInUserId));
+                break;
+            case "Acc_US_Inc_Sub":
+                await Navigation.PushAsync(new frmAccUSIncSub(LoggedInUserId));
+                break;
+            default:
+                break;
+        }
+    }
+
+    // Navigation handlers for buttons (Keep as is)
+    private async void btnAccUSExpBub_Click(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new frmAccUSExpBub(LoggedInUserId));
+    }
+
+    private async void btnAccUSExpendHead_Click(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new frmAccUSExpendHead(LoggedInUserId));
+    }
+
+    private async void btnAccUSIncomeHead_Click(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new frmAccUSIncomeHead(LoggedInUserId));
+    }
+
+    private async void btnAccUSIncSub_Click(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new frmAccUSIncSub(LoggedInUserId));
+    }
 }

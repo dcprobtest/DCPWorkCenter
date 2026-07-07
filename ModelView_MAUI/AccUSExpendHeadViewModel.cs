@@ -7,9 +7,10 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
-using Model_MAUI; // আপনার প্রোজেক্টের আসল মডেল ক্লাসের নেমস্পেস এখানে রি-ম্যাপ করুন
+using Microsoft.Maui.Devices; // Required for DeviceInfo
+using Model_MAUI;
 
-namespace ModelView_MAUI
+namespace View_MAUI
 {
     public class AccUSExpendHeadViewModel : INotifyPropertyChanged
     {
@@ -18,12 +19,12 @@ namespace ModelView_MAUI
         private string _expCode;
         private string _expDetail;
         private string _uid;
-        private DateTime _entryDate = DateTime.Now; // MAUI DatePicker-এর জন্য অ-নালযোগ্য DateTime রাখা নিরাপদ
+        private DateTime _entryDate = DateTime.Now;
         private ObservableCollection<AccUSExpendHeadModel> _expenseList;
         private AccUSExpendHeadModel _selectedExpense;
 
         private readonly HttpClient _httpClient;
-        private readonly string _apiBaseUrl = "http://74.208.227.170:8050/api/AccUSExpendHead";
+        private readonly string _apiBaseUrl;
 
         #endregion
 
@@ -88,7 +89,7 @@ namespace ModelView_MAUI
                 OnPropertyChanged();
                 if (_selectedExpense != null)
                 {
-                    // CollectionView থেকে রো সিলেক্ট হলে টেক্সটবক্সগুলোতে ডেটা লোড হবে
+                    // Load data into text fields when a row is selected from CollectionView
                     ExpCode = _selectedExpense.ExpCode;
                     ExpDetail = _selectedExpense.ExpDetail;
                     UID = _selectedExpense.UID;
@@ -118,19 +119,26 @@ namespace ModelView_MAUI
         // Parameterized Constructor
         public AccUSExpendHeadViewModel(string uid)
         {
-            _httpClient = new HttpClient();
+            // Setup Base URL logic for Android Emulator access
+            string baseUrl = DeviceInfo.Platform == DevicePlatform.Android
+                ? "https://10.0.2.2:7073/"
+                : "https://localhost:7073/";
+
+            _httpClient = new HttpClient { BaseAddress = new Uri(baseUrl) };
+            _apiBaseUrl = "api/AccUSExpendHead";
+
             ExpenseList = new ObservableCollection<AccUSExpendHeadModel>();
 
-            // MAUI Core Command ব্যবহার করা হয়েছে
+            // MAUI Core Commands
             AddCommand = new Command(ExecuteAdd);
             SaveCommand = new Command(async () => await ExecuteSave());
             EditCommand = new Command(async () => await ExecuteEdit());
             ExitCommand = new Command(async () => await ExecuteExit());
 
-            // লগইন করা ইউজারের আইডি অ্যাসাইন করা
+            // Assign logged-in user ID
             UID = string.IsNullOrEmpty(uid) ? "U0001" : uid;
 
-            // ইনিশিয়াল ডেটা লোড
+            // Load initial data
             LoadExpenseData();
         }
 
@@ -253,7 +261,7 @@ namespace ModelView_MAUI
 
         private async Task ExecuteExit()
         {
-            // MAUI Navigation স্ট্যাক চেক করে কারেন্ট পেজ বন্ধ বা পপ করা
+            // Pop current page from navigation stack
             if (Application.Current?.MainPage?.Navigation.NavigationStack.Count > 1)
             {
                 await Application.Current.MainPage.Navigation.PopAsync();

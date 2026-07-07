@@ -2,9 +2,11 @@ namespace View_MAUI;
 
 public partial class frmAccIncSub : ContentPage
 {
-    public frmAccIncSub()
+    public frmAccIncSub(string uid)
     {
         InitializeComponent();
+
+        this.BindingContext = new AccIncSubViewModel(uid);
     }
 
     private async void Exit_Clicked(object sender, EventArgs e)

@@ -21,12 +21,12 @@ namespace View_MAUI
             LoggedInUserName = userName;
             UserActivateStatus = status;
 
-            // অ্যানিমেশন ঘূর্ণন গতি টাইমার সেটআপ
+            // Setup animation rotation speed timer
             _timer = Dispatcher.CreateTimer();
             _timer.Interval = TimeSpan.FromMilliseconds(25);
             _timer.Tick += (s, e) => UpdateRainbowBorder();
 
-            // পেজ লোড হওয়ার পর কার্ডগুলোর ওপর স্মুথ হোভার বাইন্ড করা
+            // Attach smooth hover to cards after page loads
             Loaded += (s, e) => AttachHoverToAllCards();
         }
 
@@ -60,7 +60,8 @@ namespace View_MAUI
                 _activeBorder = border;
                 border.StrokeThickness = 3.5;
                 _timer.Start();
-                await border.ScaleTo(1.05, 120, Easing.CubicOut); // ফিউচারিস্টিক হোভার স্কেল
+                // Futuristic hover scale effect
+                await border.ScaleTo(1.05, 120, Easing.CubicOut);
             }
         }
 
@@ -104,7 +105,7 @@ namespace View_MAUI
             );
         }
 
-        // --- সেফটি নেভিগেশন ইভেন্ট হ্যান্ডলার সমূহ ---
+        // --- Safety Navigation Event Handlers ---
         private async void btnVideoClass_Tapped(object sender, TappedEventArgs e)
         {
             try
@@ -153,10 +154,33 @@ namespace View_MAUI
             catch (Exception ex) { await DisplayAlert("Navigation Error", ex.Message, "OK"); }
         }
 
+        private async void btnUSAccounts_Tapped(object sender, TappedEventArgs e)
+        {
+            try
+            {
+                if (Navigation != null)
+                    await Navigation.PushAsync(new US_AccountsLogin(LoggedInUserId));
+                else
+                    Application.Current.MainPage = new NavigationPage(new US_AccountsLogin(LoggedInUserId));
+            }
+            catch (Exception ex) { await DisplayAlert("Navigation Error", ex.Message, "OK"); }
+        }
+
+        // Updated Scrum navigation method
+        private async void btnScrum_Tapped(object sender, TappedEventArgs e)
+        {
+            try
+            {
+                if (Navigation != null)
+                    await Navigation.PushAsync(new Main_ScrumWindow(LoggedInUserId));
+                else
+                    Application.Current.MainPage = new NavigationPage(new Main_ScrumWindow(LoggedInUserId));
+            }
+            catch (Exception ex) { await DisplayAlert("Navigation Error", ex.Message, "OK"); }
+        }
+
         private void btnVideoConference_Tapped(object sender, TappedEventArgs e) { }
         private void btnFileManager_Tapped(object sender, TappedEventArgs e) { }
-        private void btnScrum_Tapped(object sender, TappedEventArgs e) { }
         private void btnRemoteAccess_Tapped(object sender, TappedEventArgs e) { }
-        private void btnUSAccounts_Tapped(object sender, TappedEventArgs e) { }
     }
 }

@@ -8,13 +8,15 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Maui.Controls;
-using Model_MAUI; // আপনার MAUI প্রোজেক্টের আসল মডেল নেমস্পেস এখানে রি-ম্যাপ করুন
+using Microsoft.Maui.Devices; 
+using Model_MAUI;
 
-namespace ModelView_MAUI
+namespace View_MAUI
 {
     public class AccUSExpBubViewModel : INotifyPropertyChanged
     {
-        private readonly HttpClient _httpClient = new HttpClient { BaseAddress = new Uri("http://74.208.227.170:8050/") };
+        // BaseAddress logic as per requirement
+        private readonly HttpClient _httpClient;
 
         private bool _isEntryVisible;
         private AccUSExpBubModel _currentEntry;
@@ -38,7 +40,6 @@ namespace ModelView_MAUI
             {
                 _currentEntry = value;
                 OnPropertyChanged();
-                // বর্তমান এন্ট্রি অবজেক্ট পরিবর্তন হলে SAVE বাটনের CanExecute স্টেট চেক হবে
                 (SaveCommand as Command)?.ChangeCanExecute();
             }
         }
@@ -65,13 +66,11 @@ namespace ModelView_MAUI
                 if (CurrentEntry != null)
                 {
                     CurrentEntry.ExpCode = value;
-                    // কোড সিলেক্ট বা পরিবর্তন হলে SAVE কমান্ডকে এলার্ট করবে
                     (SaveCommand as Command)?.ChangeCanExecute();
                 }
             }
         }
 
-        // CollectionView থেকে সিলেক্টেড রো ট্র্যাকিংয়ের জন্য প্রোপার্টি
         public AccUSExpBubModel SelectedExpBub
         {
             get => _selectedExpBub;
@@ -86,27 +85,32 @@ namespace ModelView_MAUI
             }
         }
 
-        // MAUI Standard ICommands
         public ICommand AddCommand { get; }
         public ICommand SaveCommand { get; }
         public ICommand EditCommand { get; }
         public ICommand ExitCommand { get; }
 
-        // Default Constructor
         public AccUSExpBubViewModel() : this(string.Empty)
         {
         }
 
-        // Parameterized Constructor
         public AccUSExpBubViewModel(string uid)
         {
             _loggedInUID = uid;
 
+            // URL handling logic
+            string baseUrl = DeviceInfo.Platform == DevicePlatform.Android
+                ? "https://10.0.2.2:7073/"
+                : "https://localhost:7073/";
+
+            _httpClient = new HttpClient { BaseAddress = new Uri(baseUrl) };
+
             ExpBubList = new ObservableCollection<AccUSExpBubModel>();
             ExpCodeList = new ObservableCollection<string>();
-            CurrentEntry = new AccUSExpBubModel { EntryDate = DateTime.Now };
 
-            // MAUI Core Command mappings
+            
+            CurrentEntry = new AccUSExpBubModel { EntryDate = DateTime.Now, UID = _loggedInUID };
+
             AddCommand = new Command(ExecuteAdd);
             SaveCommand = new Command(async () => await ExecuteSave(), CanExecuteSave);
             EditCommand = new Command(ExecuteEdit);
@@ -114,7 +118,6 @@ namespace ModelView_MAUI
 
             IsEntryVisible = false;
 
-            // ডেটা লোড প্রসেস ইনিশিয়েট
             LoadGridData();
             LoadDropdowns();
         }
@@ -136,9 +139,7 @@ namespace ModelView_MAUI
             catch (Exception ex)
             {
                 if (Application.Current?.MainPage != null)
-                {
                     await Application.Current.MainPage.DisplayAlert("API Error", $"Error loading grid data: {ex.Message}", "OK");
-                }
             }
         }
 
@@ -153,23 +154,20 @@ namespace ModelView_MAUI
                     foreach (var head in expHeads)
                     {
                         if (!string.IsNullOrEmpty(head.ExpCode))
-                        {
                             ExpCodeList.Add(head.ExpCode);
-                        }
                     }
                 }
             }
             catch (Exception ex)
             {
                 if (Application.Current?.MainPage != null)
-                {
                     await Application.Current.MainPage.DisplayAlert("API Error", $"Error loading dropdowns: {ex.Message}", "OK");
-                }
             }
         }
 
         private void ExecuteAdd()
         {
+            
             CurrentEntry = new AccUSExpBubModel
             {
                 EntryDate = DateTime.Now,
@@ -188,9 +186,7 @@ namespace ModelView_MAUI
                 if (response.IsSuccessStatusCode)
                 {
                     if (Application.Current?.MainPage != null)
-                    {
                         await Application.Current.MainPage.DisplayAlert("Success", "Data saved successfully.", "OK");
-                    }
 
                     LoadGridData();
                     IsEntryVisible = false;
@@ -200,17 +196,13 @@ namespace ModelView_MAUI
                 else
                 {
                     if (Application.Current?.MainPage != null)
-                    {
                         await Application.Current.MainPage.DisplayAlert("API Warning", "Failed to save data to server.", "OK");
-                    }
                 }
             }
             catch (Exception ex)
             {
                 if (Application.Current?.MainPage != null)
-                {
                     await Application.Current.MainPage.DisplayAlert("Exception", $"Error executing save operation: {ex.Message}", "OK");
-                }
             }
         }
 
@@ -223,7 +215,6 @@ namespace ModelView_MAUI
         {
             if (SelectedExpBub != null)
             {
-                // রেফারেন্স সেফ রাখার জন্য অবজেক্ট ক্লোন বা রি-অ্যাসাইন
                 CurrentEntry = new AccUSExpBubModel
                 {
                     ExpSubCode = SelectedExpBub.ExpSubCode,
@@ -240,8 +231,6 @@ namespace ModelView_MAUI
         private async Task ExecuteExit()
         {
             IsEntryVisible = false;
-
-            // ন্যাভিগেশন স্ট্যাক চেক করে পেজ পপ করা অথবা অ্যাপ ক্লোজ করা
             if (Application.Current?.MainPage?.Navigation.NavigationStack.Count > 1)
             {
                 await Application.Current.MainPage.Navigation.PopAsync();

@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Maui.Controls;
-using Model_MAUI; // নিশ্চিত করুন আপনার Model_MAUI প্রোজেক্টে এই নেমস্পেসটিই আছে
+using Model_MAUI;
 
-namespace ModelView_MAUI
+namespace View_MAUI
 {
     public class AccEmpSalaryViewModel : INotifyPropertyChanged
     {
@@ -19,6 +19,14 @@ namespace ModelView_MAUI
         private string _monthID;
         private AccExpBubModel _selectedExpSubCodeItem;
         private readonly HttpClient _httpClient;
+
+        // Property to hold the received UID
+        private string _accountUserId;
+        public string AccountUserId
+        {
+            get => _accountUserId;
+            set { _accountUserId = value; OnPropertyChanged(); }
+        }
 
         private ObservableCollection<AccExpBubModel> _expSubCodeList;
         public ObservableCollection<AccExpBubModel> ExpSubCodeList
@@ -29,9 +37,18 @@ namespace ModelView_MAUI
 
         public ObservableCollection<AccEmpSalaryModel> SalaryList { get; set; }
 
-        public AccEmpSalaryViewModel()
+        // Updated constructor to accept uid
+        public AccEmpSalaryViewModel(string uid)
         {
-            _httpClient = new HttpClient { BaseAddress = new Uri("http://74.208.227.170:8050/") };
+            // Set the UID
+            AccountUserId = uid;
+
+            // Using 10.0.2.2 for Android Emulator to access local machine
+            string baseUrl = DeviceInfo.Platform == DevicePlatform.Android
+                ? "https://10.0.2.2:7073/"
+                : "https://localhost:7073/";
+
+            _httpClient = new HttpClient { BaseAddress = new Uri(baseUrl) };
 
             SalaryList = new ObservableCollection<AccEmpSalaryModel>();
             ExpSubCodeList = new ObservableCollection<AccExpBubModel>();
@@ -52,7 +69,6 @@ namespace ModelView_MAUI
             set { _selectedSalary = value; OnPropertyChanged(); }
         }
 
-        // MAUI Picker এর জন্য Object Binding প্রোপার্টি
         public AccExpBubModel SelectedExpSubCodeItem
         {
             get => _selectedExpSubCodeItem;
@@ -111,8 +127,6 @@ namespace ModelView_MAUI
                 if (response != null)
                 {
                     ExpSubCodeList = new ObservableCollection<AccExpBubModel>(response);
-
-                    // এডিট মোডের অবজেক্ট ম্যাপিং করার জন্য
                     SyncPickerSelectedValue();
                 }
             }
@@ -170,15 +184,10 @@ namespace ModelView_MAUI
             try
             {
                 HttpResponseMessage response;
-
                 if (SelectedSalary.ExpenditurID == 0)
-                {
                     response = await _httpClient.PostAsJsonAsync("api/AccEmpSalary", SelectedSalary);
-                }
                 else
-                {
                     response = await _httpClient.PostAsJsonAsync($"api/AccEmpSalary/{SelectedSalary.ExpenditurID}", SelectedSalary);
-                }
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -212,13 +221,9 @@ namespace ModelView_MAUI
         private async Task ExecuteExit(object obj)
         {
             if (Application.Current?.MainPage?.Navigation.NavigationStack.Count > 1)
-            {
                 await Application.Current.MainPage.Navigation.PopAsync();
-            }
             else
-            {
                 Application.Current?.Quit();
-            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

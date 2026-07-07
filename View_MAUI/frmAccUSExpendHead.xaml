@@ -19,10 +19,6 @@
         </Style>
     </ContentPage.Resources>
 
-    <ContentPage.BindingContext>
-        <vm:AccUSExpendHeadViewModel />
-    </ContentPage.BindingContext>
-
     <ScrollView>
         <Grid Margin="12">
             <Border StrokeShape="RoundRectangle 10" StrokeThickness="3" BackgroundColor="White" Padding="2">

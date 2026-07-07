@@ -7,9 +7,10 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Maui.Controls;
-using Model_MAUI; // আপনার MAUI প্রজেক্টের সঠিক মডেল নেমস্পেস নিশ্চিত করুন
+using Microsoft.Maui.Devices; 
+using Model_MAUI;
 
-namespace ModelView_MAUI
+namespace View_MAUI
 {
     public class AccIncomeHeadViewModel : INotifyPropertyChanged
     {
@@ -18,31 +19,33 @@ namespace ModelView_MAUI
         private string _uid = string.Empty;
         private DateTime _entryDate = DateTime.Now;
         private AccIncomeHeadModel _selectedIncome;
+        private readonly HttpClient _httpClient;
 
-        // API Endpoint Configuration
-        private static readonly HttpClient httpClient = new HttpClient { BaseAddress = new Uri("http://74.208.227.170:8050/") };
-
-        // Collection to hold database records for the CollectionView
         public ObservableCollection<AccIncomeHeadModel> IncomeList { get; set; }
 
         public AccIncomeHeadViewModel()
         {
+            // URL logic updated to match AccEmpSalaryViewModel
+            string baseUrl = DeviceInfo.Platform == DevicePlatform.Android
+                ? "https://10.0.2.2:7073/"
+                : "https://localhost:7073/";
+
+            _httpClient = new HttpClient { BaseAddress = new Uri(baseUrl) };
+
             IncomeList = new ObservableCollection<AccIncomeHeadModel>();
 
-            // MAUI Standard Commands with CanExecute handling
             AddCommand = new Command(ExecuteAdd);
             SaveCommand = new Command(async () => await ExecuteSave(), CanExecuteSave);
             EditCommand = new Command(async () => await ExecuteEdit(), CanExecuteEdit);
             ExitCommand = new Command(async () => await ExecuteExit());
 
-            // Load existing data from the database via API when initialized
             LoadInitialData();
         }
 
         // Parameterized constructor to receive UID from Form
         public AccIncomeHeadViewModel(string uid) : this()
         {
-            this.UID = uid; // Sets received UID to show on the form
+            this.UID = uid;
         }
 
         #region Properties Linked to View Fields
@@ -54,7 +57,7 @@ namespace ModelView_MAUI
             {
                 _incCode = value;
                 OnPropertyChanged();
-                // রিফ্রেশ বাটন স্টেট যখন ইউজার টাইপ করছে
+                // Refresh Save button state when user types
                 ((Command)SaveCommand).ChangeCanExecute();
             }
         }
@@ -103,7 +106,7 @@ namespace ModelView_MAUI
                     UID = _selectedIncome.UID;
                     EntryDate = _selectedIncome.EntryDate ?? DateTime.Now;
                 }
-                // রিফ্রেশ এডিট বাটন স্টেট যখন গ্রিড রো সিলেক্ট হচ্ছে
+                // Refresh Edit button state when grid row is selected
                 ((Command)EditCommand).ChangeCanExecute();
             }
         }
@@ -121,12 +124,11 @@ namespace ModelView_MAUI
 
         #region Command Implementation Logic
 
-        // Fetch data from API and populate CollectionView
         private async void LoadInitialData()
         {
             try
             {
-                var data = await httpClient.GetFromJsonAsync<ObservableCollection<AccIncomeHeadModel>>("api/AccIncomeHead");
+                var data = await _httpClient.GetFromJsonAsync<ObservableCollection<AccIncomeHeadModel>>("api/AccIncomeHead");
                 if (data != null)
                 {
                     IncomeList.Clear();
@@ -147,7 +149,6 @@ namespace ModelView_MAUI
 
         private void ExecuteAdd()
         {
-            // Reset fields for a new entry setup
             IncCode = string.Empty;
             IncDetail = string.Empty;
             EntryDate = DateTime.Now;
@@ -156,7 +157,6 @@ namespace ModelView_MAUI
 
         private bool CanExecuteSave()
         {
-            // Validation: Save button is enabled only when IncCode is exactly 2 characters
             return !string.IsNullOrWhiteSpace(IncCode) && IncCode.Length == 2;
         }
 
@@ -172,8 +172,7 @@ namespace ModelView_MAUI
                     EntryDate = this.EntryDate
                 };
 
-                // HTTP POST request to API to insert into database
-                HttpResponseMessage response = await httpClient.PostAsJsonAsync("api/AccIncomeHead", newIncome);
+                HttpResponseMessage response = await _httpClient.PostAsJsonAsync("api/AccIncomeHead", newIncome);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -182,7 +181,7 @@ namespace ModelView_MAUI
                     {
                         await Application.Current.MainPage.DisplayAlert("Success", "Data saved successfully through API endpoint.", "OK");
                     }
-                    ExecuteAdd(); // Clear fields after a successful save operation
+                    ExecuteAdd();
                 }
                 else
                 {
@@ -204,7 +203,6 @@ namespace ModelView_MAUI
 
         private bool CanExecuteEdit()
         {
-            // Edit button remains enabled only when an existing grid row is selected
             return SelectedIncome != null;
         }
 
@@ -219,12 +217,10 @@ namespace ModelView_MAUI
                     SelectedIncome.UID = this.UID;
                     SelectedIncome.EntryDate = this.EntryDate;
 
-                    // HTTP PUT request to API to update database row using IncCode as key
-                    HttpResponseMessage response = await httpClient.PutAsJsonAsync($"api/AccIncomeHead/{IncCode}", SelectedIncome);
+                    HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"api/AccIncomeHead/{IncCode}", SelectedIncome);
 
                     if (response.IsSuccessStatusCode)
                     {
-                        // Refreshing collection bound to CollectionView layout
                         int index = IncomeList.IndexOf(SelectedIncome);
                         if (index >= 0)
                         {
@@ -255,7 +251,6 @@ namespace ModelView_MAUI
 
         private async Task ExecuteExit()
         {
-            // Closes active view container safely using Navigation Stack or safely Quits app
             if (Application.Current?.MainPage?.Navigation.NavigationStack.Count > 1)
             {
                 await Application.Current.MainPage.Navigation.PopAsync();

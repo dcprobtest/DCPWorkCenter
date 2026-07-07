@@ -7,10 +7,13 @@ namespace View_MAUI
         private IDispatcherTimer _timer;
         private Border _activeBorder;
         private double _angle = 0;
+        private string _loggedInUserId; // Field to store the received UID
 
-        public Main_ScrumWindow()
+        // Updated constructor to accept uid
+        public Main_ScrumWindow(string uid)
         {
             InitializeComponent();
+            _loggedInUserId = uid; // Assign received uid to the field
 
             // Timer setup (updates color every 30 milliseconds)
             _timer = Dispatcher.CreateTimer();
@@ -80,9 +83,16 @@ namespace View_MAUI
         }
 
         // Click event handlers
-        private void btnAssignmentScrum_Clicked(object sender, EventArgs e)
+        private async void btnAssignmentScrum_Clicked(object sender, EventArgs e)
         {
-            // Navigation logic here
+            try
+            {
+                await Navigation.PushAsync(new frmAssignmentScrum(_loggedInUserId));
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Navigation Error", ex.Message, "OK");
+            }
         }
 
         private void btnAssignTechInfo_Clicked(object sender, EventArgs e) { }

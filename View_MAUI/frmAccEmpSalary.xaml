@@ -27,10 +27,6 @@
         </Style>
     </ContentPage.Resources>
 
-    <ContentPage.BindingContext>
-        <vm:AccEmpSalaryViewModel />
-    </ContentPage.BindingContext>
-
     <Grid Margin="10">
         <Border StrokeShape="RoundRectangle 12" StrokeThickness="1.5" BackgroundColor="White">
             <Grid ColumnDefinitions="280, *">
@@ -76,8 +72,8 @@
                                    Style="{StaticResource ModernEntry}"/>
 
                             <Label Text="User ID (UID)" Style="{StaticResource LabelStyle}"/>
-                            <Entry Text="{Binding SelectedSalary.UID}" 
-                                   Style="{StaticResource ModernEntry}"/>
+                            <Entry Text="{Binding AccountUserId}" 
+                                   Style="{StaticResource ModernEntry}" IsReadOnly="True"/>
 
                             <Label Text="Employee UID" Style="{StaticResource LabelStyle}"/>
                             <Entry Text="{Binding SelectedSalary.EmpUID}" 

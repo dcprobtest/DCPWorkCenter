@@ -1,15 +1,25 @@
-namespace View_MAUI;
+using System;
+using Microsoft.Maui.Controls;
 
-public partial class frmAccUSIncomeHead : ContentPage
+namespace View_MAUI
 {
-    public frmAccUSIncomeHead()
+    public partial class frmAccUSIncomeHead : ContentPage
     {
-        InitializeComponent();
-    }
+        public string LoggedInUserId { get; private set; }
 
-    private async void Exit_Clicked(object sender, EventArgs e)
-    {
-        
-        await Navigation.PopAsync();
+        public frmAccUSIncomeHead(string userId)
+        {
+            InitializeComponent();
+
+            LoggedInUserId = userId;
+
+            // Pass the userId to the ViewModel
+            this.BindingContext = new AccUSIncomeHeadViewModel(LoggedInUserId);
+        }
+
+        private async void Exit_Clicked(object sender, EventArgs e)
+        {
+            await Navigation.PopAsync();
+        }
     }
 }

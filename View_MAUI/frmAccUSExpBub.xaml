@@ -25,10 +25,6 @@
         </Style>
     </ContentPage.Resources>
 
-    <ContentPage.BindingContext>
-        <vm:AccUSExpBubViewModel />
-    </ContentPage.BindingContext>
-
     <ScrollView>
         <Grid Margin="15">
             <Border StrokeShape="RoundRectangle 20" StrokeThickness="3" BackgroundColor="White" Padding="2">

@@ -2,11 +2,12 @@ namespace View_MAUI;
 
 public partial class frmAccIncomeHead : ContentPage
 {
-    public frmAccIncomeHead()
+    public frmAccIncomeHead(string uid)
     {
         InitializeComponent();
-        
-        
+
+        this.BindingContext = new AccIncomeHeadViewModel(uid);
+
         this.Loaded += FrmAccIncomeHead_Loaded;
     }
 

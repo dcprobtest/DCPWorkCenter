@@ -1,37 +1,27 @@
+using Microsoft.Maui.Controls;
+using System;
+
 namespace View_MAUI;
 
 public partial class frmAccExpBub : ContentPage
 {
-    public frmAccExpBub()
+    public frmAccExpBub(string uid)
     {
-        InitializeComponent();
+        try
+        {
+            InitializeComponent();
 
-        // If you are using a ViewModel, uncomment the line below:
-        // this.BindingContext = new AccExpBubViewModel();
-    }
-
-    // Logic for ADD button
-    private void AddCommand_Clicked(object sender, EventArgs e)
-    {
-        // Add your logic to enable input fields or reset for a new entry
-    }
-
-    // Logic for SAVE button
-    private void SaveCommand_Clicked(object sender, EventArgs e)
-    {
-        // Add your logic to save the data to the database
-    }
-
-    // Logic for EDIT button
-    private void EditCommand_Clicked(object sender, EventArgs e)
-    {
-        // Add your logic to edit the selected item
-    }
-
-    // Logic for EXIT button
-    private void ExitCommand_Clicked(object sender, EventArgs e)
-    {
-        // Navigate back or close the page
-        Navigation.PopAsync();
+            // ViewModel ??????????? ???? ??? ??? ??????? ???? ???? ????? ????
+            this.BindingContext = new AccExpBubViewModel(uid);
+        }
+        catch (Exception ex)
+        {
+            // ????? ??????? ???? ???? ????? ??? ??????? ??????
+            // ??? ????? ???? ??? ???? ??-?? ????????? ??????
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                await DisplayAlert("CRITICAL ERROR", ex.ToString(), "OK");
+            });
+        }
     }
 }

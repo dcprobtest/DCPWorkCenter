@@ -7,16 +7,17 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Devices; // Required for DeviceInfo
 using Model_MAUI;
-using Model_WPF; // আপনার MAUI প্রজেক্টের আসল মডেল ক্লাসের নেমস্পেস এখানে পরিবর্তন করুন
+using Model_WPF;
 
-namespace ModelView_MAUI
+namespace View_MAUI
 {
     public class AccUSIncomeHeadViewModel : INotifyPropertyChanged
     {
         private bool _isEditMode = false;
         private readonly HttpClient _httpClient;
-        private const string ApiUrl = "http://74.208.227.170:8050/api/AccUSIncomeHead";
+        private readonly string _apiBaseUrl = "api/AccUSIncomeHead";
         private readonly string _currentUID = string.Empty;
 
         #region PropertiesBackedByFields
@@ -24,7 +25,7 @@ namespace ModelView_MAUI
         private string _incCode;
         private string _incDetail;
         private string _uid;
-        private DateTime _entryDate = DateTime.Now; // MAUI DatePicker-এর জন্য অ-নালযোগ্য করা হয়েছে
+        private DateTime _entryDate = DateTime.Now;
         private AccUSIncomeHeadModel _selectedUSIncome;
         private ObservableCollection<AccUSIncomeHeadModel> _usIncomeList;
 
@@ -35,7 +36,7 @@ namespace ModelView_MAUI
             {
                 _incCode = value;
                 OnPropertyChanged();
-                // ইনপুট পরিবর্তনের সাথে সাথে SAVE বাটনের CanExecute লজিক ট্রিগার হবে
+                // Trigger CanExecute logic for SAVE button on input change
                 (SaveCommand as Command)?.ChangeCanExecute();
             }
         }
@@ -74,7 +75,7 @@ namespace ModelView_MAUI
                     EntryDate = _selectedUSIncome.EntryDate ?? DateTime.Now;
                 }
 
-                // গ্রিড সিলেক্ট হওয়ার সাথে সাথে EDIT বাটনের CanExecute লজিক রিফ্রেশ হবে
+                // Refresh CanExecute logic for EDIT button when grid selection changes
                 (EditCommand as Command)?.ChangeCanExecute();
             }
         }
@@ -98,25 +99,31 @@ namespace ModelView_MAUI
 
         #region Constructors
 
-        public AccUSIncomeHeadViewModel()
+        public AccUSIncomeHeadViewModel() : this(string.Empty)
         {
-            _httpClient = new HttpClient();
+        }
+
+        public AccUSIncomeHeadViewModel(string uid)
+        {
+            // Setup Base URL logic for Android Emulator access
+            string baseUrl = DeviceInfo.Platform == DevicePlatform.Android
+                ? "https://10.0.2.2:7073/"
+                : "https://localhost:7073/";
+
+            _httpClient = new HttpClient { BaseAddress = new Uri(baseUrl) };
             USIncomeList = new ObservableCollection<AccUSIncomeHeadModel>();
 
-            // .NET MAUI স্ট্যান্ডার্ড কমান্ড আর্কিটেকচার
+            // MAUI Standard Command Architecture
             AddCommand = new Command(ExecuteAdd);
             SaveCommand = new Command(async () => await ExecuteSave(), CanExecuteSave);
             EditCommand = new Command(ExecuteEdit, CanExecuteEdit);
             ExitCommand = new Command(async () => await ExecuteExit());
 
+            _currentUID = uid;
+            this.UID = uid; // Ensure the received UID is set
+
             ClearFields();
             LoadDataGridFromDatabase();
-        }
-
-        public AccUSIncomeHeadViewModel(string uid) : this()
-        {
-            _currentUID = uid;
-            this.UID = uid;
         }
 
         #endregion
@@ -146,7 +153,7 @@ namespace ModelView_MAUI
 
                 if (_isEditMode)
                 {
-                    HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"{ApiUrl}/{IncCode}", inputData);
+                    HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"{_apiBaseUrl}/{IncCode}", inputData);
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -169,7 +176,7 @@ namespace ModelView_MAUI
                 }
                 else
                 {
-                    HttpResponseMessage response = await _httpClient.PostAsJsonAsync(ApiUrl, inputData);
+                    HttpResponseMessage response = await _httpClient.PostAsJsonAsync(_apiBaseUrl, inputData);
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -205,7 +212,6 @@ namespace ModelView_MAUI
             if (SelectedUSIncome != null)
             {
                 _isEditMode = true;
-                // অলরেডি প্রোপার্টি অ্যাসাইনমেন্ট সিলেকশন চেঞ্জেই হ্যান্ডেল করা আছে
             }
         }
 
@@ -239,7 +245,7 @@ namespace ModelView_MAUI
         {
             try
             {
-                var items = await _httpClient.GetFromJsonAsync<ObservableCollection<AccUSIncomeHeadModel>>(ApiUrl);
+                var items = await _httpClient.GetFromJsonAsync<ObservableCollection<AccUSIncomeHeadModel>>(_apiBaseUrl);
                 if (items != null)
                 {
                     USIncomeList.Clear();

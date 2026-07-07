@@ -25,9 +25,7 @@
         </Style>
     </ContentPage.Resources>
 
-    <ContentPage.BindingContext>
-        <vm:AccUSIncSubViewModel />
-    </ContentPage.BindingContext>
+    
 
     <ScrollView>
         <Grid Margin="15">

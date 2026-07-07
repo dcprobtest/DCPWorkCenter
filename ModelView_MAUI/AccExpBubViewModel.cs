@@ -9,15 +9,19 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.Maui.Controls;
-using Model_MAUI; // আপনার প্রজেক্টের সঠিক মডেল নেমস্পেস
+using Model_MAUI;
 
-namespace ModelView_MAUI
+namespace View_MAUI
 {
     public class AccExpBubViewModel : INotifyPropertyChanged
     {
-        private readonly string _apiUrl = "http://74.208.227.170:8050/api/AccExpBub";
+        private readonly string _baseUrl = DeviceInfo.Platform == DevicePlatform.Android
+            ? "https://10.0.2.2:7073"
+            : "https://localhost:7073";
+
+        private readonly string _apiUrl;
         private readonly HttpClient _httpClient;
-        private string _receivedUid = "Admin"; // ডিফল্ট ভ্যালু হিসেবে "Admin" রাখা হলো
+        private string _receivedUid = "Admin";
 
         #region Properties
 
@@ -62,7 +66,6 @@ namespace ModelView_MAUI
             {
                 _isEntryVisible = value;
                 OnPropertyChanged();
-                // IsEntryVisible পরিবর্তন হলে বাটনগুলোর CanExecute রিফ্রেশ করার জন্য
                 ((Command)SaveCommand).ChangeCanExecute();
                 ((Command)EditCommand).ChangeCanExecute();
             }
@@ -79,33 +82,32 @@ namespace ModelView_MAUI
 
         public AccExpBubViewModel()
         {
+            _apiUrl = $"{_baseUrl}/api/AccExpBub";
             _httpClient = new HttpClient();
 
-            ExpBubList = new ObservableCollection<AccExpBubModel>();
-            ExpCodeList = new ObservableCollection<string>();
-            IsEntryVisible = false;
-
-            // MAUI বিল্ট-ইন Command প্যাটার্ন
             AddCommand = new Command(ExecuteAdd);
             SaveCommand = new Command(async () => await ExecuteSave(), CanExecuteAction);
             EditCommand = new Command(ExecuteEdit, CanExecuteAction);
             ExitCommand = new Command(async () => await ExecuteExit());
 
-            LoadDataFromApi();
-            LoadExpCodes();
+            ExpBubList = new ObservableCollection<AccExpBubModel>();
+            ExpCodeList = new ObservableCollection<string>();
+
+            IsEntryVisible = false;
+
+            Task.Run(async () =>
+            {
+                await LoadDataFromApi();
+                await LoadExpCodes();
+            });
         }
 
-        // অন্য পেজ বা লগইন থেকে UID পাস করার জন্য কনস্ট্রাক্টর
         public AccExpBubViewModel(string uid) : this()
         {
             _receivedUid = uid;
-            if (CurrentEntry != null)
-            {
-                CurrentEntry.UID = uid;
-            }
         }
 
-        private async void LoadDataFromApi()
+        private async Task LoadDataFromApi()
         {
             try
             {
@@ -118,15 +120,14 @@ namespace ModelView_MAUI
             }
         }
 
-        private async void LoadExpCodes()
+        private async Task LoadExpCodes()
         {
             try
             {
-                var codes = await _httpClient.GetFromJsonAsync<List<string>>("http://74.208.227.170:8050/api/AccExpBub/GetExpendHeadCodes");
+                var codes = await _httpClient.GetFromJsonAsync<List<string>>($"{_baseUrl}/api/AccExpBub/GetExpendHeadCodes");
 
                 if (codes != null)
                 {
-                    // MAUI থ্রেড সেফ ডিসপ্যাচার লজিক
                     MainThread.BeginInvokeOnMainThread(() =>
                     {
                         ExpCodeList.Clear();
@@ -149,7 +150,6 @@ namespace ModelView_MAUI
         {
             IsEntryVisible = true;
 
-            // অটো ExpSubCode জেনারেশন লজিক
             string nextSubCode = "001";
             if (ExpBubList != null && ExpBubList.Any())
             {

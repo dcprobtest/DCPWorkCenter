@@ -28,6 +28,7 @@
                 <Border Grid.Column="0" Grid.Row="0" Style="{StaticResource OptionCardStyle}">
                     <Border.GestureRecognizers>
                         <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                        <TapGestureRecognizer Tapped="OnCardTapped" CommandParameter="Acc_US_Exp_Bub" />
                     </Border.GestureRecognizers>
                     <VerticalStackLayout VerticalOptions="Center">
                         <Path Fill="#FF5722" Data="M11,2V22C5.9,21.5 2,17.2 2,12C2,6.8 5.9,2.5 11,2M13,2C14.8,2.2 16.4,2.9 17.8,4L13,8.8V2M22,12C22,13.8 21.5,15.4 20.6,16.8L15.8,12H22M13,15.2L17.8,20C16.4,21.1 14.8,21.8 13,22V15.2Z" HorizontalOptions="Center" HeightRequest="65"/>
@@ -48,6 +49,7 @@
                 <Border Grid.Column="2" Grid.Row="0" Style="{StaticResource OptionCardStyle}">
                     <Border.GestureRecognizers>
                         <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                        <TapGestureRecognizer Tapped="OnCardTapped" CommandParameter="Acc_US_Expend_Head" />
                     </Border.GestureRecognizers>
                     <VerticalStackLayout VerticalOptions="Center">
                         <Path Fill="#607D8B" Data="M3,5H9V11H3V5M5,7V9H7V7H5M11,5H17V11H11V5M13,7V9H15V7H13M3,13H9V19H3V13M5,15V17H7V15H5M11,13H17V19H11V13M13,15V17H15V15H13M19,5V19H21V5H19Z" HorizontalOptions="Center" HeightRequest="65"/>
@@ -78,6 +80,7 @@
                 <Border Grid.Column="1" Grid.Row="1" Style="{StaticResource OptionCardStyle}">
                     <Border.GestureRecognizers>
                         <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                        <TapGestureRecognizer Tapped="OnCardTapped" CommandParameter="Acc_US_Income_Head" />
                     </Border.GestureRecognizers>
                     <VerticalStackLayout VerticalOptions="Center">
                         <Path Fill="#3F51B5" Data="M13,3V9H19L13,3M6,2H14L20,8V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V4A2,2 0 0,1 6,2M12,18L16,14H13V10H11V14H8L12,18Z" HorizontalOptions="Center" HeightRequest="65"/>
@@ -88,6 +91,7 @@
                 <Border Grid.Column="2" Grid.Row="1" Style="{StaticResource OptionCardStyle}">
                     <Border.GestureRecognizers>
                         <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                        <TapGestureRecognizer Tapped="OnCardTapped" CommandParameter="Acc_US_Inc_Sub" />
                     </Border.GestureRecognizers>
                     <VerticalStackLayout VerticalOptions="Center">
                         <Path Fill="#9C27B0" Data="M17,13H13V17H11V13H7V11H11V7H13V11H17M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" HorizontalOptions="Center" HeightRequest="65"/>

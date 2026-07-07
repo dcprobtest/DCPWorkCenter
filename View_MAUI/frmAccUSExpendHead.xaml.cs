@@ -1,14 +1,25 @@
-namespace View_MAUI;
+using System;
+using Microsoft.Maui.Controls;
 
-public partial class frmAccUSExpendHead : ContentPage
+namespace View_MAUI
 {
-    public frmAccUSExpendHead()
+    public partial class frmAccUSExpendHead : ContentPage
     {
-        InitializeComponent();
-    }
+        public string LoggedInUserId { get; private set; }
 
-    private async void Exit_Clicked(object sender, EventArgs e)
-    {
-        await Navigation.PopAsync();
+        public frmAccUSExpendHead(string userId)
+        {
+            InitializeComponent();
+
+            LoggedInUserId = userId;
+
+            // Pass the userId to the ViewModel
+            this.BindingContext = new AccUSExpendHeadViewModel(LoggedInUserId);
+        }
+
+        private async void Exit_Clicked(object sender, EventArgs e)
+        {
+            await Navigation.PopAsync();
+        }
     }
 }

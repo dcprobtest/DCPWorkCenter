@@ -8,9 +8,10 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.Maui.Controls;
-using Model_MAUI; // আপনার MAUI প্রজেক্টের আসল মডেল ক্লাসের নেমস্পেস এখানে রিপ্লেস করুন
+using Microsoft.Maui.Devices; // Required for DeviceInfo
+using Model_MAUI;
 
-namespace ModelView_MAUI
+namespace View_MAUI
 {
     public class AccUSIncSubViewModel : INotifyPropertyChanged
     {
@@ -19,10 +20,10 @@ namespace ModelView_MAUI
         private string _incDetail = string.Empty;
         private string _incCode = string.Empty;
         private string _uid = string.Empty;
-        private DateTime _entryDate = DateTime.Now; // MAUI DatePicker-এর জন্য অ-নালযোগ্য রাখা হয়েছে
+        private DateTime _entryDate = DateTime.Now;
         private AccUSIncSubModel? _selectedUSIncSub;
         private readonly HttpClient _httpClient;
-        private const string ApiBaseUrl = "http://74.208.227.170:8050/api/AccUSIncSub";
+        private readonly string _apiBaseUrl = "api/AccUSIncSub";
 
         // Collections for DataGrid and ComboBox
         public ObservableCollection<AccUSIncSubModel> USIncSubList { get; set; }
@@ -35,37 +36,30 @@ namespace ModelView_MAUI
         public ICommand ExitCommand { get; }
 
         // Default Constructor
-        public AccUSIncSubViewModel()
+        public AccUSIncSubViewModel() : this(string.Empty)
         {
-            _httpClient = new HttpClient();
-
-            USIncSubList = new ObservableCollection<AccUSIncSubModel>();
-            IncCodeList = new ObservableCollection<string>();
-
-            // .NET MAUI স্ট্যান্ডার্ড কমান্ড আর্কিটেকচার
-            AddCommand = new Command(ExecuteAdd);
-            SaveCommand = new Command(async () => await ExecuteSave(), CanExecuteSave);
-            EditCommand = new Command(ExecuteEdit);
-            ExitCommand = new Command(async () => await ExecuteExit());
-
-            LoadInitialData();
         }
 
         // Parameterized Constructor to receive UID from View
         public AccUSIncSubViewModel(string uid)
         {
-            _httpClient = new HttpClient();
+            // Using 10.0.2.2 for Android Emulator to access local machine
+            string baseUrl = DeviceInfo.Platform == DevicePlatform.Android
+                ? "https://10.0.2.2:7073/"
+                : "https://localhost:7073/";
+
+            _httpClient = new HttpClient { BaseAddress = new Uri(baseUrl) };
 
             USIncSubList = new ObservableCollection<AccUSIncSubModel>();
             IncCodeList = new ObservableCollection<string>();
 
+            // .NET MAUI Standard Command Architecture
             AddCommand = new Command(ExecuteAdd);
             SaveCommand = new Command(async () => await ExecuteSave(), CanExecuteSave);
             EditCommand = new Command(ExecuteEdit);
             ExitCommand = new Command(async () => await ExecuteExit());
 
             UID = uid;
-
             LoadInitialDataWithUID(uid);
         }
 
@@ -79,7 +73,7 @@ namespace ModelView_MAUI
                 {
                     _incSubCode = value;
                     OnPropertyChanged();
-                    // ইনপুট পরিবর্তনের সাথে সাথে SAVE বাটনের CanExecute লজিক ট্রিগার হবে
+                    // Trigger SaveCommand CanExecute logic on input change
                     (SaveCommand as Command)?.ChangeCanExecute();
                 }
             }
@@ -148,7 +142,7 @@ namespace ModelView_MAUI
                     _selectedUSIncSub = value;
                     OnPropertyChanged();
 
-                    // গ্রিড সিলেকশন চেঞ্জ হলে ডেটা ফর্ম ফিল্ডে চলে আসবে
+                    // Load data into fields when grid selection changes
                     if (_selectedUSIncSub != null)
                     {
                         IncSubCode = _selectedUSIncSub.IncSubCode ?? string.Empty;
@@ -168,7 +162,6 @@ namespace ModelView_MAUI
             IncSubCode = string.Empty;
             IncDetail = string.Empty;
             SelectedIncCode = IncCodeList.Count > 0 ? IncCodeList[0] : string.Empty;
-            UID = "01";
             EntryDate = DateTime.Now;
             SelectedUSIncSub = null;
         }
@@ -190,11 +183,11 @@ namespace ModelView_MAUI
 
                 if (SelectedUSIncSub == null)
                 {
-                    response = await _httpClient.PostAsJsonAsync(ApiBaseUrl, targetSubHead);
+                    response = await _httpClient.PostAsJsonAsync(_apiBaseUrl, targetSubHead);
                 }
                 else
                 {
-                    response = await _httpClient.PutAsJsonAsync($"{ApiBaseUrl}/{targetSubHead.IncSubCode}", targetSubHead);
+                    response = await _httpClient.PutAsJsonAsync($"{_apiBaseUrl}/{targetSubHead.IncSubCode}", targetSubHead);
                 }
 
                 if (response.IsSuccessStatusCode)
@@ -243,25 +236,17 @@ namespace ModelView_MAUI
         #endregion
 
         #region Data Loading Helpers (API Integration)
-        private async void LoadInitialData()
-        {
-            UID = "01";
-            await FetchComboBoxCodes();
-            await RefreshGridData();
-        }
-
         private async void LoadInitialDataWithUID(string uid)
         {
             await FetchComboBoxCodes();
             await RefreshGridData();
-            UID = uid;
         }
 
         private async Task FetchComboBoxCodes()
         {
             try
             {
-                var rawCodes = await _httpClient.GetFromJsonAsync<List<string>>($"{ApiBaseUrl}/GetIncCodes");
+                var rawCodes = await _httpClient.GetFromJsonAsync<List<string>>($"{_apiBaseUrl}/GetIncCodes");
                 if (rawCodes != null)
                 {
                     IncCodeList.Clear();
@@ -279,8 +264,6 @@ namespace ModelView_MAUI
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"API fetch error: {ex.Message}");
-
-                // Fallback local schema assignments if API target is unreachable
                 IncCodeList.Clear();
                 IncCodeList.Add("01");
                 IncCodeList.Add("02");
@@ -294,7 +277,7 @@ namespace ModelView_MAUI
         {
             try
             {
-                var items = await _httpClient.GetFromJsonAsync<List<AccUSIncSubModel>>(ApiBaseUrl);
+                var items = await _httpClient.GetFromJsonAsync<List<AccUSIncSubModel>>(_apiBaseUrl);
                 if (items != null)
                 {
                     USIncSubList.Clear();

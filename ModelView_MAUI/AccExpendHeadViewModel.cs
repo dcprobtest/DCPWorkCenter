@@ -8,17 +8,21 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
-using Model_MAUI; // আপনার প্রজেক্টের সঠিক মডেল নেমস্পেস নিশ্চিত করুন
+using Model_MAUI;
 
-namespace ModelView_MAUI
+namespace View_MAUI
 {
     public class AccExpendHeadViewModel : INotifyPropertyChanged
     {
-        private readonly HttpClient _httpClient;
-        private const string ApiUrl = "api/AccExpendHead";
-        private string _receivedUid = string.Empty;
+        // Android Emulator এর জন্য 10.0.2.2 এবং পিসি বা ফিজিক্যাল ডিভাইসের জন্য localhost/IP
+        private readonly string _baseUrl = DeviceInfo.Platform == DevicePlatform.Android
+            ? "https://10.0.2.2:7073"
+            : "https://localhost:7073";
 
-        // Collection for CollectionView
+        private readonly HttpClient _httpClient;
+        private readonly string _apiUrl;
+        private string _receivedUid = "Admin";
+
         private ObservableCollection<AccExpendHeadModel> _expenseList = new();
         public ObservableCollection<AccExpendHeadModel> ExpenseList
         {
@@ -26,14 +30,13 @@ namespace ModelView_MAUI
             set { _expenseList = value; OnPropertyChanged(); }
         }
 
-        // Selected item from CollectionView
-        private AccExpendHeadModel _selectedExpense;
-        public AccExpendHeadModel _selectedExpenseItem
+        private AccExpendHeadModel _selectedExpenseItem;
+        public AccExpendHeadModel SelectedExpenseItem
         {
-            get => _selectedExpense;
+            get => _selectedExpenseItem;
             set
             {
-                _selectedExpense = value;
+                _selectedExpenseItem = value;
                 OnPropertyChanged();
                 if (value != null)
                 {
@@ -84,9 +87,9 @@ namespace ModelView_MAUI
 
         public AccExpendHeadViewModel()
         {
-            _httpClient = new HttpClient { BaseAddress = new Uri("http://74.208.227.170:8050/") };
+            _httpClient = new HttpClient();
+            _apiUrl = $"{_baseUrl}/api/AccExpendHead";
 
-            // MAUI Standard Commands
             AddCommand = new Command(ExecuteAdd);
             SaveCommand = new Command(async () => await ExecuteSave());
             EditCommand = new Command(async () => await ExecuteEdit());
@@ -95,7 +98,7 @@ namespace ModelView_MAUI
             _ = LoadData();
         }
 
-        // ফ্রন্ট-এন্ড ফর্ম ওপেনিং বা লগইন স্টেট থেকে UID পাস করার জন্য ওভারলোডেড কনস্ট্রাক্টর
+        // Updated constructor to receive UID properly
         public AccExpendHeadViewModel(string uid) : this()
         {
             _receivedUid = uid;
@@ -106,7 +109,7 @@ namespace ModelView_MAUI
         {
             try
             {
-                var response = await _httpClient.GetFromJsonAsync<List<AccExpendHeadModel>>(ApiUrl);
+                var response = await _httpClient.GetFromJsonAsync<List<AccExpendHeadModel>>(_apiUrl);
                 if (response != null)
                 {
                     ExpenseList = new ObservableCollection<AccExpendHeadModel>(response);
@@ -130,8 +133,7 @@ namespace ModelView_MAUI
         {
             if (string.IsNullOrWhiteSpace(ExpCode) || string.IsNullOrWhiteSpace(ExpDetail))
             {
-                if (Application.Current?.MainPage != null)
-                    await Application.Current.MainPage.DisplayAlert("Warning", "Please fill all required fields (ExpCode and ExpDetail).", "OK");
+                await Application.Current.MainPage.DisplayAlert("Warning", "Please fill all fields.", "OK");
                 return;
             }
 
@@ -145,35 +147,29 @@ namespace ModelView_MAUI
 
             try
             {
-                var response = await _httpClient.PostAsJsonAsync(ApiUrl, newEntry);
+                var response = await _httpClient.PostAsJsonAsync(_apiUrl, newEntry);
                 if (response.IsSuccessStatusCode)
                 {
-                    if (Application.Current?.MainPage != null)
-                        await Application.Current.MainPage.DisplayAlert("Success", "Saved Successfully", "OK");
-
+                    await Application.Current.MainPage.DisplayAlert("Success", "Saved Successfully", "OK");
                     await LoadData();
                     ClearFields();
                 }
                 else
                 {
-                    var error = await response.Content.ReadAsStringAsync();
-                    if (Application.Current?.MainPage != null)
-                        await Application.Current.MainPage.DisplayAlert("API Error", $"Error saving data: {error}", "OK");
+                    await Application.Current.MainPage.DisplayAlert("API Error", "Error saving data", "OK");
                 }
             }
             catch (Exception ex)
             {
-                if (Application.Current?.MainPage != null)
-                    await Application.Current.MainPage.DisplayAlert("Error", $"Connection Error: {ex.Message}", "OK");
+                await Application.Current.MainPage.DisplayAlert("Error", $"Connection Error: {ex.Message}", "OK");
             }
         }
 
         private async Task ExecuteEdit()
         {
-            if (_selectedExpense == null)
+            if (SelectedExpenseItem == null)
             {
-                if (Application.Current?.MainPage != null)
-                    await Application.Current.MainPage.DisplayAlert("Selection Required", "Please select an item from the list to update.", "OK");
+                await Application.Current.MainPage.DisplayAlert("Selection Required", "Please select an item.", "OK");
                 return;
             }
 
@@ -187,26 +183,17 @@ namespace ModelView_MAUI
 
             try
             {
-                var response = await _httpClient.PutAsJsonAsync(ApiUrl, updatedEntry);
-
+                var response = await _httpClient.PutAsJsonAsync($"{_apiUrl}/{SelectedExpenseItem.ExpCode}", updatedEntry);
                 if (response.IsSuccessStatusCode)
                 {
-                    if (Application.Current?.MainPage != null)
-                        await Application.Current.MainPage.DisplayAlert("Success", "Updated Successfully", "OK");
-
+                    await Application.Current.MainPage.DisplayAlert("Success", "Updated Successfully", "OK");
                     await LoadData();
                     ClearFields();
-                }
-                else
-                {
-                    if (Application.Current?.MainPage != null)
-                        await Application.Current.MainPage.DisplayAlert("Error", "Update failed. Please check if the data is correct.", "OK");
                 }
             }
             catch (Exception ex)
             {
-                if (Application.Current?.MainPage != null)
-                    await Application.Current.MainPage.DisplayAlert("Error", $"Update Error: {ex.Message}", "OK");
+                await Application.Current.MainPage.DisplayAlert("Error", $"Update Error: {ex.Message}", "OK");
             }
         }
 
@@ -228,16 +215,13 @@ namespace ModelView_MAUI
             ExpDetail = string.Empty;
             UID = _receivedUid;
             EntryDate = DateTime.Now;
-            _selectedExpense = null;
-            OnPropertyChanged(nameof(_selectedExpenseItem));
+            SelectedExpenseItem = null;
         }
 
-        #region PropertyChanged Implementation
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        #endregion
     }
 }

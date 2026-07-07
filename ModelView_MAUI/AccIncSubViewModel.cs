@@ -8,9 +8,10 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Maui.Controls;
-using Model_MAUI; // আপনার MAUI প্রজেক্টের সঠিক মডেল নেমস্পেস নিশ্চিত করুন
+using Microsoft.Maui.Devices; 
+using Model_MAUI;
 
-namespace ModelView_MAUI
+namespace View_MAUI
 {
     public class AccIncSubViewModel : INotifyPropertyChanged
     {
@@ -34,7 +35,12 @@ namespace ModelView_MAUI
         // Default constructor
         public AccIncSubViewModel()
         {
-            _httpClient = new HttpClient { BaseAddress = new Uri("http://74.208.227.170:8050/") };
+            // URL logic updated to match AccEmpSalaryViewModel
+            string baseUrl = DeviceInfo.Platform == DevicePlatform.Android
+                ? "https://10.0.2.2:7073/"
+                : "https://localhost:7073/";
+
+            _httpClient = new HttpClient { BaseAddress = new Uri(baseUrl) };
 
             IncSubList = new ObservableCollection<AccIncSubModel>();
             IncCodeList = new ObservableCollection<string>();
@@ -43,7 +49,8 @@ namespace ModelView_MAUI
             // MAUI Standard Command initialization
             AddCommand = new Command(ExecuteAdd);
             SaveCommand = new Command(async () => await ExecuteSave());
-            EditCommand = new Command(ExecuteEdit);
+            // Updated to handle async call properly
+            EditCommand = new Command(async () => await ExecuteEdit());
             ExitCommand = new Command(async () => await ExecuteExit());
 
             // Default State
@@ -84,8 +91,8 @@ namespace ModelView_MAUI
                 OnPropertyChanged();
                 if (_selectedIncSub != null)
                 {
-                    // যখন কালেকশন ভিউ থেকে কোনো রো সিলেক্ট হবে তখন ফিল্ডগুলোতে ডেটা পাস হবে
-                    ExecuteEdit();
+                    // Trigger edit logic when a row is selected from the CollectionView
+                    _ = ExecuteEdit();
                 }
             }
         }
@@ -137,7 +144,7 @@ namespace ModelView_MAUI
                         await Application.Current.MainPage.DisplayAlert("Success", "Data saved successfully.", "OK");
                     }
 
-                    // কালেকশনে অ্যাড করা এবং ইনপুট ফরম ক্লিয়ার করা
+                    // Add to collection and clear input form
                     IncSubList.Add(CurrentEntry);
                     CurrentEntry = new AccIncSubModel { UID = _userUID, EntryDate = DateTime.Now };
                     SelectedIncCode = string.Empty;
@@ -160,7 +167,8 @@ namespace ModelView_MAUI
             }
         }
 
-        private async void ExecuteEdit()
+        // Changed return type to Task and added async modifier
+        private async Task ExecuteEdit()
         {
             if (SelectedIncSub != null)
             {
@@ -209,8 +217,6 @@ namespace ModelView_MAUI
                         IncCodeList.Add(code);
                     }
                 }
-
-                // অপশনাল: যদি ইনিশিয়াল সাব হেড কালেকশন ডেটাও লোড করতে চান তবে এখানে রিকোয়েস্ট যুক্ত করতে পারেন।
             }
             catch (Exception ex)
             {

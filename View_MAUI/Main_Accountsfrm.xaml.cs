@@ -10,21 +10,42 @@ namespace View_MAUI
         private Border _activeBorder;
         private double _angle = 0;
 
-        // Property to store the received user ID
         public string AccountUserId { get; private set; }
 
-        // Updated Constructor to accept uid
         public Main_Accountsfrm(string uid)
         {
             InitializeComponent();
 
-            // Assign the received uid
             AccountUserId = uid;
 
-            // Timer setup (updates color every 30 milliseconds)
             _timer = Dispatcher.CreateTimer();
             _timer.Interval = TimeSpan.FromMilliseconds(30);
             _timer.Tick += (s, e) => UpdateRainbowBorder();
+        }
+
+        private async void OnEmployeeSalaryTapped(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new frmAccEmpSalary(AccountUserId));
+        }
+
+        private async void OnExpenseBubTapped(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new frmAccExpBub(AccountUserId));
+        }
+
+        private async void OnExpendHeadTapped(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new frmAccExpendHead(AccountUserId));
+        }
+
+        private async void OnIncomeHeadTapped(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new frmAccIncomeHead(AccountUserId));
+        }
+
+        private async void OnIncomeSubTapped(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new frmAccIncSub(AccountUserId));
         }
 
         private async void OnPointerEntered(object sender, PointerEventArgs e)
@@ -35,7 +56,7 @@ namespace View_MAUI
                 await border.ScaleTo(1.05, 150, Easing.SpringOut);
 
                 border.StrokeThickness = 4;
-                _timer.Start(); // Start timer when mouse enters
+                _timer.Start();
             }
         }
 
@@ -43,10 +64,9 @@ namespace View_MAUI
         {
             if (sender is Border border)
             {
-                _timer.Stop(); // Stop timer when mouse exits
+                _timer.Stop();
                 _activeBorder = null;
 
-                // Reset border rotation and scale
                 border.Rotation = 0;
                 _angle = 0;
 
@@ -60,16 +80,13 @@ namespace View_MAUI
         {
             if (_activeBorder == null) return;
 
-            // Increment angle to calculate new gradient positions
             _angle += 0.1;
 
-            // Calculate coordinates based on the angle to simulate rotating gradient
             double x1 = 0.5 + Math.Cos(_angle) * 0.5;
             double y1 = 0.5 + Math.Sin(_angle) * 0.5;
             double x2 = 0.5 + Math.Cos(_angle + Math.PI) * 0.5;
             double y2 = 0.5 + Math.Sin(_angle + Math.PI) * 0.5;
 
-            // Apply rainbow color loop with rotating Start and End points
             _activeBorder.Stroke = new LinearGradientBrush(
                 new GradientStopCollection {
                     new GradientStop(Colors.Red, 0.0f),
@@ -82,8 +99,6 @@ namespace View_MAUI
                 new Point(x1, y1),
                 new Point(x2, y2)
             );
-
-            // Removed _activeBorder.Rotation = _angle; to keep the button static
         }
     }
 }
