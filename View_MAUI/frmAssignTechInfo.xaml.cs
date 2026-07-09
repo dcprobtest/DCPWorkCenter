@@ -1,9 +1,15 @@
-namespace View_MAUI;
+﻿using Microsoft.Maui.Controls;
 
-public partial class frmAssignTechInfo : ContentPage
+namespace View_MAUI
 {
-	public frmAssignTechInfo()
-	{
-		InitializeComponent();
-	}
+    public partial class frmAssignTechInfo : ContentPage
+    {
+        public frmAssignTechInfo()
+        {
+            InitializeComponent();
+
+            // ভিউমডেল অবজেক্ট তৈরি করে এই পেজের ডাটা বাইন্ডিং কন্টেক্সটে অ্যাসাইন করা হলো
+            this.BindingContext = new AssignTechInfoViewModel();
+        }
+    }
 }
