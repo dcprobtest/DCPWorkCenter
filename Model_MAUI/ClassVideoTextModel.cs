@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace View_WPF.Model_MAUI
+namespace View_MAUI.Model_MAUI
 {
     public class ClassVideoTextModel
     {

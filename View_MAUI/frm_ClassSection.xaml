@@ -3,81 +3,155 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="View_MAUI.frm_ClassSection"
              Title="Class Section Management"
-             BackgroundColor="#F4F7F9">
+             BackgroundColor="White">
 
-    <Grid Margin="20">
-        <Border StrokeShape="RoundRectangle 15" Padding="2">
-            <Border.Background>
-                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                    <GradientStop Color="#FF0000" Offset="0.0"/>
-                    <GradientStop Color="#00FF00" Offset="0.5"/>
-                    <GradientStop Color="#0000FF" Offset="1.0"/>
-                </LinearGradientBrush>
-            </Border.Background>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- টেক্সট বক্স এবং এডিটর স্টাইল (Dark Background, White Text) -->
+            <Style x:Key="FuturisticEntryStyle" TargetType="Entry">
+                <Setter Property="BackgroundColor" Value="#1A1A1A"/>
+                <Setter Property="TextColor" Value="White"/>
+                <Setter Property="FontFamily" Value="OpenSansSemibold"/>
+                <Setter Property="HeightRequest" Value="45"/>
+                <Setter Property="Margin" Value="0,5,0,15"/>
+            </Style>
 
-            <Border Background="White" StrokeShape="RoundRectangle 13" Padding="25">
-                <Grid ColumnDefinitions="1.8*, 1*">
-                    <Grid Grid.Column="0" RowDefinitions="*, Auto, Auto" Margin="0,0,25,0">
+            <Style x:Key="FuturisticEditorStyle" TargetType="Editor">
+                <Setter Property="BackgroundColor" Value="#1A1A1A"/>
+                <Setter Property="TextColor" Value="White"/>
+                <Setter Property="FontFamily" Value="OpenSansSemibold"/>
+                <Setter Property="HeightRequest" Value="80"/>
+                <Setter Property="Margin" Value="0,5,0,15"/>
+            </Style>
 
-                        <CollectionView ItemsSource="{Binding ClassSectionList}" SelectedItem="{Binding SelectedClassSection}" SelectionMode="Single">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid Padding="10" ColumnDefinitions="100, *">
-                                        <Label Text="{Binding SectionId}" FontAttributes="Bold"/>
-                                        <Label Grid.Column="1" Text="{Binding SectionDesc}"/>
-                                    </Grid>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
+            <!-- লেবেল স্টাইল -->
+            <Style x:Key="FormLabelStyle" TargetType="Label">
+                <Setter Property="TextColor" Value="#333333"/>
+                <Setter Property="FontAttributes" Value="Bold"/>
+                <Setter Property="FontSize" Value="14"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-                        <Grid Grid.Row="1" ColumnDefinitions="*, *" Margin="0,20">
-                            <Entry Text="{Binding ClassSection.SectionId}" Placeholder="Section ID" HeightRequest="40"/>
-                            <Entry Grid.Column="1" Text="{Binding ClassSection.SectionDesc}" Placeholder="Description" Margin="10,0,0,0"/>
+    <!-- মূল লেআউটের জন্য গ্রিড -->
+    <Grid RowDefinitions="*" ColumnDefinitions="*">
+
+        <!-- ১. ব্যাকগ্রাউন্ড ফিউচারিস্টিক ব্লার ইলিপ্স ইফেক্ট (FIXED MAUI LAYOUT FLAGS) -->
+        <AbsoluteLayout HorizontalOptions="Fill" VerticalOptions="Fill">
+            <Ellipse Fill="#E8F5E9" WidthRequest="400" HeightRequest="400" 
+                     AbsoluteLayout.LayoutBounds="0.1, 0.2, 400, 400" 
+                     AbsoluteLayout.LayoutFlags="XProportional, YProportional" />
+            <Ellipse Fill="#FCE4EC" WidthRequest="350" HeightRequest="350" 
+                     AbsoluteLayout.LayoutBounds="0.9, 0.8, 350, 350" 
+                     AbsoluteLayout.LayoutFlags="XProportional, YProportional" />
+        </AbsoluteLayout>
+
+        <!-- ২. মেইন কন্টেন্ট এরিয়া -->
+        <ScrollView Grid.Row="0" Grid.Column="0" Padding="30" VerticalScrollBarVisibility="Never">
+            <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*" RowSpacing="25">
+
+                <!-- শিরোনাম কন্টেইনার -->
+                <Frame Grid.Row="0" BackgroundColor="Transparent" BorderColor="Transparent" Padding="0">
+                    <Label Text="CLASS SECTION SETUP" 
+                           FontSize="28" 
+                           FontAttributes="Bold" 
+                           TextColor="#111111" 
+                           HorizontalOptions="Center" 
+                           CharacterSpacing="2"/>
+                </Frame>
+
+                <!-- মেইন ফর্ম এবং লিস্ট কন্টেইনার গ্রিড -->
+                <Grid Grid.Row="1" RowDefinitions="Auto, Auto" ColumnDefinitions="*, *" RowSpacing="20" ColumnSpacing="30">
+
+                    <!-- বাম পাশ: ইনপুট ফর্ম কার্ড -->
+                    <Border Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" StrokeThickness="3" StrokeShape="RoundRectangle 15" Padding="25" BackgroundColor="White">
+                        <Border.Stroke>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#FF007F" Offset="0.0" />
+                                <GradientStop Color="#7F00FF" Offset="0.25" />
+                                <GradientStop Color="#00FFFF" Offset="0.5" />
+                                <GradientStop Color="#00FF7F" Offset="0.75" />
+                                <GradientStop Color="#FF007F" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Stroke>
+
+                        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="*">
+
+                            <Label Grid.Row="0" Text="Section ID" Style="{StaticResource FormLabelStyle}"/>
+                            <Entry Grid.Row="1" Text="{Binding ClassSection.SectionId}" Style="{StaticResource FuturisticEntryStyle}"/>
+
+                            <Label Grid.Row="2" Text="Course" Style="{StaticResource FormLabelStyle}"/>
+                            <Picker Grid.Row="3" ItemsSource="{Binding CourseList}" SelectedItem="{Binding ClassSection.SubjectCode}" Title="Select Course" BackgroundColor="#1A1A1A" TextColor="White" Margin="0,5,0,15" HeightRequest="45"/>
+
+                            <Label Grid.Row="4" Text="Description" Style="{StaticResource FormLabelStyle}"/>
+                            <Editor Grid.Row="5" Text="{Binding ClassSection.SectionDesc}" Style="{StaticResource FuturisticEditorStyle}"/>
+
+                            <Label Grid.Row="6" Text="Entry Date" Style="{StaticResource FormLabelStyle}"/>
+                            <DatePicker Grid.Row="7" Date="{Binding ClassSection.EntryDate}" Format="dd-MMM-yyyy" BackgroundColor="#1A1A1A" TextColor="White" Margin="0,5,0,15" HeightRequest="45"/>
+
+                            <Label Grid.Row="8" Text="Start Date" Style="{StaticResource FormLabelStyle}"/>
+                            <DatePicker Grid.Row="9" Date="{Binding ClassSection.StartDate}" Format="dd-MMM-yyyy" BackgroundColor="#1A1A1A" TextColor="White" Margin="0,5,0,15" HeightRequest="45"/>
+
+                            <Label Grid.Row="10" Text="End Date" Style="{StaticResource FormLabelStyle}"/>
+                            <DatePicker Grid.Row="11" Date="{Binding ClassSection.EndDate}" Format="dd-MMM-yyyy" BackgroundColor="#1A1A1A" TextColor="White" Margin="0,5,0,15" HeightRequest="45"/>
+
+                            <!-- অ্যাক্টিভ চেকবক্স এরিয়া -->
+                            <Grid Grid.Row="12" ColumnDefinitions="Auto, Auto" ColumnSpacing="10" Margin="0,5,0,20">
+                                <CheckBox Grid.Column="0" IsChecked="{Binding IsActiveChecked}" Color="#7F00FF"/>
+                                <Label Grid.Column="1" Text="Mark as Active" VerticalOptions="Center" FontAttributes="Bold" TextColor="#333333"/>
+                            </Grid>
+
+                            <!-- অ্যাকশন বাটনস গ্রিড -->
+                            <Grid Grid.Row="13" RowDefinitions="Auto, Auto" ColumnDefinitions="*, *, *" RowSpacing="10" ColumnSpacing="10">
+                                <Button Grid.Row="0" Grid.Column="0" Text="ADD" Command="{Binding AddCommand}" BackgroundColor="#2196F3" TextColor="White" FontAttributes="Bold" CornerRadius="8"/>
+                                <Button Grid.Row="0" Grid.Column="1" Text="ACTIVE" Command="{Binding ActiveClickCommand}" BackgroundColor="#4CAF50" TextColor="White" FontAttributes="Bold" CornerRadius="8"/>
+                                <Button Grid.Row="0" Grid.Column="2" Text="DELETE" Command="{Binding DeleteCommand}" BackgroundColor="#F44336" TextColor="White" FontAttributes="Bold" CornerRadius="8"/>
+
+                                <Button Grid.Row="1" Grid.Column="0" Text="EDIT" Command="{Binding EditCommand}" BackgroundColor="#FF9800" TextColor="White" FontAttributes="Bold" CornerRadius="8"/>
+                                <Button Grid.Row="1" Grid.Column="1" Text="EXIT" Command="{Binding ExitCommand}" BackgroundColor="#607D8B" TextColor="White" FontAttributes="Bold" CornerRadius="8"/>
+
+                                <!-- সেভ বাটন -->
+                                <Border Grid.Row="1" Grid.Column="2" StrokeShape="RoundRectangle 8" StrokeThickness="0" Padding="0">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                            <GradientStop Color="#FF007F" Offset="0.0"/>
+                                            <GradientStop Color="#7F00FF" Offset="1.0"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <Button Text="SAVE" Command="{Binding SaveCommand}" BackgroundColor="Transparent" TextColor="White" FontAttributes="Bold"/>
+                                </Border>
+                            </Grid>
                         </Grid>
-
-                        <FlexLayout Grid.Row="2" JustifyContent="Center" Wrap="Wrap">
-                            <Button Text="ADD" Command="{Binding AddCommand}" WidthRequest="100" Margin="5" BackgroundColor="#6366F1" CornerRadius="6">
-                                <Button.GestureRecognizers>
-                                    <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited"/>
-                                </Button.GestureRecognizers>
-                            </Button>
-                            <Button Text="SAVE" Command="{Binding SaveCommand}" WidthRequest="100" Margin="5" BackgroundColor="#6366F1" CornerRadius="6">
-                                <Button.GestureRecognizers>
-                                    <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited"/>
-                                </Button.GestureRecognizers>
-                            </Button>
-                            <Button Text="DELETE" Command="{Binding DeleteCommand}" WidthRequest="100" Margin="5" BackgroundColor="#6366F1" CornerRadius="6">
-                                <Button.GestureRecognizers>
-                                    <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited"/>
-                                </Button.GestureRecognizers>
-                            </Button>
-                            <Button Text="EDIT" Command="{Binding EditCommand}" WidthRequest="100" Margin="5" BackgroundColor="#6366F1" CornerRadius="6">
-                                <Button.GestureRecognizers>
-                                    <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited"/>
-                                </Button.GestureRecognizers>
-                            </Button>
-                            <Button Text="EXIT" Command="{Binding ExitCommand}" WidthRequest="100" Margin="5" BackgroundColor="#6366F1" CornerRadius="6">
-                                <Button.GestureRecognizers>
-                                    <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited"/>
-                                </Button.GestureRecognizers>
-                            </Button>
-                        </FlexLayout>
-                    </Grid>
-
-                    <Border Grid.Column="1" BackgroundColor="#FAFAFA" StrokeShape="RoundRectangle 12" Padding="20">
-                        <VerticalStackLayout Spacing="15">
-                            <Entry Text="{Binding ClassSection.EntryByUid}" Placeholder="User ID (Entry By)" HeightRequest="40"/>
-
-                            <HorizontalStackLayout Spacing="10">
-                                <CheckBox IsChecked="{Binding ClassSection.Activate}"/>
-                                <Label Text="Is Active" VerticalOptions="Center"/>
-                            </HorizontalStackLayout>
-
-                            <Button Text="Active Now" Command="{Binding ActiveClickCommand}" BackgroundColor="#6366F1"/>
-                        </VerticalStackLayout>
                     </Border>
+
+                    <!-- ডান পাশ: ডেটা লিস্ট কার্ড -->
+                    <Border Grid.Row="0" Grid.Column="1" StrokeThickness="1" StrokeShape="RoundRectangle 15" Stroke="#E0E0E0" Padding="15" BackgroundColor="#FAFAFA">
+                        <Grid RowDefinitions="Auto, *">
+                            <Label Grid.Row="0" Text="Existing Class Sections" FontSize="18" FontAttributes="Bold" TextColor="#111111" Margin="0,0,0,15"/>
+
+                            <CollectionView Grid.Row="1" ItemsSource="{Binding ClassSectionList}" SelectedItem="{Binding SelectedClassSection}" SelectionMode="Single">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Padding="10" Margin="0,0,0,10">
+                                            <Grid.GestureRecognizers>
+                                                <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited"/>
+                                            </Grid.GestureRecognizers>
+
+                                            <Border StrokeShape="RoundRectangle 10" StrokeThickness="1" Stroke="#EEEEEE" BackgroundColor="White" Padding="15">
+                                                <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*, Auto">
+                                                    <Label Grid.Row="0" Grid.Column="0" Text="{Binding SectionId}" FontAttributes="Bold" TextColor="#111111" FontSize="16"/>
+                                                    <Label Grid.Row="1" Grid.Column="0" Text="{Binding SectionDesc}" TextColor="#666666" FontSize="13" Margin="0,4,0,0"/>
+                                                </Grid>
+                                            </Border>
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </Grid>
+                    </Border>
+
                 </Grid>
-            </Border>
-        </Border>
+            </Grid>
+        </ScrollView>
     </Grid>
 </ContentPage>

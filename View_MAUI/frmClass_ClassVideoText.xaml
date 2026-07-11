@@ -1,97 +1,155 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             x:Class="View_MAUI.frmClass_ClassVideoText"
-             Title="Class Video Text Information"
-             BackgroundColor="#F8FAFC">
+             x:Class="View_MAUI.View_MAUI.ClassVideoTextView"
+             Title="Class Video Management"
+             BackgroundColor="#1E1E24">
 
-    <ContentPage.Resources>
-        <Style x:Key="ModernEntry" TargetType="Entry">
-            <Setter Property="HeightRequest" Value="40"/>
-            <Setter Property="BackgroundColor" Value="White"/>
-            <Setter Property="VerticalOptions" Value="Center"/>
-        </Style>
-        <Style x:Key="BaseBtn" TargetType="Button">
-            <Setter Property="HeightRequest" Value="40"/>
-            <Setter Property="FontAttributes" Value="Bold"/>
-            <Setter Property="CornerRadius" Value="6"/>
-        </Style>
-    </ContentPage.Resources>
+    <!-- প্রধান লেআউট - কোনো StackPanel ব্যবহার করা হয়নি -->
+    <Grid RowDefinitions="Auto, *, Auto" ColumnDefinitions="*" Padding="20">
 
-    <Grid Margin="20" ColumnDefinitions="*, 320" ColumnSpacing="25">
-
-        <Grid Grid.Column="0" RowDefinitions="Auto, *, Auto, Auto">
-            <Grid Grid.Row="0" ColumnDefinitions="1.2*, *, 100" ColumnSpacing="10" Margin="0,0,0,15">
-                <Picker Title="Subject" ItemsSource="{Binding SubjectList}" ItemDisplayBinding="{Binding SubjectDesc}" SelectedItem="{Binding SelectedSubject}"/>
-                <Picker Grid.Column="1" Title="Select Section" ItemsSource="{Binding SectionList}" ItemDisplayBinding="{Binding SectionDesc}" SelectedItem="{Binding SelectedSection}"/>
-                <Entry Grid.Column="2" Placeholder="ID" Text="{Binding SelectedSection.SectionId}" IsReadOnly="True" BackgroundColor="#F1F5F9"/>
-            </Grid>
-
-            <Border Grid.Row="1" Stroke="#E2E8F0" StrokeShape="RoundRectangle 8" Background="White">
-                <CollectionView ItemsSource="{Binding ClassVideoList}" SelectedItem="{Binding SelectedItemInGrid}">
-                    <CollectionView.Header>
-                        <Grid BackgroundColor="#F3F4F6" Padding="10" ColumnDefinitions="100, 400, 80">
-                            <Label Text="Class ID" FontAttributes="Bold"/>
-                            <Label Grid.Column="1" Text="Class Content" FontAttributes="Bold"/>
-                            <Label Grid.Column="2" Text="Status" FontAttributes="Bold"/>
-                        </Grid>
-                    </CollectionView.Header>
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Padding="10" ColumnDefinitions="100, 400, 80">
-                                <Label Text="{Binding ClassID}"/>
-                                <Label Grid.Column="1" Text="{Binding ClassContent}"/>
-                                <Label Grid.Column="2" Text="{Binding Activate}"/>
-                            </Grid>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-            </Border>
-
-            <Grid Grid.Row="2" ColumnDefinitions="100, *" ColumnSpacing="10" Margin="0,15,0,0">
-                <Entry Placeholder="Class ID" Text="{Binding ClassVideo.ClassID}"/>
-                <Entry Grid.Column="1" Placeholder="Enter Class Content..." Text="{Binding ClassVideo.ClassContent}"/>
-            </Grid>
-
-            <Grid Grid.Row="3" ColumnDefinitions="*, Auto" Margin="0,10,0,0">
-                <Entry Placeholder="Video Server Path..." Text="{Binding ClassVideo.ClassPath}" IsReadOnly="True"/>
-                <Button Grid.Column="1" Text="Browse Server" Command="{Binding BrowseCommand}" Margin="10,0,0,0"/>
-            </Grid>
+        <!-- হেড সেকশন (Row 0) -->
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="0,0,0,20">
+            <Label Grid.Column="0" 
+                   Text="CLASS VIDEO SETUP" 
+                   FontSize="24" 
+                   FontAttributes="Bold" 
+                   TextColor="#00FFCC"
+                   VerticalOptions="Center"/>
+            <Button Grid.Column="1" 
+                    Text="EXIT" 
+                    Command="{Binding ExitCommand}" 
+                    BackgroundColor="#FF3B30" 
+                    TextColor="White" 
+                    FontAttributes="Bold"
+                    WidthRequest="100"/>
         </Grid>
 
-        <VerticalStackLayout Grid.Column="1" Spacing="15">
-            <toolkit:Expander>
-                <toolkit:Expander.Header>
-                    <Label Text="View Timeline (Dates)" FontAttributes="Bold" TextColor="#8B5CF6" Padding="10"/>
-                </toolkit:Expander.Header>
-                <VerticalStackLayout Background="White" Padding="15" Spacing="5">
-                    <Label Text="Entry By UID" FontSize="11" TextColor="Gray"/>
-                    <Entry Text="{Binding ClassVideo.EntryByUID}" IsReadOnly="True" BackgroundColor="#F8FAFC"/>
-                    <Label Text="Entry Date" FontSize="11" TextColor="Gray"/>
-                    <Entry Text="{Binding ClassVideo.EntryDate, StringFormat='{0:dd-MMM-yyyy}'}" IsReadOnly="True" BackgroundColor="#F8FAFC"/>
-                    <Label Text="Start Date" FontSize="11" TextColor="Gray"/>
-                    <Entry Text="{Binding ClassVideo.StartDate, StringFormat='{0:dd-MMM-yyyy}'}" IsReadOnly="True" BackgroundColor="#F8FAFC"/>
-                    <Label Text="End Date" FontSize="11" TextColor="Gray"/>
-                    <Entry Text="{Binding ClassVideo.EndDate, StringFormat='{0:dd-MMM-yyyy}'}" IsReadOnly="True" BackgroundColor="#F8FAFC"/>
-                </VerticalStackLayout>
-            </toolkit:Expander>
+        <!-- মূল কন্টেন্ট এরিয়া (Row 1) - দুটি ভাগে বিভক্ত (ফর্ম এবং টেবিল/ভিউ) -->
+        <Grid Grid.Row="1" ColumnDefinitions="*, 1.2*" ColumnSpacing="20">
 
-            <Button Text="Browse &amp; Prepare Video" Command="{Binding BrowseCommand}" BackgroundColor="#F0FDF4" TextColor="#166534" Style="{StaticResource BaseBtn}"/>
-            <Button Text="Download" Command="{Binding DownloadCommand}" BackgroundColor="#EFF6FF" TextColor="#1E40AF" Style="{StaticResource BaseBtn}"/>
-            <Button Text="Delete File" Command="{Binding DeleteFileCommand}" BackgroundColor="#FEF2F2" TextColor="#991B1B" Style="{StaticResource BaseBtn}"/>
+            <!-- বাম পাশ: ডাটা এন্ট্রি ফর্ম -->
+            <Border Grid.Column="0" StrokeThickness="2" StrokeShape="RoundRectangle 10" Padding="15" BackgroundColor="#2A2A32">
+                <Border.Stroke>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#00FFCC" Offset="0.0" />
+                        <GradientStop Color="#9900FF" Offset="1.0" />
+                    </LinearGradientBrush>
+                </Border.Stroke>
 
-            <HorizontalStackLayout Spacing="5" HorizontalOptions="Start" VerticalOptions="Center">
-                <CheckBox IsChecked="{Binding IsActive}" VerticalOptions="Center"/>
-                <Label Text="Active" VerticalOptions="Center"/>
-            </HorizontalStackLayout>
+                <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,*" RowSpacing="15">
 
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="10" RowDefinitions="Auto, Auto" RowSpacing="10">
-                <Button Grid.Row="0" Grid.Column="0" Text="ADD" Command="{Binding AddCommand}" BackgroundColor="#10B981" TextColor="White" Style="{StaticResource BaseBtn}"/>
-                <Button Grid.Row="0" Grid.Column="1" Text="SAVE" Command="{Binding SaveCommand}" BackgroundColor="#3B82F6" TextColor="White" Style="{StaticResource BaseBtn}"/>
-                <Button Grid.Row="1" Grid.Column="0" Text="EDIT" Command="{Binding EditCommand}" BackgroundColor="#F59E0B" TextColor="White" Style="{StaticResource BaseBtn}"/>
-                <Button Grid.Row="1" Grid.Column="1" Text="EXIT" Command="{Binding ExitCommand}" BackgroundColor="#64748B" TextColor="White" Style="{StaticResource BaseBtn}"/>
+                    <!-- Subject Picker -->
+                    <Grid Grid.Row="0" RowDefinitions="Auto,Auto" RowSpacing="5">
+                        <Label Grid.Row="0" Text="Select Subject" TextColor="White"/>
+                        <Picker Grid.Row="1" 
+                                ItemsSource="{Binding SubjectList}" 
+                                ItemDisplayBinding="{Binding SubjectDesc}" 
+                                SelectedItem="{Binding SelectedSubject}"
+                                Title="-- Choose Subject --" TextColor="White" TitleColor="Gray" BackgroundColor="#1E1E24"/>
+                    </Grid>
+
+                    <!-- Section Picker -->
+                    <Grid Grid.Row="1" RowDefinitions="Auto,Auto" RowSpacing="5">
+                        <Label Grid.Row="0" Text="Select Section" TextColor="White"/>
+                        <Picker Grid.Row="1" 
+                                ItemsSource="{Binding SectionList}" 
+                                ItemDisplayBinding="{Binding SectionDesc}" 
+                                SelectedItem="{Binding SelectedSection}"
+                                Title="-- Choose Section --" TextColor="White" TitleColor="Gray" BackgroundColor="#1E1E24"/>
+                    </Grid>
+
+                    <!-- Class Content Input -->
+                    <Grid Grid.Row="2" RowDefinitions="Auto,Auto" RowSpacing="5">
+                        <Label Grid.Row="0" Text="Class Content / Title" TextColor="White"/>
+                        <Entry Grid.Row="1" Text="{Binding ClassVideo.ClassContent}" Placeholder="Enter content title" TextColor="White" PlaceholderColor="Gray" BackgroundColor="#1E1E24"/>
+                    </Grid>
+
+                    <!-- File Browser Section -->
+                    <Grid Grid.Row="3" ColumnDefinitions="*, Auto" ColumnSpacing="10" RowDefinitions="Auto, Auto" RowSpacing="5">
+                        <Label Grid.Row="0" Grid.ColumnSpan="2" Text="Video File Path" TextColor="White"/>
+                        <Entry Grid.Row="1" Grid.Column="0" Text="{Binding ClassVideo.ClassPath}" IsReadOnly="True" TextColor="White" BackgroundColor="#1E1E24"/>
+                        <Button Grid.Row="1" Grid.Column="1" Text="Browse" Command="{Binding BrowseCommand}" BackgroundColor="#9900FF" TextColor="White"/>
+                    </Grid>
+
+                    <!-- Date Pickers -->
+                    <Grid Grid.Row="4" ColumnDefinitions="*, *" ColumnSpacing="10">
+                        <Grid Grid.Column="0" RowDefinitions="Auto,Auto" RowSpacing="5">
+                            <Label Grid.Row="0" Text="Start Date" TextColor="White"/>
+                            <DatePicker Grid.Row="1" Date="{Binding ClassVideo.StartDate}" TextColor="White" BackgroundColor="#1E1E24"/>
+                        </Grid>
+                        <Grid Grid.Column="1" RowDefinitions="Auto,Auto" RowSpacing="5">
+                            <Label Grid.Row="0" Text="End Date" TextColor="White"/>
+                            <DatePicker Grid.Row="1" Date="{Binding ClassVideo.EndDate}" TextColor="White" BackgroundColor="#1E1E24"/>
+                        </Grid>
+                    </Grid>
+
+                    <!-- Active Checkbox -->
+                    <Grid Grid.Row="5" ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center">
+                        <CheckBox Grid.Column="0" IsChecked="{Binding IsActive}" Color="#00FFCC"/>
+                        <Label Grid.Column="1" Text="Mark as Active" TextColor="White" VerticalOptions="Center"/>
+                    </Grid>
+
+                    <!-- Action Buttons -->
+                    <Grid Grid.Row="6" ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,10,0,0">
+                        <Button Grid.Column="0" Text="RESET" Command="{Binding AddCommand}" BackgroundColor="#555555" TextColor="White" FontAttributes="Bold"/>
+                        <Button Grid.Column="1" Text="SAVE VIDEO" Command="{Binding SaveCommand}" BackgroundColor="#00FFCC" TextColor="#1E1E24" FontAttributes="Bold"/>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!-- ডান পাশ: ডেটা গ্রিড / লিস্ট ভিউ -->
+            <Grid Grid.Column="1" RowDefinitions="*, Auto" RowSpacing="15">
+
+                <!-- CollectionView (Data Grid বিকল্প) - StrokeColor পরিবর্তন করে Stroke করা হয়েছে -->
+                <Border Grid.Row="0" StrokeThickness="1" Stroke="#444" BackgroundColor="#2A2A32" StrokeShape="RoundRectangle 8">
+                    <CollectionView ItemsSource="{Binding ClassVideoList}" 
+                                    SelectedItem="{Binding SelectedItemInGrid}" 
+                                    SelectionMode="Single">
+                        <CollectionView.Header>
+                            <!-- টেবিল হেডার -->
+                            <Grid ColumnDefinitions="2*, 3*, 2*" BackgroundColor="#1E1E24" Padding="10">
+                                <Label Grid.Column="0" Text="ID" FontAttributes="Bold" TextColor="#00FFCC"/>
+                                <Label Grid.Column="1" Text="Content Title" FontAttributes="Bold" TextColor="#00FFCC"/>
+                                <Label Grid.Column="2" Text="Status" FontAttributes="Bold" TextColor="#00FFCC"/>
+                            </Grid>
+                        </CollectionView.Header>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="2*, 3*, 2*" Padding="10">
+                                    <!-- সেকশনগুলোর ভিজ্যুয়াল স্টেট গ্রুপ (সিলেকশন হাইলাইট করার জন্য) -->
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup Name="CommonStates">
+                                            <VisualState Name="Normal" />
+                                            <VisualState Name="Selected">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="#3D3D4C" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+
+                                    <!-- Model_MAUI:Text ফিক্স করে স্ট্যান্ডার্ড Text প্রপার্টি দেওয়া হয়েছে -->
+                                    <Label Grid.Column="0" Text="{Binding ClassID}" TextColor="White"/>
+                                    <Label Grid.Column="1" Text="{Binding ClassContent}" TextColor="White"/>
+                                    <Label Grid.Column="2" Text="{Binding Activate}" TextColor="White"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Border>
+
+                <!-- গ্রিড আইটেম অ্যাকশন বাটনসমূহ -->
+                <Grid Grid.Row="1" ColumnDefinitions="*, *, *" ColumnSpacing="10">
+                    <Button Grid.Column="0" Text="EDIT SELECTED" Command="{Binding EditCommand}" BackgroundColor="#007AFF" TextColor="White" FontAttributes="Bold"/>
+                    <Button Grid.Column="1" Text="DOWNLOAD" Command="{Binding DownloadCommand}" BackgroundColor="#34C759" TextColor="White" FontAttributes="Bold"/>
+                    <Button Grid.Column="2" Text="DELETE" Command="{Binding DeleteFileCommand}" BackgroundColor="#FF3B30" TextColor="White" FontAttributes="Bold"/>
+                </Grid>
             </Grid>
-        </VerticalStackLayout>
+
+        </Grid>
+
+        <!-- ফুটার সেকশন (Row 2) -->
+        <Label Grid.Row="2" Text="Powered by DCP WorkCenter" TextColor="Gray" HorizontalOptions="Center" Margin="0,15,0,0"/>
     </Grid>
 </ContentPage>

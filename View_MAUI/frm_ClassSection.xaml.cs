@@ -1,6 +1,6 @@
-using Microsoft.Maui.Controls;
+﻿using Microsoft.Maui.Controls;
 
-namespace View_MAUI
+namespace ModelView_MAUI
 {
     public partial class frm_ClassSection : ContentPage
     {
@@ -9,19 +9,26 @@ namespace View_MAUI
             InitializeComponent();
         }
 
-        private void OnPointerEntered(object sender, PointerEventArgs e)
+        private void InitializeComponent()
         {
-            if (sender is Button btn)
+            throw new NotImplementedException();
+        }
+
+        // মাউস কার্ডের ওপর ঢুকলে (Hover Scale Up)
+        private async void OnPointerEntered(object sender, PointerEventArgs e)
+        {
+            if (sender is VisualElement view)
             {
-                btn.ScaleTo(1.1, 150);
+                await view.ScaleTo(1.03, 150, Easing.CubicOut);
             }
         }
 
-        private void OnPointerExited(object sender, PointerEventArgs e)
+        // মাউস কার্ড থেকে বের হয়ে গেলে (Scale Down to normal)
+        private async void OnPointerExited(object sender, PointerEventArgs e)
         {
-            if (sender is Button btn)
+            if (sender is VisualElement view)
             {
-                btn.ScaleTo(1.0, 150);
+                await view.ScaleTo(1.0, 150, Easing.CubicIn);
             }
         }
     }

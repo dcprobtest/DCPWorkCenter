@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-with:ModelView_MAUI"
              x:Class="View_MAUI.frmAdmin_Designation"
              Title="Designation Management"
              BackgroundColor="White">
+
+    <!-- ভিউ-মডেলটিকে সরাসরি XAML-এর ডাটা কনটেক্সট বা বাইন্ডিং কনটেক্সট হিসেবে সেট করা হলো -->
+    <ContentPage.BindingContext>
+        <vm:DesignationViewModel />
+    </ContentPage.BindingContext>
 
     <ContentPage.Resources>
         <Style x:Key="RainbowButtonStyle" TargetType="Button">
@@ -17,11 +23,13 @@
 
     <ScrollView>
         <Grid>
+            <!-- ব্যাকগ্রাউন্ডের ব্লার ইফেক্ট এলিপ্স -->
             <Ellipse Fill="#1500FF95" WidthRequest="500" HeightRequest="500" HorizontalOptions="Start" VerticalOptions="End" Margin="-150,0,0,-150"/>
 
             <VerticalStackLayout Spacing="30" Margin="40">
                 <Label Text="Designation Setup" FontSize="32" FontAttributes="Bold" TextColor="Black" HorizontalOptions="Center"/>
 
+                <!-- রেইনবো গ্রাডিয়েন্ট বর্ডার -->
                 <Border StrokeThickness="3" StrokeShape="RoundRectangle 20" Padding="2" WidthRequest="750" HorizontalOptions="Center">
                     <Border.Stroke>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -37,41 +45,49 @@
                     <Border BackgroundColor="#FFEBEAE9" StrokeShape="RoundRectangle 18" Padding="30">
                         <Grid RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto" ColumnDefinitions="*, *" RowSpacing="15" ColumnSpacing="15">
 
+                            <!-- Designation Code Field -->
                             <VerticalStackLayout Grid.Row="0" Grid.Column="0">
-                                <Label Text="Designation Code" TextColor="#AAAAAA"/>
-                                <Entry Text="{Binding Designation.DesigCode}" BackgroundColor="White" TextColor="Black"/>
+                                <Label Text="Designation Code" TextColor="#555555" Margin="0,0,0,5"/>
+                                <Entry Text="{Binding Designation.DesigCode, Mode=TwoWay}" BackgroundColor="White" TextColor="Black"/>
                             </VerticalStackLayout>
 
+                            <!-- Entry Date Field -->
                             <VerticalStackLayout Grid.Row="0" Grid.Column="1">
-                                <Label Text="Entry Date" TextColor="#AAAAAA"/>
-                                <DatePicker Date="{Binding Designation.EntryDate}"/>
+                                <Label Text="Entry Date" TextColor="#555555" Margin="0,0,0,5"/>
+                                <DatePicker Date="{Binding Designation.EntryDate, Mode=TwoWay}"/>
                             </VerticalStackLayout>
 
+                            <!-- Description Field (মাল্টি-লাইন সাপোর্টের জন্য Editor ব্যবহার করা হয়েছে) -->
                             <VerticalStackLayout Grid.Row="1" Grid.ColumnSpan="2">
-                                <Label Text="Description" TextColor="#AAAAAA"/>
-                                <Entry Text="{Binding Designation.Description}" HeightRequest="80" BackgroundColor="White" TextColor="Black"/>
+                                <Label Text="Description" TextColor="#555555" Margin="0,0,0,5"/>
+                                <Editor Text="{Binding Designation.Description, Mode=TwoWay}" HeightRequest="80" BackgroundColor="White" TextColor="Black"/>
                             </VerticalStackLayout>
 
+                            <!-- Responsibility Field -->
                             <VerticalStackLayout Grid.Row="2" Grid.ColumnSpan="2">
-                                <Label Text="Responsibility" TextColor="#AAAAAA"/>
-                                <Entry Text="{Binding Designation.Responsiblity}" BackgroundColor="White" TextColor="Black"/>
+                                <Label Text="Responsibility" TextColor="#555555" Margin="0,0,0,5"/>
+                                <Entry Text="{Binding Designation.Responsiblity, Mode=TwoWay}" BackgroundColor="White" TextColor="Black"/>
                             </VerticalStackLayout>
 
+                            <!-- Start Date Field -->
                             <VerticalStackLayout Grid.Row="3" Grid.Column="0">
-                                <Label Text="Start Date" TextColor="#AAAAAA"/>
-                                <DatePicker Date="{Binding Designation.StartDate}"/>
+                                <Label Text="Start Date" TextColor="#555555" Margin="0,0,0,5"/>
+                                <DatePicker Date="{Binding Designation.StartDate, Mode=TwoWay}"/>
                             </VerticalStackLayout>
 
+                            <!-- End Date Field -->
                             <VerticalStackLayout Grid.Row="3" Grid.Column="1">
-                                <Label Text="End Date" TextColor="#AAAAAA"/>
-                                <DatePicker Date="{Binding Designation.EndDate}"/>
+                                <Label Text="End Date" TextColor="#555555" Margin="0,0,0,5"/>
+                                <DatePicker Date="{Binding Designation.EndDate, Mode=TwoWay}"/>
                             </VerticalStackLayout>
 
-                            <HorizontalStackLayout Grid.Row="4" Grid.ColumnSpan="2" Spacing="10">
-                                <CheckBox IsChecked="{Binding IsActiveChecked}"/>
+                            <!-- Checkbox / Active Status Field -->
+                            <HorizontalStackLayout Grid.Row="4" Grid.ColumnSpan="2" Spacing="10" Margin="0,5,0,5">
+                                <CheckBox IsChecked="{Binding IsActiveChecked, Mode=TwoWay}"/>
                                 <Label Text="Mark as Active" VerticalOptions="Center" TextColor="Black"/>
                             </HorizontalStackLayout>
 
+                            <!-- Save Button / Command Binding -->
                             <Button Grid.Row="5" Grid.ColumnSpan="2" Text="SAVE DESIGNATION" Style="{StaticResource RainbowButtonStyle}" 
                                     Command="{Binding SaveCommand}" WidthRequest="250" HorizontalOptions="Center" x:Name="btnSave"/>
                         </Grid>

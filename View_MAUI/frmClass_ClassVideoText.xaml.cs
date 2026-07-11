@@ -1,9 +1,20 @@
-namespace View_MAUI;
+﻿using View_MAUI.ViewModel_MAUI;
 
-public partial class frmClass_ClassVideoText : ContentPage
+namespace View_MAUI.View_MAUI
 {
-	public frmClass_ClassVideoText()
-	{
-		InitializeComponent();
-	}
+    public partial class ClassVideoTextView : ContentPage
+    {
+        public ClassVideoTextView()
+        {
+            InitializeComponent();
+
+            // এখানে ডামি ইউজার আইডি (UID) হিসেবে "Admin01" পাঠানো হয়েছে, আপনার প্রয়োজনমতো চেঞ্জ করতে পারেন
+            BindingContext = new ClassVideoTextViewModel("Admin01");
+        }
+
+        private void InitializeComponent()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

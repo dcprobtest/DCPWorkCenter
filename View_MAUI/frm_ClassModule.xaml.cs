@@ -1,9 +1,16 @@
-namespace View_MAUI;
+﻿using Microsoft.Maui.Controls;
+using ModelView_MAUI;
 
-public partial class frm_ClassModule : ContentPage
+namespace View_MAUI
 {
-	public frm_ClassModule()
-	{
-		InitializeComponent();
-	}
+    public partial class frm_ClassModule : ContentPage
+    {
+        public frm_ClassModule()
+        {
+            InitializeComponent();
+
+            // XAML UI এর সাথে ভিউমডেল যুক্ত করার স্টেটমেন্ট
+            this.BindingContext = new ClassModuleViewModel();
+        }
+    }
 }

@@ -1,9 +1,12 @@
-namespace View_MAUI;
+using Microsoft.Maui.Controls;
 
-public partial class frmAdmin_Designation : ContentPage
+namespace View_MAUI
 {
-	public frmAdmin_Designation()
-	{
-		InitializeComponent();
-	}
+    public partial class frmAdmin_Designation : ContentPage
+    {
+        public frmAdmin_Designation()
+        {
+            InitializeComponent();
+        }
+    }
 }
