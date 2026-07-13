@@ -95,8 +95,40 @@ namespace View_MAUI
             }
         }
 
-        private void btnAssignTechInfo_Clicked(object sender, EventArgs e) { }
-        private void btnScrumInfo_Clicked(object sender, EventArgs e) { }
-        private void btnTechInfo_Clicked(object sender, EventArgs e) { }
+        private async void btnAssignTechInfo_Clicked(object sender, EventArgs e)
+        {
+            try
+            {
+                await Navigation.PushAsync(new frmAssignTechInfo(_loggedInUserId));
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Navigation Error", ex.Message, "OK");
+            }
+        }
+
+        private async void btnScrumInfo_Clicked(object sender, EventArgs e)
+        {
+            try
+            {
+                await Navigation.PushAsync(new frm_ScrumInfo(_loggedInUserId));
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Navigation Error", ex.Message, "OK");
+            }
+        }
+
+        private async void btnTechInfo_Clicked(object sender, EventArgs e)
+        {
+            try
+            {
+                await Navigation.PushAsync(new frm_TechInfo(_loggedInUserId));
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Navigation Error", ex.Message, "OK");
+            }
+        }
     }
 }

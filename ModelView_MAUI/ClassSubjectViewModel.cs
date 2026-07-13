@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Microsoft.Maui.Devices; // Required for DeviceInfo
+using Microsoft.Maui.Controls;
 
-namespace View_MAUI // আপনার MAUI প্রজেক্টের Namespace অনুযায়ী পরিবর্তন করতে পারেন
+namespace View_MAUI
 {
     public class ClassSubject : INotifyPropertyChanged
     {
@@ -85,7 +87,6 @@ namespace View_MAUI // আপনার MAUI প্রজেক্টের Names
         private readonly HttpClient _httpClient;
         private string _receivedUid;
 
-        // ডাটাবেস থেকে আসা লিস্টটি রাখার জন্য
         private ObservableCollection<ClassSubject> _subjectList = new();
         public ObservableCollection<ClassSubject> SubjectList
         {
@@ -93,7 +94,6 @@ namespace View_MAUI // আপনার MAUI প্রজেক্টের Names
             set { _subjectList = value; OnPropertyChanged(); }
         }
 
-        // ফর্মের ইনপুট ডাটা বাইন্ডিং-এর জন্য
         private ClassSubject _currentSubject = new();
         public ClassSubject CurrentSubject
         {
@@ -101,7 +101,6 @@ namespace View_MAUI // আপনার MAUI প্রজেক্টের Names
             set { _currentSubject = value; OnPropertyChanged(); }
         }
 
-        // XAML CollectionView-তে সিলেক্টেড আইটেম ধরার জন্য
         private ClassSubject? _selectedSubject;
         public ClassSubject? SelectedSubject
         {
@@ -114,7 +113,6 @@ namespace View_MAUI // আপনার MAUI প্রজেক্টের Names
                     OnPropertyChanged();
                     if (_selectedSubject != null)
                     {
-                        // লিস্ট থেকে সিলেক্ট করলে ফর্মে ডাটা লোড হবে
                         LoadSelectedSubjectToForm(_selectedSubject);
                     }
                 }
@@ -136,7 +134,6 @@ namespace View_MAUI // আপনার MAUI প্রজেক্টের Names
             }
         }
 
-        // XAML-এর সব বাটনের Commands
         public ICommand SaveCommand { get; }
         public ICommand AddCommand { get; }
         public ICommand DeleteCommand { get; }
@@ -144,22 +141,28 @@ namespace View_MAUI // আপনার MAUI প্রজেক্টের Names
         public ICommand ExitCommand { get; }
         public ICommand ToggleStatusCommand { get; }
 
-        // ডিফল্ট কনস্ট্রাক্টর (XAML ডিজাইনারের জন্য)
         public ClassSubjectViewModel() : this(string.Empty)
         {
         }
 
-        // মেইন কনস্ট্রাক্টর
         public ClassSubjectViewModel(string uid)
         {
             _receivedUid = uid;
 
-            // অ্যান্ড্রয়েড এমুলেটর বা রিয়েল ডিভাইসের জন্য বেস অ্যাড্রেসটি লোকালহোস্ট হলে পরিবর্তন লাগতে পারে, 
-            // তবে যেহেতু লাইভ আইপি তাই এটাই থাকবে।
-            _httpClient = new HttpClient { BaseAddress = new Uri("http://74.208.227.170:8050/") };
+            // Using 10.0.2.2 for Android Emulator to access local machine
+            string baseUrl = DeviceInfo.Platform == DevicePlatform.Android
+                ? "https://10.0.2.2:7073/"
+                : "https://localhost:7073/";
+
+            // Handler to ignore SSL certificate validation for local development
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+
+            _httpClient = new HttpClient(handler) { BaseAddress = new Uri(baseUrl) };
             SubjectList = new ObservableCollection<ClassSubject>();
 
-            // Command ইনিশিয়ালাইজেশন
             SaveCommand = new Command(async () => await ExecuteSave());
             AddCommand = new Command(ResetForm);
             DeleteCommand = new Command(async () => await ExecuteDelete());
@@ -171,7 +174,6 @@ namespace View_MAUI // আপনার MAUI প্রজেক্টের Names
             _ = LoadSubjects();
         }
 
-        // API থেকে ডাটা লোড করা
         private async Task LoadSubjects()
         {
             try
@@ -188,7 +190,6 @@ namespace View_MAUI // আপনার MAUI প্রজেক্টের Names
             }
         }
 
-        // সেভ বা আপডেট করার মেথড
         private async Task ExecuteSave()
         {
             if (string.IsNullOrWhiteSpace(CurrentSubject.SubjectCode))
@@ -222,7 +223,6 @@ namespace View_MAUI // আপনার MAUI প্রজেক্টের Names
             }
         }
 
-        // ডিলিট করার মেথড
         private async Task ExecuteDelete()
         {
             if (string.IsNullOrWhiteSpace(CurrentSubject.SubjectCode))
@@ -231,7 +231,6 @@ namespace View_MAUI // আপনার MAUI প্রজেক্টের Names
                 return;
             }
 
-            // MAUI Style Confirmation Alert
             bool confirm = await Application.Current!.MainPage!.DisplayAlert(
                 "Confirm Delete",
                 $"Are you sure you want to delete Subject: {CurrentSubject.SubjectCode}?",
@@ -261,7 +260,6 @@ namespace View_MAUI // আপনার MAUI প্রজেক্টের Names
             }
         }
 
-        // এক্সিট বাটন লজিক
         private async Task ExecuteExit()
         {
             if (Application.Current?.MainPage != null)
@@ -270,7 +268,6 @@ namespace View_MAUI // আপনার MAUI প্রজেক্টের Names
             }
         }
 
-        // এডিট বাটন লজিক (সিলেক্টেড আইটেম ফর্মে পুশ করা)
         private void ExecuteEdit()
         {
             if (SelectedSubject != null)
@@ -283,13 +280,11 @@ namespace View_MAUI // আপনার MAUI প্রজেক্টের Names
             }
         }
 
-        // স্ট্যাটাস টগল বাটন লজিক
         private void ExecuteToggleStatus()
         {
             IsActiveChecked = !IsActiveChecked;
         }
 
-        // লিস্ট থেকে সিলেক্ট করা আইটেম ফর্মের ইনপুটে নেওয়া
         private void LoadSelectedSubjectToForm(ClassSubject subject)
         {
             CurrentSubject = new ClassSubject
@@ -307,7 +302,6 @@ namespace View_MAUI // আপনার MAUI প্রজেক্টের Names
             IsActiveChecked = subject.Activate == "1";
         }
 
-        // ফর্ম রিসেট করার মেথড
         private void ResetForm()
         {
             CurrentSubject = new ClassSubject
@@ -325,7 +319,6 @@ namespace View_MAUI // আপনার MAUI প্রজেক্টের Names
             SelectedSubject = null;
         }
 
-        // MAUI তে অ্যালার্ট দেখানোর হেল্পার মেথড
         private async Task ShowAlertAsync(string title, string message)
         {
             if (Application.Current?.MainPage != null)
@@ -338,7 +331,4 @@ namespace View_MAUI // আপনার MAUI প্রজেক্টের Names
         protected void OnPropertyChanged([CallerMemberName] string name = null!) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
-
-    // MAUI তে WPF এর RelayCommand এর জায়গায় আমরা বিল্ট-ইন 'Command' ব্যবহার করেছি, 
-    // তাই আলাদা RelayCommand ক্লাস দরকার হবে না।
 }

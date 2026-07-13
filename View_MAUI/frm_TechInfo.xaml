@@ -55,11 +55,17 @@
                             <Label Text="Last Update" Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="2" TextColor="Gray"/>
                             <DatePicker Date="{Binding Tech.LastUpdate}" Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="2" Margin="10,0"/>
 
-                            <CheckBox IsChecked="{Binding Tech.IsActivated}" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="4"/>
+                            <!-- Updated Binding path from Activate to IsActivated -->
+                            <CheckBox IsChecked="{Binding Tech.IsActivated, Mode=TwoWay}" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="4"/>
                             <Label Text="Activate Technology" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="4" Margin="50,15,0,0" VerticalOptions="Start"/>
 
                             <Label Text="Technology Data List" Grid.Row="0" Grid.Column="4" TextColor="Gray"/>
-                            <CollectionView ItemsSource="{Binding TechList}" SelectedItem="{Binding SelectedTech}" Grid.Row="1" Grid.RowSpan="8" Grid.Column="4" BackgroundColor="White" Margin="20,0">
+
+                            <!-- Added SelectionMode="Single" so that Edit button works -->
+                            <CollectionView ItemsSource="{Binding TechList}" 
+                                            SelectedItem="{Binding SelectedTech, Mode=TwoWay}" 
+                                            SelectionMode="Single"
+                                            Grid.Row="1" Grid.RowSpan="8" Grid.Column="4" BackgroundColor="White" Margin="20,0">
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate>
                                         <Label Text="{Binding TechDesc}" Padding="10"/>

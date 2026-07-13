@@ -7,17 +7,20 @@ using System.Windows.Input;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Microsoft.Maui.Controls;
-using View_MAUI.Model; // MAUI Command এবং UI Thread এর জন্য
+using Microsoft.Maui.Devices; // Added for DeviceInfo
+using View_MAUI.Model;
 
-// আপনার MAUI প্রজেক্টের Namespace এবং ফোল্ডার স্ট্রাকচার অনুযায়ী পরিবর্তন করে নেবেন
-namespace View_MAUI.ViewModel
+namespace View_MAUI.ViewModel_MAUI
 {
     public class EmpInfoViewModel : INotifyPropertyChanged
     {
-        // API Base URL
-        private readonly string _baseUrl = "http://74.208.227.170:8050//api/Data/";
+        // Dynamic URL logic based on platform
+        private string GetBaseUrl() => DeviceInfo.Platform == DevicePlatform.Android
+            ? "https://10.0.2.2:7073/"
+            : "https://localhost:7073/";
 
-        // মনে রাখবেন: MAUI প্রজেক্টে Model ক্লাসের নাম (EmpInfoModel) যেন ঠিক থাকে
+        private string _baseUrl => $"{GetBaseUrl()}api/Data/";
+
         private EmpInfoModel _emp = new EmpInfoModel();
         public EmpInfoModel Emp
         {
@@ -49,7 +52,6 @@ namespace View_MAUI.ViewModel
         public EmpInfoViewModel()
         {
             ResetForm();
-            // MAUI-এর বিল্ট-ইন Command ব্যবহার করা হয়েছে (RelayCommand এর বদলে)
             SaveCommand = new Command(async () => await ExecuteSave());
         }
 
@@ -66,7 +68,11 @@ namespace View_MAUI.ViewModel
 
             try
             {
-                using (HttpClient client = new HttpClient())
+                // Added handler to bypass SSL for development
+                var handler = new HttpClientHandler();
+                handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
+
+                using (HttpClient client = new HttpClient(handler))
                 {
                     var settings = new JsonSerializerSettings
                     {

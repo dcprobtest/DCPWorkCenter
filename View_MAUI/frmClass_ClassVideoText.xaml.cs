@@ -1,20 +1,21 @@
 ﻿using View_MAUI.ViewModel_MAUI;
 
-namespace View_MAUI.View_MAUI
+namespace View_MAUI
 {
     public partial class ClassVideoTextView : ContentPage
     {
-        public ClassVideoTextView()
+        // Property to hold the user ID
+        public string ClassUserId { get; private set; }
+
+        public ClassVideoTextView(string uid)
         {
             InitializeComponent();
 
-            // এখানে ডামি ইউজার আইডি (UID) হিসেবে "Admin01" পাঠানো হয়েছে, আপনার প্রয়োজনমতো চেঞ্জ করতে পারেন
-            BindingContext = new ClassVideoTextViewModel("Admin01");
-        }
+            // Assign the received uid
+            ClassUserId = uid;
 
-        private void InitializeComponent()
-        {
-            throw new NotImplementedException();
+            // Pass the uid to the ViewModel
+            BindingContext = new ClassVideoTextViewModel(ClassUserId);
         }
     }
 }

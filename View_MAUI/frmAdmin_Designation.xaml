@@ -7,9 +7,6 @@
              BackgroundColor="White">
 
     <!-- ভিউ-মডেলটিকে সরাসরি XAML-এর ডাটা কনটেক্সট বা বাইন্ডিং কনটেক্সট হিসেবে সেট করা হলো -->
-    <ContentPage.BindingContext>
-        <vm:DesignationViewModel />
-    </ContentPage.BindingContext>
 
     <ContentPage.Resources>
         <Style x:Key="RainbowButtonStyle" TargetType="Button">

@@ -4,12 +4,19 @@ namespace View_MAUI
 {
     public partial class frmAdmin_Department : ContentPage
     {
-        public frmAdmin_Department()
+        // Property to store the received user ID
+        public string AdminUserId { get; private set; }
+
+        public frmAdmin_Department(string uid)
         {
             InitializeComponent();
 
-            // ভিউ-মডেলকে পেজের BindingContext হিসেবে সেট করা হলো
-            this.BindingContext = new DepartmentViewModel();
+            // Assign the received uid
+            AdminUserId = uid;
+
+            // Initialize the ViewModel and pass the uid to it
+            // Note: Ensure your DepartmentViewModel constructor is updated to accept the string parameter
+            this.BindingContext = new DepartmentViewModel(AdminUserId);
         }
     }
 }

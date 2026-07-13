@@ -4,12 +4,15 @@ namespace View_MAUI
 {
     public partial class frmAssignTechInfo : ContentPage
     {
-        public frmAssignTechInfo()
+        private string _loggedInUserId;
+
+        public frmAssignTechInfo(string uid)
         {
             InitializeComponent();
+            _loggedInUserId = uid;
 
-            // ভিউমডেল অবজেক্ট তৈরি করে এই পেজের ডাটা বাইন্ডিং কন্টেক্সটে অ্যাসাইন করা হলো
-            this.BindingContext = new AssignTechInfoViewModel();
+            // Initialize ViewModel with the passed UID and assign to BindingContext
+            this.BindingContext = new AssignTechInfoViewModel(_loggedInUserId);
         }
     }
 }

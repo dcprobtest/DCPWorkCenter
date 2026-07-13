@@ -59,6 +59,30 @@ namespace View_MAUI
             }
         }
 
+        // Click Event: Course Subject
+        private async void OnCourseSubjectTapped(object sender, TappedEventArgs e)
+        {
+            await Navigation.PushAsync(new frmClass_ClassSubject(ClassUserId));
+        }
+
+        // Click Event: Subject Section
+        private async void OnSubjectSectionTapped(object sender, TappedEventArgs e)
+        {
+            await Navigation.PushAsync(new frm_ClassSection(ClassUserId));
+        }
+
+        // Click Event: Section Assign
+        private async void OnSectionAssignTapped(object sender, TappedEventArgs e)
+        {
+            await Navigation.PushAsync(new frmClass_SubjectWiseClassAssign(ClassUserId));
+        }
+
+        // Click Event: Video Upload
+        private async void OnVideoUploadTapped(object sender, TappedEventArgs e)
+        {
+            await Navigation.PushAsync(new ClassVideoTextView(ClassUserId));
+        }
+
         // Update the border color dynamically
         private void UpdateRainbowBorder()
         {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace View_MAUI.Model_MAUI
+namespace Model_MAUI
 {
     public class ClassVideoTextModel
     {

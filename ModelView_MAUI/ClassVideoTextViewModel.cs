@@ -11,16 +11,16 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
+using Microsoft.Maui.Devices; // Required for DeviceInfo
 using ModelView_MAUI;
 using Newtonsoft.Json;
-using View_MAUI.Model_MAUI; // আপনার প্রজেক্টের সঠিক মডেল ফোল্ডারের নেমস্পেসটি দিন
+using Model_MAUI;
 
 namespace View_MAUI.ViewModel_MAUI
 {
     public class ClassVideoTextViewModel : INotifyPropertyChanged
     {
-        private readonly string _apiUrl = "http://74.208.227.170:8050//api/Data/SaveVideo";
-        private readonly string _baseApiUrl = "http://74.208.227.170:8050//api/Data/";
+        private readonly HttpClient _httpClient;
 
         private ClassVideoTextModel _classVideo;
         private bool _isActive;
@@ -93,6 +93,19 @@ namespace View_MAUI.ViewModel_MAUI
 
         public ClassVideoTextViewModel(string uid)
         {
+            // Using 10.0.2.2 for Android Emulator to access local machine
+            string baseUrl = DeviceInfo.Platform == DevicePlatform.Android
+                ? "https://10.0.2.2:7073/"
+                : "https://localhost:7073/";
+
+            // Handler to ignore SSL certificate validation for local development
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+
+            _httpClient = new HttpClient(handler) { BaseAddress = new Uri(baseUrl) };
+
             InitializeClassVideo();
 
             if (ClassVideo != null)
@@ -116,22 +129,19 @@ namespace View_MAUI.ViewModel_MAUI
         {
             try
             {
-                using (HttpClient client = new HttpClient())
+                var response = await _httpClient.GetAsync("api/Data/GetVideos");
+                if (response.IsSuccessStatusCode)
                 {
-                    var response = await client.GetAsync(_baseApiUrl + "GetVideos");
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var json = await response.Content.ReadAsStringAsync();
-                        var list = JsonConvert.DeserializeObject<List<ClassVideoTextModel>>(json);
+                    var json = await response.Content.ReadAsStringAsync();
+                    var list = JsonConvert.DeserializeObject<List<ClassVideoTextModel>>(json);
 
-                        // MAUI Main Thread Dispatcher
-                        MainThread.BeginInvokeOnMainThread(() =>
-                        {
-                            ClassVideoList.Clear();
-                            foreach (var item in list) { ClassVideoList.Add(item); }
-                            BuildTreeView(list);
-                        });
-                    }
+                    // MAUI Main Thread Dispatcher
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        ClassVideoList.Clear();
+                        foreach (var item in list) { ClassVideoList.Add(item); }
+                        BuildTreeView(list);
+                    });
                 }
             }
             catch (Exception ex)
@@ -177,16 +187,13 @@ namespace View_MAUI.ViewModel_MAUI
         {
             try
             {
-                using (HttpClient client = new HttpClient())
+                var response = await _httpClient.GetAsync("api/Data/GetSubjects");
+                if (response.IsSuccessStatusCode)
                 {
-                    var response = await client.GetAsync(_baseApiUrl + "GetSubjects");
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var json = await response.Content.ReadAsStringAsync();
-                        var list = JsonConvert.DeserializeObject<List<ClassSubject>>(json);
-                        SubjectList.Clear();
-                        foreach (var item in list) SubjectList.Add(item);
-                    }
+                    var json = await response.Content.ReadAsStringAsync();
+                    var list = JsonConvert.DeserializeObject<List<ClassSubject>>(json);
+                    SubjectList.Clear();
+                    foreach (var item in list) SubjectList.Add(item);
                 }
             }
             catch (Exception ex)
@@ -199,16 +206,13 @@ namespace View_MAUI.ViewModel_MAUI
         {
             try
             {
-                using (HttpClient client = new HttpClient())
+                var response = await _httpClient.GetAsync("api/Data/GetSections");
+                if (response.IsSuccessStatusCode)
                 {
-                    var response = await client.GetAsync(_baseApiUrl + "GetSections");
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var json = await response.Content.ReadAsStringAsync();
-                        var list = JsonConvert.DeserializeObject<List<ClassSection>>(json);
-                        SectionList.Clear();
-                        foreach (var item in list) SectionList.Add(item);
-                    }
+                    var json = await response.Content.ReadAsStringAsync();
+                    var list = JsonConvert.DeserializeObject<List<ClassSection>>(json);
+                    SectionList.Clear();
+                    foreach (var item in list) SectionList.Add(item);
                 }
             }
             catch (Exception ex)
@@ -273,23 +277,20 @@ namespace View_MAUI.ViewModel_MAUI
 
                 ClassVideo.LastUpdate = DateTime.Now;
 
-                using (HttpClient client = new HttpClient())
-                {
-                    var json = JsonConvert.SerializeObject(ClassVideo);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
-                    HttpResponseMessage response = await client.PostAsync(_apiUrl, content);
+                var json = JsonConvert.SerializeObject(ClassVideo);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await _httpClient.PostAsync("api/Data/SaveVideo", content);
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        await Application.Current.MainPage.DisplayAlert("Success", "Class Video Saved Successfully!", "OK");
-                        ResetForm();
-                        LoadClassVideos();
-                    }
-                    else
-                    {
-                        string errorMsg = await response.Content.ReadAsStringAsync();
-                        await Application.Current.MainPage.DisplayAlert("Error", $"API Error: {errorMsg}", "OK");
-                    }
+                if (response.IsSuccessStatusCode)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Success", "Class Video Saved Successfully!", "OK");
+                    ResetForm();
+                    LoadClassVideos();
+                }
+                else
+                {
+                    string errorMsg = await response.Content.ReadAsStringAsync();
+                    await Application.Current.MainPage.DisplayAlert("Error", $"API Error: {errorMsg}", "OK");
                 }
             }
             catch (Exception ex)
@@ -323,15 +324,12 @@ namespace View_MAUI.ViewModel_MAUI
             {
                 try
                 {
-                    using (HttpClient client = new HttpClient())
+                    var response = await _httpClient.DeleteAsync($"api/Data/DeleteVideo/{SelectedItemInGrid.ClassID}");
+                    if (response.IsSuccessStatusCode)
                     {
-                        var response = await client.DeleteAsync(_baseApiUrl + "DeleteVideo/" + SelectedItemInGrid.ClassID);
-                        if (response.IsSuccessStatusCode)
-                        {
-                            await Application.Current.MainPage.DisplayAlert("Success", "Deleted Successfully", "OK");
-                            LoadClassVideos();
-                            ResetForm();
-                        }
+                        await Application.Current.MainPage.DisplayAlert("Success", "Deleted Successfully", "OK");
+                        LoadClassVideos();
+                        ResetForm();
                     }
                 }
                 catch (Exception ex)

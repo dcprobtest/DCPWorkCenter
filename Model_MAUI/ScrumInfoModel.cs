@@ -23,6 +23,8 @@ namespace Model_MAUI
             {
                 _scrumID = value;
                 OnPropertyChanged();
+                // বাটন স্টেট আপডেট করার জন্য একটি সিগন্যাল
+                MessagingCenter.Send(this, "ScrumIDChanged");
             }
         }
 

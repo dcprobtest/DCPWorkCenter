@@ -1,20 +1,26 @@
 ﻿using Microsoft.Maui.Controls;
+using ModelView_MAUI;
 
-namespace ModelView_MAUI
+
+namespace View_MAUI
 {
     public partial class frm_ClassSection : ContentPage
     {
-        public frm_ClassSection()
+        // Property to hold the user ID
+        public string ClassUserId { get; private set; }
+
+        public frm_ClassSection(string uid)
         {
             InitializeComponent();
+
+            // Assign the received uid
+            ClassUserId = uid;
+
+            // Pass the uid to the ViewModel
+            BindingContext = new ClassSectionViewModel(ClassUserId);
         }
 
-        private void InitializeComponent()
-        {
-            throw new NotImplementedException();
-        }
-
-        // মাউস কার্ডের ওপর ঢুকলে (Hover Scale Up)
+        // Triggered when the pointer enters the border
         private async void OnPointerEntered(object sender, PointerEventArgs e)
         {
             if (sender is VisualElement view)
@@ -23,7 +29,7 @@ namespace ModelView_MAUI
             }
         }
 
-        // মাউস কার্ড থেকে বের হয়ে গেলে (Scale Down to normal)
+        // Triggered when the pointer leaves the border
         private async void OnPointerExited(object sender, PointerEventArgs e)
         {
             if (sender is VisualElement view)

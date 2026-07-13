@@ -27,6 +27,7 @@
                 <Border x:Name="Card2" Grid.Column="1" Grid.Row="0" WidthRequest="150" HeightRequest="160" StrokeShape="RoundRectangle 25" Background="White" Padding="10" Stroke="Transparent" StrokeThickness="0">
                     <Border.GestureRecognizers>
                         <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                        <TapGestureRecognizer Tapped="OnCourseSubjectTapped" />
                     </Border.GestureRecognizers>
                     <VerticalStackLayout VerticalOptions="Center">
                         <Path Fill="#FF5722" Data="M18,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V4A2,2 0 0,0 18,2M10,4H14V6H10V4M18,20H6V18H18V20M18,16H6V4H8V16H18V16Z" HorizontalOptions="Center" HeightRequest="60"/>
@@ -37,6 +38,7 @@
                 <Border x:Name="Card3" Grid.Column="2" Grid.Row="0" WidthRequest="150" HeightRequest="160" StrokeShape="RoundRectangle 25" Background="White" Padding="10" Stroke="Transparent" StrokeThickness="0">
                     <Border.GestureRecognizers>
                         <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                        <TapGestureRecognizer Tapped="OnSubjectSectionTapped" />
                     </Border.GestureRecognizers>
                     <VerticalStackLayout VerticalOptions="Center">
                         <Path Fill="#9C27B0" Data="M3,5V19L11,12M13,19V5L21,12" HorizontalOptions="Center" HeightRequest="60"/>
@@ -57,6 +59,7 @@
                 <Border x:Name="Card5" Grid.Column="1" Grid.Row="1" WidthRequest="150" HeightRequest="160" StrokeShape="RoundRectangle 25" Background="White" Padding="10" Stroke="Transparent" StrokeThickness="0">
                     <Border.GestureRecognizers>
                         <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                        <TapGestureRecognizer Tapped="OnSectionAssignTapped" />
                     </Border.GestureRecognizers>
                     <VerticalStackLayout VerticalOptions="Center">
                         <Path Fill="#FF9800" Data="M15,14C12.33,14 7,15.33 7,18V20H23V18C23,15.33 17.67,14 15,14M6,10V7H4V10H1V12H4V15H6V12H9V10H6M15,12A4,4 0 0,0 19,8A4,4 0 0,0 15,4A4,4 0 0,0 11,8A4,4 0 0,0 15,12Z" HorizontalOptions="Center" HeightRequest="60"/>
@@ -67,6 +70,7 @@
                 <Border x:Name="Card6" Grid.Column="2" Grid.Row="1" WidthRequest="150" HeightRequest="160" StrokeShape="RoundRectangle 25" Background="White" Padding="10" Stroke="Transparent" StrokeThickness="0">
                     <Border.GestureRecognizers>
                         <PointerGestureRecognizer PointerEntered="OnPointerEntered" PointerExited="OnPointerExited" />
+                        <TapGestureRecognizer Tapped="OnVideoUploadTapped" />
                     </Border.GestureRecognizers>
                     <VerticalStackLayout VerticalOptions="Center">
                         <Path Fill="#E91E63" Data="M9,16V10H5L12,3L19,10H15V16H9M5,18H19V20H5V18Z" HorizontalOptions="Center" HeightRequest="60"/>

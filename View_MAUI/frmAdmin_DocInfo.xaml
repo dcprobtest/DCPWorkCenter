@@ -1,38 +1,41 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<ContentPage
-    x:Class="View_MAUI.frmAdmin_DocInfo"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:toolkit="clr-namespace:CommunityToolkit.Maui.Converters;assembly=CommunityToolkit.Maui"
-    Title="DCP Document Manager">
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="View_MAUI.frmAdmin_DocInfo"
+             Title="DCP Document Manager"
+             BackgroundColor="White">
 
     <ContentPage.Resources>
         <ResourceDictionary>
             <toolkit:BoolToObjectConverter x:Key="BooleanToVisibilityConverter" 
-                                         TrueObject="Visible" 
-                                         FalseObject="Collapsed"/>
+                                           TrueObject="True" 
+                                           FalseObject="False"/>
         </ResourceDictionary>
     </ContentPage.Resources>
 
     <Grid>
         <Grid RowDefinitions="65, 130, *, 60">
 
-            <Border Grid.Row="0" BackgroundColor="#2C3E50" StrokeShape="RoundRectangle 8,8,8,8" Margin="10,5">
-                <Label Text="DCP Document Manager" VerticalOptions="Center" HorizontalOptions="Center" FontSize="26" FontAttributes="Bold" TextColor="White"/>
+            <!-- Header -->
+            <Border Grid.Row="0" BackgroundColor="#2C3E50" StrokeShape="RoundRectangle 8" Margin="10,5">
+                <Label Text="DCP Document Manager" VerticalOptions="Center" HorizontalOptions="Center" 
+                       TextColor="White" FontSize="26" FontAttributes="Bold"/>
             </Border>
 
+            <!-- Toolbar/Input Section -->
             <Grid Grid.Row="1" ColumnDefinitions="Auto, *, 280" Margin="15,0">
                 <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
                     <HorizontalStackLayout Margin="5,10,5,5">
-                        <Label Text="UID: " FontSize="16" FontAttributes="Bold" VerticalOptions="Center" TextColor="#2C3E50"/>
-                        <Label Text="{Binding UID}" FontSize="16" FontAttributes="Bold" Margin="0,0,25,0"/>
-                        <Label Text="Emp Name: " FontSize="16" FontAttributes="Bold" VerticalOptions="Center" TextColor="#2C3E50"/>
-                        <Label Text="{Binding EmployeeName}" FontSize="16" FontAttributes="Bold"/>
+                        <Label Text="UID: " FontSize="16" FontAttributes="Bold" TextColor="#2C3E50" VerticalOptions="Center"/>
+                        <Label Text="{Binding UID}" FontSize="16" FontAttributes="Bold" Margin="0,0,25,0" VerticalOptions="Center"/>
+                        <Label Text="Emp Name: " FontSize="16" FontAttributes="Bold" TextColor="#2C3E50" VerticalOptions="Center"/>
+                        <Label Text="{Binding EmployeeName}" FontSize="16" FontAttributes="Bold" VerticalOptions="Center"/>
                     </HorizontalStackLayout>
 
                     <HorizontalStackLayout Margin="0,12,0,0">
-                        <Picker x:Name="cmbDocType" Title="Document Type" WidthRequest="150" HeightRequest="45" BackgroundColor="#E0E0E0"
-                                SelectedItem="{Binding SelectedDocType, Mode=TwoWay}">
+                        <Picker x:Name="cmbDocType" Title="Document Type" WidthRequest="150" HeightRequest="45" 
+                                BackgroundColor="#E0E0E0" SelectedItem="{Binding SelectedDocType, Mode=TwoWay}">
                             <Picker.ItemsSource>
                                 <x:Array Type="{x:Type x:String}">
                                     <x:String>Driving Licence</x:String>
@@ -51,48 +54,106 @@
                         </Picker>
 
                         <HorizontalStackLayout Margin="10,0,0,0">
-                            <Button Text="+" Command="{Binding OpenContextMenuCommand}" WidthRequest="40" HeightRequest="40" CornerRadius="20" BackgroundColor="#4CAF50"/>
-                            <Button Text="↑" Command="{Binding AddCommand}" WidthRequest="40" HeightRequest="40" CornerRadius="20" BackgroundColor="#4CAF50" Margin="10,0"/>
-                            <Button Text="↓" Command="{Binding DownloadCommand}" WidthRequest="40" HeightRequest="40" CornerRadius="20" BackgroundColor="#4CAF50"/>
+                            <Button Text="+" WidthRequest="45" HeightRequest="45" 
+                                    CornerRadius="22" BackgroundColor="#4CAF50" FontAttributes="Bold" TextColor="White">
+                                <FlyoutBase.ContextFlyout>
+                                    <MenuFlyout>
+                                        <MenuFlyoutItem Text="CPT" Command="{Binding OpenCptPopupCommand}" />
+                                        <MenuFlyoutItem Text="OPT" Command="{Binding OpenOptPopupCommand}" />
+                                        <MenuFlyoutItem Text="STEM OPT" Command="{Binding OpenStemOptPopupCommand}" />
+                                    </MenuFlyout>
+                                </FlyoutBase.ContextFlyout>
+                            </Button>
+
+                            <Button Text="↑" Command="{Binding AddCommand}" CommandParameter="{Binding SelectedItem, Source={x:Reference cmbDocType}}" 
+                                    WidthRequest="45" HeightRequest="45" CornerRadius="22" BackgroundColor="#4CAF50" Margin="10,0" FontAttributes="Bold" TextColor="White"/>
+                            <Button Text="↓" Command="{Binding DownloadCommand}" WidthRequest="45" HeightRequest="45" 
+                                    CornerRadius="22" BackgroundColor="#4CAF50" FontAttributes="Bold" TextColor="White"/>
                         </HorizontalStackLayout>
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
 
-                <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" HorizontalOptions="End">
-                    <HorizontalStackLayout Margin="5">
-                        <Label Text="Start Date: " FontSize="15" FontAttributes="Bold"/>
-                        <Label Text="{Binding StartDate, StringFormat='{0:dd-MM-yyyy}'}" TextColor="Blue" FontSize="15" FontAttributes="Bold"/>
-                    </HorizontalStackLayout>
-                    <HorizontalStackLayout Margin="5">
-                        <Label Text="End Date: " FontSize="15" FontAttributes="Bold"/>
-                        <Label Text="{Binding EndDate, StringFormat='{0:dd-MM-yyyy}'}" TextColor="Red" FontSize="15" FontAttributes="Bold"/>
-                    </HorizontalStackLayout>
-                </VerticalStackLayout>
+                <Grid Grid.Column="2" VerticalOptions="Center" HorizontalOptions="End" Margin="0,0,10,0" RowDefinitions="Auto, Auto" ColumnDefinitions="Auto, 120">
+                    <Label Grid.Row="0" Grid.Column="0" Text="Start Date: " VerticalOptions="Center" FontAttributes="Bold"/>
+                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding StartDate, StringFormat='{0:dd-MM-yyyy}'}" TextColor="Blue" VerticalOptions="Center" FontAttributes="Bold" FontFamily="CourierNew"/>
+
+                    <Label Grid.Row="1" Grid.Column="0" Text="End Date: " VerticalOptions="Center" FontAttributes="Bold"/>
+                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding EndDate, StringFormat='{0:dd-MM-yyyy}'}" TextColor="Red" VerticalOptions="Center" FontAttributes="Bold" FontFamily="CourierNew"/>
+                </Grid>
             </Grid>
 
+            <!-- Data Display -->
             <Grid Grid.Row="2" ColumnDefinitions="1*, 1.4*" Margin="15,10">
                 <Border Grid.Column="0" Stroke="#BDC3C7" BackgroundColor="White">
+                    <Grid RowDefinitions="Auto, *">
+                        <Grid Grid.Row="0" ColumnDefinitions="*,*,*,*" BackgroundColor="#F2F2F2" Padding="5">
+                            <Label Text="Type" Grid.Column="0" FontAttributes="Bold"/>
+                            <Label Text="EntryDate" Grid.Column="1" FontAttributes="Bold"/>
+                            <Label Text="StartDate" Grid.Column="2" FontAttributes="Bold"/>
+                            <Label Text="EndDate" Grid.Column="3" FontAttributes="Bold"/>
+                        </Grid>
+                        <CollectionView Grid.Row="1" ItemsSource="{Binding Documents}" SelectionMode="Single" SelectedItem="{Binding SelectedDocument}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="*,*,*,*" Padding="5">
+                                        <Label Text="{Binding DocType}" Grid.Column="0" FontSize="12"/>
+                                        <Label Text="{Binding EntryDate, StringFormat='{0:dd-MM-yyyy}'}" Grid.Column="1" FontSize="12"/>
+                                        <Label Text="{Binding StartDate, StringFormat='{0:dd-MM-yyyy}'}" Grid.Column="2" FontSize="12"/>
+                                        <Label Text="{Binding EndDate, StringFormat='{0:dd-MM-yyyy}'}" Grid.Column="3" FontSize="12"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </Grid>
                 </Border>
-
                 <Border Grid.Column="1" BackgroundColor="#EAECEE" Margin="15,0,0,0" Stroke="#BDC3C7">
                     <Grid>
-                        <Image Source="{Binding SelectedDocument.Path}" Aspect="AspectFit"/>
+                        <Image Source="{Binding SelectedDocument.DocPath}" Aspect="AspectFit" HorizontalOptions="Fill" VerticalOptions="Fill"/>
                         <WebView x:Name="docPreview" IsVisible="False"/>
                     </Grid>
                 </Border>
             </Grid>
 
+            <!-- Footer -->
             <Grid Grid.Row="3" Margin="25,0,25,10" ColumnDefinitions="*, Auto">
-                <HorizontalStackLayout Grid.Column="0" VerticalOptions="Center">
+                <HorizontalStackLayout VerticalOptions="Center">
                     <BoxView WidthRequest="10" HeightRequest="10" Color="#2ECC71" CornerRadius="5"/>
                     <Label Text="Server Status: Online" Margin="8,0,0,0" VerticalOptions="Center"/>
                 </HorizontalStackLayout>
-
                 <HorizontalStackLayout Grid.Column="1">
                     <Button Text="Back" Command="{Binding BackCommand}" WidthRequest="120" HeightRequest="40" BackgroundColor="#34495E" CornerRadius="5"/>
                     <Button Text="Logout" Command="{Binding LogoutCommand}" WidthRequest="120" HeightRequest="40" BackgroundColor="#2C3E50" Margin="10,0,0,0" CornerRadius="5"/>
                 </HorizontalStackLayout>
             </Grid>
+        </Grid>
+
+        <!-- Popup Overlay -->
+        <Grid BackgroundColor="#66000000" IsVisible="{Binding IsPopupVisible}">
+            <Border WidthRequest="450" HeightRequest="480" BackgroundColor="White" StrokeShape="RoundRectangle 15" VerticalOptions="Center" HorizontalOptions="Center">
+                <VerticalStackLayout Margin="30" Spacing="15">
+                    <Label Text="{Binding PopupTitle}" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" TextColor="#2C3E50"/>
+                    <Label Text="Employer Name" FontAttributes="Bold" TextColor="#34495E"/>
+                    <Entry Text="{Binding PopupEmployerName}" IsReadOnly="True" BackgroundColor="#F0F0F0" HeightRequest="38"/>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="Start Date"/>
+                            <DatePicker Date="{Binding PopupStartDate}"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="End Date"/>
+                            <DatePicker Date="{Binding PopupEndDate}"/>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Button Text="📁 Click to Upload Document" HeightRequest="50" BackgroundColor="#F8F9F9" Command="{Binding UploadInPopupCommand}"/>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,20,0,0">
+                        <Button Grid.Column="0" Text="Cancel" BackgroundColor="#E74C3C" Command="{Binding ClosePopupCommand}" CornerRadius="8"/>
+                        <Button Grid.Column="1" Text="Save Data" BackgroundColor="#2ECC71" Command="{Binding SavePopupDataCommand}" CornerRadius="8"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
         </Grid>
     </Grid>
 </ContentPage>

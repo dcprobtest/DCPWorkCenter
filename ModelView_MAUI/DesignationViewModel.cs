@@ -6,17 +6,23 @@ using System.Windows.Input;
 using System.ComponentModel;
 using Newtonsoft.Json;
 using Microsoft.Maui.Controls;
-using Model_MAUI; // MAUI Commands এবং UI Thread এর জন্য
+using Microsoft.Maui.Devices; // Required for DeviceInfo
+using Model_MAUI;
 
-// আপনার MAUI প্রজেক্টের Namespace অনুযায়ী পরিবর্তন করে নেবেন
-namespace ModelView_MAUI
+namespace View_MAUI
 {
     public class DesignationViewModel : INotifyPropertyChanged
     {
-        private readonly string _apiUrl = "http://74.208.227.170:8050//api/Data/SaveDesignation";
+        // Set the base URL dynamically for Android Emulator or local development
+        private string GetBaseUrl() => DeviceInfo.Platform == DevicePlatform.Android
+            ? "https://10.0.2.2:7073/"
+            : "https://localhost:7073/";
 
-        // মনে রাখবেন: MAUI প্রজেক্টে Model ক্লাসের নাম এবং প্রপার্টি যেন ঠিক থাকে (যেমন: Responsiblity বানানটি খেয়াল করবেন)
+        private string _apiUrl => $"{GetBaseUrl()}api/Data/SaveDesignation";
+
         private DesignationModel _designation = new DesignationModel();
+        private string _loggedInUid;
+
         public DesignationModel Designation
         {
             get => _designation;
@@ -44,10 +50,11 @@ namespace ModelView_MAUI
 
         public ICommand SaveCommand { get; }
 
-        public DesignationViewModel()
+        // Constructor modified to accept the uid
+        public DesignationViewModel(string uid)
         {
+            _loggedInUid = uid;
             ResetForm();
-            // MAUI-এর বিল্ট-ইন Command ব্যবহার করা হয়েছে
             SaveCommand = new Command(async () => await SaveDesignation());
         }
 
@@ -55,7 +62,6 @@ namespace ModelView_MAUI
         {
             if (string.IsNullOrWhiteSpace(Designation.DesigCode))
             {
-                // MAUI-তে পপ-আপ অ্যালার্ট দেখানোর নিয়ম
                 if (Shell.Current != null)
                 {
                     await Shell.Current.DisplayAlert("Validation Error", "Please enter a Designation Code.", "OK");
@@ -65,9 +71,14 @@ namespace ModelView_MAUI
 
             try
             {
-                using (HttpClient client = new HttpClient())
+                // Added SSL certificate bypass for development
+                var handler = new HttpClientHandler();
+                handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
+
+                using (HttpClient client = new HttpClient(handler))
                 {
                     Designation.LastUpdate = DateTime.Now;
+                    Designation.EntryByUid = _loggedInUid; // Using the passed uid
 
                     var json = JsonConvert.SerializeObject(Designation);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -107,11 +118,11 @@ namespace ModelView_MAUI
             {
                 DesigCode = string.Empty,
                 Description = string.Empty,
-                Responsiblity = string.Empty, // আপনার মডেলের বানান অনুযায়ী
+                Responsiblity = string.Empty,
                 EntryDate = DateTime.Now,
                 StartDate = DateTime.Now,
-                EndDate = DateTime.Now, // MAUI DatePicker-এর জন্য Nullable এর পরিবর্তে ডিফল্ট কারেন্ট ডেট দেওয়া নিরাপদ
-                EntryByUid = "Admin",
+                EndDate = DateTime.Now,
+                EntryByUid = _loggedInUid, // Default to logged-in user
                 LastUpdate = DateTime.Now,
                 Activate = "N"
             };

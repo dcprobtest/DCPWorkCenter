@@ -1,14 +1,45 @@
 using Microsoft.Maui.Controls.Shapes;
+using ModelView_MAUI;
 
 namespace View_MAUI;
 
 public partial class frm_ScrumInfo : ContentPage
 {
-    public frm_ScrumInfo()
+    private string _loggedInUserId;
+    private ScrumInfoViewModel _viewModel;
+
+    public frm_ScrumInfo(string uid)
     {
         InitializeComponent();
+        _loggedInUserId = uid;
+
+        _viewModel = new ScrumInfoViewModel(_loggedInUserId);
+        BindingContext = _viewModel;
+
         this.Loaded += (s, e) => StartMainBorderAnimation();
     }
+
+    private void OnAddClicked(object sender, EventArgs e) => _viewModel.AddCommand?.Execute(null);
+
+    private async void OnSaveClicked(object sender, EventArgs e)
+    {
+        // ??????? ???? ?? ???????? ??? ???? ???? ????????
+        if (_viewModel.SaveCommand != null && _viewModel.SaveCommand.CanExecute(null))
+        {
+            _viewModel.SaveCommand?.Execute(null);
+
+            // ??? ??? ????? ?? ????? ?????
+            await DisplayAlert("Success", "Scrum information saved successfully!", "OK");
+        }
+        else
+        {
+            // ??? ???? ????? ??? ?? ?? (???? ?????????? ????), ??? ???????? ???
+            await DisplayAlert("Warning", "Please ensure all fields are filled correctly.", "OK");
+        }
+    }
+
+    private void OnEditClicked(object sender, EventArgs e) => _viewModel.EditCommand?.Execute(null);
+    private void OnExitClicked(object sender, EventArgs e) => _viewModel.ExitCommand?.Execute(null);
 
     private void StartMainBorderAnimation()
     {
@@ -28,7 +59,6 @@ public partial class frm_ScrumInfo : ContentPage
     {
         if (sender is Border border)
         {
-            // ???? ?????? ??????????? ???? ??? ?????
             var gradient = new LinearGradientBrush();
             gradient.GradientStops.Add(new GradientStop(Colors.Red, 0.0f));
             gradient.GradientStops.Add(new GradientStop(Colors.Yellow, 0.2f));
@@ -45,7 +75,6 @@ public partial class frm_ScrumInfo : ContentPage
                 gradient.EndPoint = new Point(0.5 - 0.5 * Math.Cos(v), 0.5 - 0.5 * Math.Sin(v));
             }, 0, 2 * Math.PI);
 
-            // ?????????? ???? ???????????? ??? ??? ??? ???? ??? ??? ???? ? ??????? ??
             rotation.Commit(border, "BtnAnim", 16, 2000, Easing.Linear, null, () => true);
         }
     }
@@ -56,8 +85,6 @@ public partial class frm_ScrumInfo : ContentPage
         {
             border.ScaleTo(1.0, 100);
             border.AbortAnimation("BtnAnim");
-
-            // ???? ????? ???? ?????? ???? ?????? ?? ????? ??? ????
             border.Stroke = Colors.Transparent;
         }
     }

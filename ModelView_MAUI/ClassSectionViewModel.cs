@@ -7,11 +7,12 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Maui.Controls; // MAUI কমান্ড এবং কম্পোনেন্টের জন্য
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Devices; // Required for DeviceInfo
 
 namespace ModelView_MAUI
 {
-    // মডেল ক্লাস
+    // Model class
     public class ClassSection
     {
         public string SectionId { get; set; } = string.Empty;
@@ -25,7 +26,7 @@ namespace ModelView_MAUI
         public string? Activate { get; set; }
     }
 
-    // ViewModel ক্লাস
+    // ViewModel class
     public class ClassSectionViewModel : INotifyPropertyChanged
     {
         private readonly HttpClient _httpClient;
@@ -38,11 +39,11 @@ namespace ModelView_MAUI
             {
                 _classSection = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(IsActiveChecked)); // অবজেক্ট চেঞ্জ হলে চেকবক্সও আপডেট হবে
+                OnPropertyChanged(nameof(IsActiveChecked)); // Updates checkbox when object changes
             }
         }
 
-        // MAUI CheckBox-এর জন্য string ("0"/"1") থেকে bool ম্যাপিং প্রপার্টি
+        // Property for MAUI CheckBox mapping from string ("0"/"1") to bool
         public bool IsActiveChecked
         {
             get => ClassSection?.Activate == "1";
@@ -70,7 +71,7 @@ namespace ModelView_MAUI
 
                 if (_selectedClassSection != null)
                 {
-                    // লিস্ট থেকে সিলেক্ট করলে ডাটা ক্লোন করে বক্সে পাঠানো হচ্ছে
+                    // Clone data to the box when selected from the list
                     ClassSection = new ClassSection
                     {
                         SectionId = _selectedClassSection.SectionId,
@@ -87,7 +88,7 @@ namespace ModelView_MAUI
             }
         }
 
-        // MAUI Command ব্যবহার করা হয়েছে (WPF RelayCommand এর পরিবর্তে)
+        // MAUI Commands
         public Command AddCommand { get; }
         public Command SaveCommand { get; }
         public Command ActiveClickCommand { get; }
@@ -95,15 +96,26 @@ namespace ModelView_MAUI
         public Command EditCommand { get; }
         public Command ExitCommand { get; }
 
-        // XAML প্রিভিউ এবং এরর এড়ানোর জন্য ডিফল্ট কনস্ট্রাক্টর
+        // Default constructor
         public ClassSectionViewModel() : this(string.Empty)
         {
         }
 
-        // মূল কনস্ট্রাক্টর
+        // Main constructor
         public ClassSectionViewModel(string uid)
         {
-            _httpClient = new HttpClient { BaseAddress = new Uri("http://74.208.227.170:8050/") };
+            // Using 10.0.2.2 for Android Emulator to access local machine
+            string baseUrl = DeviceInfo.Platform == DevicePlatform.Android
+                ? "https://10.0.2.2:7073/"
+                : "https://localhost:7073/";
+
+            // Handler to ignore SSL certificate validation for local development
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+
+            _httpClient = new HttpClient(handler) { BaseAddress = new Uri(baseUrl) };
 
             ClassSection.EntryByUid = uid;
 
@@ -111,7 +123,7 @@ namespace ModelView_MAUI
             SaveCommand = new Command(async () => await OnSave());
             ActiveClickCommand = new Command(OnActive);
             DeleteCommand = new Command(async () => await OnDelete());
-            EditCommand = new Command(() => { /* এডিট মোড লজিক */ });
+            EditCommand = new Command(() => { /* Edit mode logic */ });
             ExitCommand = new Command(OnExit);
 
             _ = LoadInitialData();
@@ -121,7 +133,7 @@ namespace ModelView_MAUI
         {
             try
             {
-                // ১. কোর্স লিস্ট লোড
+                // 1. Load course list
                 var courses = await _httpClient.GetFromJsonAsync<List<object>>("api/Data/GetCourses");
                 if (courses != null)
                 {
@@ -129,7 +141,7 @@ namespace ModelView_MAUI
                     foreach (var c in courses) CourseList.Add(c);
                 }
 
-                // ২. সেকশন লিস্ট লোড
+                // 2. Load section list
                 var sections = await _httpClient.GetFromJsonAsync<List<ClassSection>>("api/Data/GetSections");
                 if (sections != null)
                 {
@@ -153,7 +165,7 @@ namespace ModelView_MAUI
             ClassSection.Activate = "0";
 
             if (Application.Current?.MainPage != null)
-                await Application.Current.MainPage.DisplayAlert("Information", "নতুন ক্লাস সেকশন এন্ট্রি করার জন্য তৈরি।", "OK");
+                await Application.Current.MainPage.DisplayAlert("Information", "Ready for new class section entry.", "OK");
         }
 
         private async void OnActive()
@@ -164,10 +176,10 @@ namespace ModelView_MAUI
                 ClassSection.Activate = "1";
 
                 OnPropertyChanged(nameof(ClassSection));
-                OnPropertyChanged(nameof(IsActiveChecked)); // UI চেকবক্স রিফ্রেশ করার জন্য
+                OnPropertyChanged(nameof(IsActiveChecked)); // Refresh UI checkbox
 
                 if (Application.Current?.MainPage != null)
-                    await Application.Current.MainPage.DisplayAlert("Success", "সেকশনটি Active হিসেবে সেট করা হয়েছে।", "OK");
+                    await Application.Current.MainPage.DisplayAlert("Success", "Section set to Active.", "OK");
             }
         }
 
@@ -177,7 +189,7 @@ namespace ModelView_MAUI
 
             if (string.IsNullOrEmpty(ClassSection.SectionId))
             {
-                await Application.Current.MainPage.DisplayAlert("Warning", "দয়া করে Section ID প্রদান করুন।", "OK");
+                await Application.Current.MainPage.DisplayAlert("Warning", "Please provide Section ID.", "OK");
                 return;
             }
 
@@ -188,13 +200,13 @@ namespace ModelView_MAUI
 
                 if (response.IsSuccessStatusCode)
                 {
-                    await Application.Current.MainPage.DisplayAlert("Success", "ডেটাবেসে সফলভাবে সেভ করা হয়েছে!", "OK");
+                    await Application.Current.MainPage.DisplayAlert("Success", "Saved successfully to database!", "OK");
                     await LoadInitialData();
                 }
                 else
                 {
                     var errorMsg = await response.Content.ReadAsStringAsync();
-                    await Application.Current.MainPage.DisplayAlert("Error", $"সেভ করা সম্ভব হয়নি।\nসার্ভার মেসেজ: {errorMsg}", "OK");
+                    await Application.Current.MainPage.DisplayAlert("Error", $"Could not save.\nServer message: {errorMsg}", "OK");
                 }
             }
             catch (Exception ex)
@@ -209,11 +221,11 @@ namespace ModelView_MAUI
 
             if (SelectedClassSection == null)
             {
-                await Application.Current.MainPage.DisplayAlert("Warning", "মুছে ফেলার জন্য আগে একটি সেকশন সিলেক্ট করুন।", "OK");
+                await Application.Current.MainPage.DisplayAlert("Warning", "Select a section to delete.", "OK");
                 return;
             }
 
-            bool result = await Application.Current.MainPage.DisplayAlert("নিশ্চিতকরণ", "আপনি কি এই সেকশনটি মুছে ফেলতে চান?", "Yes", "No");
+            bool result = await Application.Current.MainPage.DisplayAlert("Confirmation", "Are you sure you want to delete this section?", "Yes", "No");
             if (result)
             {
                 try
@@ -221,13 +233,13 @@ namespace ModelView_MAUI
                     var response = await _httpClient.DeleteAsync($"api/Data/DeleteSection/{SelectedClassSection.SectionId}");
                     if (response.IsSuccessStatusCode)
                     {
-                        await Application.Current.MainPage.DisplayAlert("Success", "সফলভাবে মুছে ফেলা হয়েছে।", "OK");
+                        await Application.Current.MainPage.DisplayAlert("Success", "Deleted successfully.", "OK");
                         await LoadInitialData();
                         ClassSection = new ClassSection();
                     }
                     else
                     {
-                        await Application.Current.MainPage.DisplayAlert("Error", "সার্ভার থেকে মুছে ফেলা সম্ভব হয়নি।", "OK");
+                        await Application.Current.MainPage.DisplayAlert("Error", "Could not delete from server.", "OK");
                     }
                 }
                 catch (Exception ex)
@@ -239,7 +251,7 @@ namespace ModelView_MAUI
 
         private void OnExit()
         {
-            // MAUI উইন্ডো ক্লোজ করার প্রসেস
+            // Process to close MAUI window
             var window = Application.Current?.Windows.FirstOrDefault();
             if (window != null)
             {

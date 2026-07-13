@@ -166,7 +166,6 @@ namespace View_MAUI
             catch (Exception ex) { await DisplayAlert("Navigation Error", ex.Message, "OK"); }
         }
 
-        // Updated Scrum navigation method
         private async void btnScrum_Tapped(object sender, TappedEventArgs e)
         {
             try
@@ -179,8 +178,19 @@ namespace View_MAUI
             catch (Exception ex) { await DisplayAlert("Navigation Error", ex.Message, "OK"); }
         }
 
+        private async void btnFileManager_Tapped(object sender, TappedEventArgs e)
+        {
+            try
+            {
+                if (Navigation != null)
+                    await Navigation.PushAsync(new frmAdmin_DocInfo(LoggedInUserId));
+                else
+                    Application.Current.MainPage = new NavigationPage(new frmAdmin_DocInfo(LoggedInUserId));
+            }
+            catch (Exception ex) { await DisplayAlert("Navigation Error", ex.Message, "OK"); }
+        }
+
         private void btnVideoConference_Tapped(object sender, TappedEventArgs e) { }
-        private void btnFileManager_Tapped(object sender, TappedEventArgs e) { }
         private void btnRemoteAccess_Tapped(object sender, TappedEventArgs e) { }
     }
 }

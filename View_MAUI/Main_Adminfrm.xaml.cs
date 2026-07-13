@@ -87,5 +87,42 @@ namespace View_MAUI
                 new Point(x2, y2)
             );
         }
+
+        // Click Event Handlers
+        private async void OnDepartmentTapped(object sender, TappedEventArgs e)
+        {
+            await Navigation.PushAsync(new frmAdmin_Department(AdminUserId));
+        }
+
+        private async void OnDesignationTapped(object sender, TappedEventArgs e)
+        {
+            await Navigation.PushAsync(new frmAdmin_Designation(AdminUserId));
+        }
+
+        private void OnDocInfoTapped(object sender, TappedEventArgs e)
+        {
+            // Handle Doc Info navigation if needed
+        }
+
+        private async void OnSTEMTapped(object sender, TappedEventArgs e)
+        {
+            await Navigation.PushAsync(new frm_STEM(AdminUserId));
+        }
+
+        private async void OnEmployeeInfoTapped(object sender, TappedEventArgs e)
+        {
+            await Navigation.PushAsync(new frmAdmin_EmpInfo(AdminUserId));
+        }
+
+        private async void OnUserTableTapped(object sender, TappedEventArgs e)
+        {
+            await Navigation.PushAsync(new frmAdmin_User(AdminUserId));
+        }
+
+        private async void OnCreateDocxTapped(object sender, TappedEventArgs e)
+        {
+            // ????? AdminUserId ?? ???? ???? ??? (????: "Admin") ??? ??? ????? ???? ????? ?? ??
+            await Navigation.PushAsync(new frm_createdocs(AdminUserId, "Admin"));
+        }
     }
 }

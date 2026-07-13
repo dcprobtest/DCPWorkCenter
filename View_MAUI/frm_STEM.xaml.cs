@@ -1,12 +1,23 @@
 using Microsoft.Maui.Controls.Shapes;
+using View_MAUI.ViewModel_MAUI;
 
 namespace View_MAUI;
 
 public partial class frm_STEM : ContentPage
 {
-    public frm_STEM()
+    // Property to store the received user ID
+    public string AdminUserId { get; private set; }
+
+    public frm_STEM(string uid)
     {
         InitializeComponent();
+
+        // Assign the received uid
+        AdminUserId = uid;
+
+        // Initialize the ViewModel and pass the uid to it
+        this.BindingContext = new STEMViewModel(AdminUserId);
+
         this.Loaded += (s, e) => StartMainBorderAnimation();
     }
 
