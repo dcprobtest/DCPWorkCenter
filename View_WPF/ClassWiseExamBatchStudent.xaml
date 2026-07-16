@@ -1,0 +1,246 @@
+﻿<Window x:Class="View_WPF.ClassWiseExamBatchStudent"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:View_WPF"
+        mc:Ignorable="d"
+        Title="Class Wise Exam Batch Student Allocation" Height="650" Width="1150"
+        WindowStartupLocation="CenterScreen" Background="#F4F6F9"
+        AllowsTransparency="True" WindowStyle="None">
+
+    <Window.Resources>
+        <!-- হোয়াইট ব্যাকগ্রাউন্ড ও নিওন সায়ান বর্ডারের মাঝের অ্যারো বাটন স্টাইল -->
+        <Style x:Key="CyberArrowButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#007ACC"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="Width" Value="55"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="btnBorder" CornerRadius="8" Background="{TemplateBinding Background}" BorderBrush="#007ACC" BorderThickness="2" RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                            </Border.RenderTransform>
+                            <Border.Effect>
+                                <DropShadowEffect x:Name="glowEffect" BlurRadius="6" Color="#007ACC" Opacity="0.3" ShadowDepth="0"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-2,0,0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="btnBorder" Property="BorderBrush" Value="#00FFCC"/>
+                                <Setter Property="Foreground" Value="#00FFCC"/>
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="btnBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.1" Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="btnBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.1" Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="glowEffect" Storyboard.TargetProperty="BlurRadius" To="12" Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="btnBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.0" Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="btnBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.0" Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="glowEffect" Storyboard.TargetProperty="BlurRadius" To="6" Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- হোয়াইট ব্যাকগ্রাউন্ড ও টেক বর্ডারের বটম অ্যাকশন বাটন স্টাইল -->
+        <Style x:Key="PremiumTechButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#FF007ACC"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="Width" Value="130"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="btnBorder" CornerRadius="6" Background="{TemplateBinding Background}" BorderBrush="#FF007ACC" BorderThickness="1.5" RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                            </Border.RenderTransform>
+                            <Border.Effect>
+                                <DropShadowEffect x:Name="glowEffect" BlurRadius="6" Color="#FF007ACC" Opacity="0.2" ShadowDepth="0"/>
+                            </Border.Effect>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="btnBorder" Property="BorderBrush" Value="#FF00FFCC"/>
+                                <Setter Property="Foreground" Value="#FF00FFCC"/>
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="btnBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.04" Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="btnBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.04" Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="glowEffect" Storyboard.TargetProperty="BlurRadius" To="12" Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="btnBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.0" Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="btnBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.0" Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="glowEffect" Storyboard.TargetProperty="BlurRadius" To="6" Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <!-- Slide-Up & Outer Rainbow Border Animations -->
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="Window.Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="MainContainer" Storyboard.TargetProperty="Opacity" From="0.2" To="1" Duration="0:0:0.5"/>
+                    <DoubleAnimation Storyboard.TargetName="MainContainerTransform" Storyboard.TargetProperty="Y" From="30" To="0" Duration="0:0:0.5"/>
+                </Storyboard>
+            </BeginStoryboard>
+            <BeginStoryboard>
+                <Storyboard RepeatBehavior="Forever">
+                    <PointAnimation Storyboard.TargetName="MainRainbowGradient" Storyboard.TargetProperty="StartPoint" From="0,0" To="1,1" Duration="0:0:6" AutoReverse="True"/>
+                    <PointAnimation Storyboard.TargetName="MainRainbowGradient" Storyboard.TargetProperty="EndPoint" From="1,1" To="0,0" Duration="0:0:6" AutoReverse="True"/>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </Window.Triggers>
+
+    <Grid x:Name="MainContainer" Margin="15" Opacity="1">
+        <Grid.RenderTransform>
+            <TranslateTransform x:Name="MainContainerTransform" Y="0"/>
+        </Grid.RenderTransform>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Top Title Bar -->
+        <Grid Grid.Row="0" Margin="0,0,0,10" Background="Transparent">
+            <TextBlock Text="Class Wise Exam Batch Student Allocation" FontSize="20" FontWeight="SemiBold" Foreground="#333333" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        </Grid>
+
+        <!-- Main Workspace Border -->
+        <Border Grid.Row="1" CornerRadius="15" BorderThickness="3" Background="White">
+            <Border.BorderBrush>
+                <LinearGradientBrush x:Name="MainRainbowGradient" StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#FF007ACC" Offset="0.0"/>
+                    <GradientStop Color="#FF00FFCC" Offset="0.25"/>
+                    <GradientStop Color="#FFE61A5F" Offset="0.5"/>
+                    <GradientStop Color="#FFFFD700" Offset="0.75"/>
+                    <GradientStop Color="#FF9400D3" Offset="1.0"/>
+                </LinearGradientBrush>
+            </Border.BorderBrush>
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="15" Color="#CCCCCC" Direction="270" ShadowDepth="3" Opacity="0.5"/>
+            </Border.Effect>
+
+            <Grid Margin="15">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="6*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- LEFT SECTION: Students List (ID, Name) -->
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="Students" FontSize="15" FontWeight="Bold" Foreground="#444444" Margin="0,0,0,8"/>
+                    <Border Grid.Row="1" Background="#F8F9FA" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="10" Padding="5">
+                        <ListView ItemsSource="{Binding StudentList}" SelectedItem="{Binding SelectedStudent}" BorderThickness="0" Background="Transparent">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="ID" DisplayMemberBinding="{Binding StudentID}" Width="90"/>
+                                    <GridViewColumn Header="Student Name" DisplayMemberBinding="{Binding StudentName}" Width="260"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </Border>
+                </Grid>
+
+                <!-- MIDDLE SECTION: White Inner Arrow Buttons -->
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="15"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Right Assign Button -->
+                    <Button Grid.Row="1" Content="➔" Style="{StaticResource CyberArrowButtonStyle}" 
+                            Command="{Binding AssignCommand}" HorizontalAlignment="Center"/>
+
+                    <!-- Left Remove Button -->
+                    <Button Grid.Row="3" Content="➔" Style="{StaticResource CyberArrowButtonStyle}" 
+                            Command="{Binding RemoveCommand}" HorizontalAlignment="Center" RenderTransformOrigin="0.5,0.5">
+                        <Button.RenderTransform>
+                            <RotateTransform Angle="180"/>
+                        </Button.RenderTransform>
+                    </Button>
+                </Grid>
+
+                <!-- RIGHT SECTION: Exam Assign List (ID, Name, Assign Date) -->
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="Exam Assign" FontSize="15" FontWeight="Bold" Foreground="#444444" Margin="0,0,0,8"/>
+                    <Border Grid.Row="1" Background="#F8F9FA" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="10" Padding="5">
+                        <ListView ItemsSource="{Binding AssignedStudentList}" SelectedItem="{Binding SelectedAssignedStudent}" BorderThickness="0" Background="Transparent">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="ID" DisplayMemberBinding="{Binding StudentID}" Width="100"/>
+                                    <GridViewColumn Header="Student Name" DisplayMemberBinding="{Binding StudentName}" Width="250"/>
+                                    <GridViewColumn Header="Assign Date" DisplayMemberBinding="{Binding AssignDate, StringFormat='{}{0:dd-MMM-yyyy}'}" Width="150"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!-- Bottom Action Buttons Footer -->
+        <Grid Grid.Row="2" Margin="0,15,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0" Content="SAVE CHANGES" Style="{StaticResource PremiumTechButtonStyle}" Command="{Binding SaveCommand}" Margin="0,0,12,0"/>
+            <Button Grid.Column="1" Content="EXIT" Style="{StaticResource PremiumTechButtonStyle}" Command="{Binding ExitCommand}" Margin="0,0,12,0"/>
+        </Grid>
+    </Grid>
+</Window>
