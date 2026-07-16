@@ -1,16 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using ModelView_WPF; // আপনার ViewModel যে নেমস্পেসে আছে সেটি ব্যবহার করুন
 
 namespace View_WPF
 {
@@ -22,6 +12,10 @@ namespace View_WPF
         public frmClassWiseExam()
         {
             InitializeComponent();
+
+            // এখানে ViewModel-টিকে DataContext হিসেবে সেট করে দেওয়া হয়েছে
+            // এটিই XAML এবং ViewModel-এর মধ্যে সেতুবন্ধন তৈরি করবে
+            this.DataContext = new ClassWiseExamViewModel();
         }
     }
 }

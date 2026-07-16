@@ -5,19 +5,100 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:View_WPF"
         mc:Ignorable="d"
-        Title="frmClassWiseExam" Height="550" Width="800">
-    <Grid>
-        <ComboBox x:Name="cmdSectionID" HorizontalAlignment="Left" Margin="58,53,0,0" VerticalAlignment="Top" Width="120"/>
-        <TextBlock x:Name="txtMCQID" Text="MCQID" HorizontalAlignment="Left" Margin="58,88,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Height="19" Width="112"/>
-        <Button x:Name="btnCreateMCQ" Content="Create MCQ" HorizontalAlignment="Left" Height="25" Margin="58,10,0,0" VerticalAlignment="Top" Width="120"/>
-        <DatePicker x:Name="dtpEntryDate" HorizontalAlignment="Left" Margin="58,125,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="txtQuestion" HorizontalAlignment="Left" Height="54" Margin="58,163,0,0" TextWrapping="Wrap" Text="Question" VerticalAlignment="Top" Width="454"/>
-        <TextBox x:Name="txtAns1" HorizontalAlignment="Left" Height="53" Margin="58,231,0,0" TextWrapping="Wrap" Text="Ans1" VerticalAlignment="Top" Width="454"/>
-        <TextBox x:Name="txtAns2" HorizontalAlignment="Left" Height="53" Margin="58,291,0,0" TextWrapping="Wrap" Text="Ans2" VerticalAlignment="Top" Width="454"/>
-        <TextBox x:Name="txtAns3" HorizontalAlignment="Left" Height="53" Margin="58,414,0,0" TextWrapping="Wrap" Text="Ans3" VerticalAlignment="Top" Width="454"/>
-        <TextBox x:Name="txtAns4" HorizontalAlignment="Left" Height="53" Margin="58,352,0,0" TextWrapping="Wrap" Text="Ans4" VerticalAlignment="Top" Width="454"/>
-        <ComboBox x:Name="cmbRightAns" HorizontalAlignment="Left" Margin="58,481,0,0" VerticalAlignment="Top" Width="51" Height="33"/>
-        <ListBox x:Name="listBox" HorizontalAlignment="Left" Height="293" Margin="548,163,0,0" VerticalAlignment="Top" Width="176" d:ItemsSource="{d:SampleData ItemCount=5}"/>
+        Title="Class Wise Exam Entry" Height="600" Width="950" WindowStartupLocation="CenterScreen">
 
-    </Grid>
+    <Border Background="#F5F5F5" Padding="15">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.2*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Column: Input Form -->
+            <Grid Grid.Column="0" Margin="0,0,15,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Button Grid.Row="0" Content="Create MCQ" Height="35" Background="#1E88E5" Foreground="White" FontWeight="Bold" 
+                        Command="{Binding CreateMCQCommand}" Margin="0,0,0,15"/>
+
+                <Label Grid.Row="1" Content="Select Section (Target Exam):" FontWeight="Bold"/>
+                <ComboBox Grid.Row="2" ItemsSource="{Binding Sections}" SelectedItem="{Binding SelectedSection}" Height="30" Margin="0,0,0,10"/>
+
+                <UniformGrid Grid.Row="3" Columns="2" Margin="0,0,0,10">
+                    <Grid Margin="0,0,5,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Label Content="MCQ ID:" FontWeight="Bold"/>
+                        <TextBox Grid.Row="1" Text="{Binding McqId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="28"/>
+                    </Grid>
+                    <Grid Margin="5,0,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Label Content="Entry Date:" FontWeight="Bold"/>
+                        <DatePicker Grid.Row="1" SelectedDate="{Binding EntryDate, Mode=TwoWay}" Height="28"/>
+                    </Grid>
+                </UniformGrid>
+
+                <Label Grid.Row="4" Content="Question Description:" FontWeight="Bold"/>
+                <TextBox Grid.Row="5" Text="{Binding Question, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="60" TextWrapping="Wrap" AcceptsReturn="True" Margin="0,0,0,10"/>
+
+                <Label Grid.Row="6" Content="Answer Options (1-4):" FontWeight="Bold"/>
+                <Grid Grid.Row="7">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBox Grid.Row="0" Text="{Binding Ans1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Option 1" Margin="0,0,0,5" Height="26"/>
+                    <TextBox Grid.Row="1" Text="{Binding Ans2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Option 2" Margin="0,0,0,5" Height="26"/>
+                    <TextBox Grid.Row="2" Text="{Binding Ans3, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Option 3" Margin="0,0,0,5" Height="26"/>
+                    <TextBox Grid.Row="3" Text="{Binding Ans4, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Option 4" Margin="0,0,0,10" Height="26"/>
+                </Grid>
+
+                <Label Grid.Row="8" Content="Right Answer Option:" FontWeight="Bold"/>
+                <ComboBox Grid.Row="9" SelectedValue="{Binding RightAns, Mode=TwoWay}" SelectedValuePath="Content" Height="30" Width="120" HorizontalAlignment="Left" Margin="0,0,0,15">
+                    <ComboBoxItem Content="1"/>
+                    <ComboBoxItem Content="2"/>
+                    <ComboBoxItem Content="3"/>
+                    <ComboBoxItem Content="4"/>
+                </ComboBox>
+
+                <!-- Button Commands Binding Updated -->
+                <UniformGrid Grid.Row="10" Columns="4" Height="35">
+                    <Button Content="SAVE" Background="#4CAF50" Foreground="White" FontWeight="Bold" Command="{Binding SaveCommand}" Margin="2"/>
+                    <Button Content="EDIT" Background="#FFC107" Foreground="Black" FontWeight="Bold" Command="{Binding EditCommand}" Margin="2"/>
+                    <Button Content="UPDATE" Background="#FF9800" Foreground="White" FontWeight="Bold" Command="{Binding UpdateCommand}" Margin="2"/>
+                    <Button Content="EXIT" Background="#F44336" Foreground="White" FontWeight="Bold" Command="{Binding ExitCommand}" Margin="2"/>
+                </UniformGrid>
+            </Grid>
+
+            <GroupBox Grid.Column="1" Header="Database Stored MCQs" FontWeight="Bold">
+                <DataGrid ItemsSource="{Binding SavedMCQs}" AutoGenerateColumns="False" IsReadOnly="True" Background="White" Margin="5">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="MCQ ID" Binding="{Binding MCQID}" Width="70"/>
+                        <DataGridTextColumn Header="Sec ID" Binding="{Binding SectionID}" Width="60"/>
+                        <DataGridTextColumn Header="Question" Binding="{Binding Question}" Width="*"/>
+                        <DataGridTextColumn Header="Right Ans" Binding="{Binding RightAns}" Width="70"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </GroupBox>
+        </Grid>
+    </Border>
 </Window>
