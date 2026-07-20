@@ -2,6 +2,9 @@
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Controls;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.ComponentModel;
 
 // Using aliases to resolve potential naming conflicts
 using MessageBox = System.Windows.MessageBox;
@@ -16,6 +19,9 @@ namespace View_WPF
         private string _loggedInName = string.Empty;
         private int _userRole;
 
+        // Base URL for API
+        private readonly string apiBaseUrl = "https://localhost:7073/";
+
         public MainWindow()
         {
             InitializeComponent();
@@ -28,6 +34,34 @@ namespace View_WPF
             _loggedInName = name;
             _userRole = role;
             this.Title = $"Main Window - Welcome {name} (ID: {uid})";
+        }
+
+        // Added logic to handle EndDate update on Window close
+        protected override async void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+
+            if (App.Current.Properties.Contains("CurrentSessionID"))
+            {
+                int sessionId = (int)App.Current.Properties["CurrentSessionID"];
+
+                try
+                {
+                    using (HttpClient client = new HttpClient())
+                    {
+                        var updateData = new
+                        {
+                            EndDate = DateTime.Now
+                        };
+
+                        await client.PutAsJsonAsync($"{apiBaseUrl}api/LoginSessionInfo/{sessionId}", updateData);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error updating EndDate: " + ex.Message);
+                }
+            }
         }
 
         // Updated Message button click event

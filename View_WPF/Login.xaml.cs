@@ -68,7 +68,7 @@ namespace View_WPF
                         string authenticatedName = "";
                         int activateStatus = 0;
 
-                        // Extracting Name from API response (using Case-Insensitive check)
+                        // Extracting Name from API response
                         if (loginData.TryGetProperty("fname", out var nameProp) || loginData.TryGetProperty("FName", out nameProp))
                         {
                             authenticatedName = nameProp.GetString();
@@ -78,10 +78,9 @@ namespace View_WPF
                             authenticatedName = userProp.GetString();
                         }
 
-                        // Extracting 'Activate' status from API response (Try both 'activate' and 'Activate')
+                        // Extracting 'Activate' status from API response
                         if (loginData.TryGetProperty("activate", out var activateProp) || loginData.TryGetProperty("Activate", out activateProp))
                         {
-                            // Checking if it's a string or number and converting to int
                             if (activateProp.ValueKind == JsonValueKind.Number)
                                 activateStatus = activateProp.GetInt32();
                             else if (activateProp.ValueKind == JsonValueKind.String)
@@ -95,7 +94,29 @@ namespace View_WPF
                         }
                         else if (activateStatus == 1 || activateStatus == 3)
                         {
-                            // Open MainWindow and pass UID, Name, and Activate Status
+                            // New Logic: Record Login Session
+                            try
+                            {
+                                var sessionData = new
+                                {
+                                    UID = authenticatedUID,
+                                    StartDate = DateTime.Now
+                                };
+
+                                var sessionResponse = await client.PostAsJsonAsync($"{apiBaseUrl}api/LoginSessionInfo", sessionData);
+
+                                if (sessionResponse.IsSuccessStatusCode)
+                                {
+                                    var sessionResult = await sessionResponse.Content.ReadFromJsonAsync<JsonElement>();
+                                    if (sessionResult.TryGetProperty("sessionID", out var sidProp) || sessionResult.TryGetProperty("SessionID", out sidProp))
+                                    {
+                                        App.Current.Properties["CurrentSessionID"] = sidProp.GetInt32();
+                                    }
+                                }
+                            }
+                            catch { /* Log session creation error if necessary */ }
+
+                            // Open MainWindow
                             MainWindow mainWin = new MainWindow(authenticatedUID, authenticatedName, activateStatus);
                             mainWin.Show();
 
@@ -125,7 +146,6 @@ namespace View_WPF
             }
             finally
             {
-                // Re-enable the button
                 btnAuthenticate.IsEnabled = true;
             }
         }
