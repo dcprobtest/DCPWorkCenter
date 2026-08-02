@@ -9,10 +9,12 @@ using System.Windows;
 using System.Windows.Input;
 using System.Collections.Generic;
 using System.Linq;
+using Model_WPF;
+using ModelView_WPF.Helpers;
 
 namespace ModelView_WPF
 {
-    // মডেল ক্লাস
+    // Model class
     public class ClassSection
     {
         public string SectionId { get; set; } = string.Empty;
@@ -26,7 +28,7 @@ namespace ModelView_WPF
         public string? Activate { get; set; }
     }
 
-    // ViewModel ক্লাস
+    // ViewModel class
     public class ClassSectionViewModel : INotifyPropertyChanged
     {
         private readonly HttpClient _httpClient;
@@ -52,7 +54,7 @@ namespace ModelView_WPF
 
                 if (_selectedClassSection != null)
                 {
-                    // লিস্ট থেকে সিলেক্ট করলে ডাটা ক্লোন করে বক্সে পাঠানো হচ্ছে যাতে অরিজিনাল লিস্টে ইফেক্ট না পড়ে সেভ করার আগে
+                    // Cloning data when selected from the list to avoid affecting the original list before saving
                     ClassSection = new ClassSection
                     {
                         SectionId = _selectedClassSection.SectionId,
@@ -76,25 +78,31 @@ namespace ModelView_WPF
         public ICommand EditCommand { get; }
         public ICommand ExitCommand { get; }
 
-        // --- যোগ করা হয়েছে: XAML এরর দূর করার জন্য ডিফল্ট কনস্ট্রাক্টর ---
+        // Default constructor added to remove XAML errors
         public ClassSectionViewModel() : this(null)
         {
         }
 
-        // কনস্ট্রাক্টর আপডেট করা হয়েছে UID রিসিভ করার জন্য
+        // Constructor updated to receive UID
         public ClassSectionViewModel(string uid)
         {
-            // আপনার পোর্টের সাথে সামঞ্জস্য রেখে HttpClient কনফিগারেশন
-            _httpClient = new HttpClient { BaseAddress = new Uri("http://74.208.227.170:8050//") };
+            // Localhost self-signed SSL certificate error bypass handler setup
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
 
-            // EntryByUid তে প্যারামিটার থেকে আসা uid সেট করা হচ্ছে
+            // HttpClient configuration updated with ApiSettings.BaseUrl
+            _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
+
+            // Setting EntryByUid from the passed parameter
             ClassSection.EntryByUid = uid;
 
             AddCommand = new RelayCommand(obj => OnAdd());
             SaveCommand = new RelayCommand(async obj => await OnSave());
             ActiveClickCommand = new RelayCommand(obj => OnActive());
             DeleteCommand = new RelayCommand(async obj => await OnDelete());
-            EditCommand = new RelayCommand(obj => { /* এডিট মোড লজিক */ });
+            EditCommand = new RelayCommand(obj => OnEdit());
             ExitCommand = new RelayCommand(obj => OnExit());
 
             _ = LoadInitialData();
@@ -104,16 +112,16 @@ namespace ModelView_WPF
         {
             try
             {
-                // ১. কোর্স লিস্ট লোড
-                var courses = await _httpClient.GetFromJsonAsync<List<object>>("api/Data/GetCourses");
+                // 1. Load Course List using ApiSettings endpoint
+                var courses = await _httpClient.GetFromJsonAsync<List<object>>(ApiSettings.GetClassSectionCoursesUrl());
                 if (courses != null)
                 {
                     CourseList.Clear();
                     foreach (var c in courses) CourseList.Add(c);
                 }
 
-                // ২. সেকশন লিস্ট লোড
-                var sections = await _httpClient.GetFromJsonAsync<List<ClassSection>>("api/Data/GetSections");
+                // 2. Load Section List using ApiSettings endpoint
+                var sections = await _httpClient.GetFromJsonAsync<List<ClassSection>>(ApiSettings.GetClassSectionsUrl());
                 if (sections != null)
                 {
                     ClassSectionList.Clear();
@@ -122,14 +130,14 @@ namespace ModelView_WPF
             }
             catch (Exception ex)
             {
-                // ডাটা লোড না হলে এরর মেসেজ দেখালে সুবিধা হবে
+                // Helpful error message if data loading fails
                 Console.WriteLine($"Error loading data: {ex.Message}");
             }
         }
 
         private void OnAdd()
         {
-            // নতুন অবজেক্ট তৈরির সময়ও আগের EntryByUid সংরক্ষণ করা হচ্ছে
+            // Preserving previous EntryByUid while creating a new object
             string currentUid = ClassSection.EntryByUid;
             ClassSection = new ClassSection();
             ClassSection.EntryByUid = currentUid;
@@ -137,7 +145,7 @@ namespace ModelView_WPF
             ClassSection.EntryDate = DateTime.Now;
             ClassSection.StartDate = DateTime.Now;
             ClassSection.Activate = "0";
-            MessageBox.Show("নতুন ক্লাস সেকশন এন্ট্রি করার জন্য তৈরি।");
+            MessageBox.Show("Ready to enter a new class section.");
         }
 
         private void OnActive()
@@ -146,40 +154,65 @@ namespace ModelView_WPF
             {
                 ClassSection.EndDate = DateTime.Now;
                 ClassSection.Activate = "1";
-                // যেহেতু ClassSection এর ভেতরকার প্রপার্টি পরিবর্তন হয়েছে, তাই পুরো অবজেক্টের আপডেট জানানো প্রয়োজন
+                // Since inner properties of ClassSection changed, notify update for the whole object
                 OnPropertyChanged(nameof(ClassSection));
-                MessageBox.Show("সেকশনটি Active হিসেবে সেট করা হয়েছে।");
+                MessageBox.Show("Section has been set as Active.");
             }
+        }
+
+        private void OnEdit()
+        {
+            if (SelectedClassSection == null)
+            {
+                MessageBox.Show("Please select a section from the list to edit.");
+                return;
+            }
+
+            // Copying selected section values to active editable object
+            ClassSection = new ClassSection
+            {
+                SectionId = SelectedClassSection.SectionId,
+                SubjectCode = SelectedClassSection.SubjectCode,
+                SectionDesc = SelectedClassSection.SectionDesc,
+                EntryDate = SelectedClassSection.EntryDate,
+                StartDate = SelectedClassSection.StartDate,
+                EndDate = SelectedClassSection.EndDate,
+                EntryByUid = SelectedClassSection.EntryByUid,
+                LastUpdate = SelectedClassSection.LastUpdate,
+                Activate = SelectedClassSection.Activate
+            };
+
+            MessageBox.Show("Section is now in Edit mode.");
         }
 
         private async Task OnSave()
         {
             if (string.IsNullOrEmpty(ClassSection.SectionId))
             {
-                MessageBox.Show("দয়া করে Section ID প্রদান করুন।");
+                MessageBox.Show("Please provide a Section ID.");
                 return;
             }
 
             ClassSection.LastUpdate = DateTime.Now;
             try
             {
-                // API Controller এর SaveSection মেথডকে কল করা হচ্ছে
-                var response = await _httpClient.PostAsJsonAsync("api/Data/SaveSection", ClassSection);
+                // Calling API Controller's SaveSection method using ApiSettings endpoint
+                var response = await _httpClient.PostAsJsonAsync(ApiSettings.SaveClassSectionUrl(), ClassSection);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    MessageBox.Show("ডেটাবেসে সফলভাবে সেভ করা হয়েছে!");
-                    await LoadInitialData(); // লিস্ট আপডেট করার জন্য পুনরায় লোড
+                    MessageBox.Show("Successfully saved to database!");
+                    await LoadInitialData(); // Reload to update the list
                 }
                 else
                 {
                     var errorMsg = await response.Content.ReadAsStringAsync();
-                    MessageBox.Show($"সেভ করা সম্ভব হয়নি। স্ট্যাটাস কোড: {response.StatusCode}\nসার্ভার মেসেজ: {errorMsg}");
+                    MessageBox.Show($"Could not save. Status Code: {response.StatusCode}\nServer Message: {errorMsg}");
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"কানেকশন এরর: {ex.Message}");
+                MessageBox.Show($"Connection Error: {ex.Message}");
             }
         }
 
@@ -187,26 +220,26 @@ namespace ModelView_WPF
         {
             if (SelectedClassSection == null)
             {
-                MessageBox.Show("মুছে ফেলার জন্য আগে একটি সেকশন সিলেক্ট করুন।");
+                MessageBox.Show("Please select a section first to delete.");
                 return;
             }
 
-            var result = MessageBox.Show("আপনি কি এই সেকশনটি মুছে ফেলতে চান?", "নিশ্চিতকরণ", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            var result = MessageBox.Show("Are you sure you want to delete this section?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (result == MessageBoxResult.Yes)
             {
                 try
                 {
-                    // API Controller এর DeleteSection মেথডকে কল করা হচ্ছে
-                    var response = await _httpClient.DeleteAsync($"api/Data/DeleteSection/{SelectedClassSection.SectionId}");
+                    // Calling API Controller's DeleteSection method using ApiSettings endpoint
+                    var response = await _httpClient.DeleteAsync(ApiSettings.DeleteClassSectionUrl(SelectedClassSection.SectionId));
                     if (response.IsSuccessStatusCode)
                     {
-                        MessageBox.Show("সফলভাবে মুছে ফেলা হয়েছে।");
+                        MessageBox.Show("Successfully deleted.");
                         await LoadInitialData();
-                        ClassSection = new ClassSection(); // ইনপুট বক্স ক্লিয়ার করার জন্য
+                        ClassSection = new ClassSection(); // Clear input fields
                     }
                     else
                     {
-                        MessageBox.Show("সার্ভার থেকে মুছে ফেলা সম্ভব হয়নি।");
+                        MessageBox.Show("Could not delete from server.");
                     }
                 }
                 catch (Exception ex) { MessageBox.Show($"Error: {ex.Message}"); }

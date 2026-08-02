@@ -5,20 +5,20 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Net.Http;
+using ModelView_WPF;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Linq; // LINQ যোগ করা হয়েছে অটো-জেনারেশনের জন্য
+using System.Linq;
 using Model_WPF;
-using ModelView_WPF;
+using ModelView_WPF.Helpers; // Namespace added for ApiSettings class
 
 namespace ViewModel_WPF
 {
     public class AccExpBubViewModel : INotifyPropertyChanged
     {
-        private readonly string _apiUrl = "http://74.208.227.170:8050//api/AccExpBub";
         private readonly HttpClient _httpClient;
-        private readonly string _receivedUid = "Admin"; // ডিফল্ট ভ্যালু হিসেবে "Admin" রাখা হলো
+        private readonly string _receivedUid = "Admin"; // Set "Admin" as default value
 
         #region Properties
 
@@ -73,10 +73,11 @@ namespace ViewModel_WPF
 
         public AccExpBubViewModel()
         {
-            _httpClient = new HttpClient();
+            // ApiSettings.BaseUrl used directly in HttpClient
+            _httpClient = new HttpClient { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
             ExpBubList = new ObservableCollection<AccExpBubModel>();
-            ExpCodeList = new ObservableCollection<string>(); // শুরুতে খালি থাকবে
+            ExpCodeList = new ObservableCollection<string>(); // Will remain empty initially
             IsEntryVisible = false;
 
             AddCommand = new RelayCommand(ExecuteAdd);
@@ -85,32 +86,33 @@ namespace ViewModel_WPF
             ExitCommand = new RelayCommand(ExecuteExit);
 
             LoadDataFromApi();
-            LoadExpCodes(); // এই মেথডটি নতুন যোগ করা হয়েছে
+            LoadExpCodes(); // This method has been newly added
         }
 
-        // frmAccExpBub.xaml.cs থেকে uid রিসিভ করার জন্য নতুন কনস্ট্রাক্টর
+        // New constructor to receive uid from frmAccExpBub.xaml.cs
         public AccExpBubViewModel(string uid) : this()
         {
-            _receivedUid = uid; // রিসিভ করা uid লোকাল ভেরিয়েবলে সেট করা হলো
+            _receivedUid = uid; // Set received uid to local variable
         }
 
         private async void LoadDataFromApi()
         {
             try
             {
-                var data = await _httpClient.GetFromJsonAsync<ObservableCollection<AccExpBubModel>>(_apiUrl);
+                // Endpoint used from ApiSettings
+                var data = await _httpClient.GetFromJsonAsync<ObservableCollection<AccExpBubModel>>(ApiSettings.AccExpBubBaseUrl);
                 if (data != null) ExpBubList = data;
             }
-            catch (Exception) { /* API রান না থাকলে এরর এড়াতে */ }
+            catch (Exception) { /* To avoid errors if API is not running */ }
         }
 
-        // API থেকে ExpCodes লোড করার মেথড
+        // Method to load ExpCodes from API
         private async void LoadExpCodes()
         {
             try
             {
-                // আপনার নতুন API এন্ডপয়েন্ট কল করা হচ্ছে
-                var codes = await _httpClient.GetFromJsonAsync<List<string>>("http://74.208.227.170:8050//api/AccExpBub/GetExpendHeadCodes");
+                // New endpoint being called from ApiSettings
+                var codes = await _httpClient.GetFromJsonAsync<List<string>>(ApiSettings.AccExpBubGetExpendHeadCodesUrl);
 
                 if (codes != null)
                 {
@@ -126,7 +128,7 @@ namespace ViewModel_WPF
             }
             catch (Exception ex)
             {
-                // ডাটা না আসলে বা এরর হলে হ্যান্ডেলিং
+                // Handling if data does not arrive or an error occurs
             }
         }
 
@@ -136,19 +138,19 @@ namespace ViewModel_WPF
         {
             IsEntryVisible = true;
 
-            // ১. অটো ExpSubCode জেনারেশন লজিক (001, 002 এভাবে)
+            // 1. Auto ExpSubCode generation logic (001, 002 like that)
             string nextSubCode = "001";
             if (ExpBubList != null && ExpBubList.Any())
             {
                 var lastCode = ExpBubList.Max(x => int.Parse(x.ExpSubCode));
-                nextSubCode = (lastCode + 1).ToString("D3"); // ৩ ডিজিটে ফরম্যাট করবে
+                nextSubCode = (lastCode + 1).ToString("D3"); // Formats to 3 digits
             }
 
-            // ২. নতুন এন্ট্রি তৈরি (হার্ডকোডেড "Admin" এর বদলে রিসিভ করা _receivedUid সেট করা হলো)
+            // 2. New entry creation (Received _receivedUid set instead of hardcoded "Admin")
             CurrentEntry = new AccExpBubModel
             {
                 EntryDate = DateTime.Now,
-                UID = _receivedUid, // রিসিভ করা User ID এখানে সেট হবে এবং ফর্মে দেখাবে
+                UID = _receivedUid, // Received User ID will be set here and shown in the form
                 ExpSubCode = nextSubCode,
                 ExpDetail = ""
             };
@@ -162,7 +164,8 @@ namespace ViewModel_WPF
             {
                 try
                 {
-                    var response = await _httpClient.PostAsJsonAsync(_apiUrl, CurrentEntry);
+                    // Endpoint used from ApiSettings
+                    var response = await _httpClient.PostAsJsonAsync(ApiSettings.AccExpBubBaseUrl, CurrentEntry);
 
                     if (response.IsSuccessStatusCode)
                     {

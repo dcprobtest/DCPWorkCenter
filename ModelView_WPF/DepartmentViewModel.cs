@@ -1,4 +1,5 @@
 ﻿using ModelView_WPF;
+using ModelView_WPF.Helpers;
 using Newtonsoft.Json;
 using System;
 using System.ComponentModel;
@@ -14,14 +15,22 @@ namespace View_WPF.ModelView_WPF
 {
     public class DepartmentViewModel : INotifyPropertyChanged
     {
-        // স্ক্রিনশট অনুযায়ী পোর্ট 7073 এবং রাউট একদম সঠিক আছে।
-        private readonly string _apiUrl = "http://74.208.227.170:8050//api/Data/SaveDepartment";
+        private readonly HttpClient _httpClient;
 
         private DepartmentModel _dept;
         private bool _isActive;
 
         public DepartmentViewModel()
         {
+            // Localhost self-signed SSL certificate error bypass handler setup
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+
+            // HttpClient configuration updated with ApiSettings.BaseUrl
+            _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
+
             ResetForm();
             SaveCommand = new RelayCommand(async (obj) => await ExecuteSave());
         }
@@ -47,44 +56,37 @@ namespace View_WPF.ModelView_WPF
 
         private async Task ExecuteSave()
         {
-            // ১. বেসিক ভ্যালিডেশন
+            // 1. Basic validation
             if (Dept == null || string.IsNullOrEmpty(Dept.DeptCode))
             {
-                MessageBox.Show("দয়া করে Department Code প্রদান করুন।", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Please provide a Department Code.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             try
             {
-                // ২. SSL সার্টিফিকেট জনিত সমস্যা এড়াতে HttpClientHandler ব্যবহার (ঐচ্ছিক কিন্তু নিরাপদ)
-                var handler = new HttpClientHandler();
-                handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
+                // 2. Convert to JSON
+                var json = JsonConvert.SerializeObject(Dept);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                using (HttpClient client = new HttpClient(handler))
+                // 3. Send data to API using ApiSettings endpoint
+                HttpResponseMessage response = await _httpClient.PostAsync(ApiSettings.SaveDepartmentUrl(), content);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    // ৩. JSON এ রূপান্তর
-                    var json = JsonConvert.SerializeObject(Dept);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                    // ৪. API-তে ডাটা পাঠানো
-                    HttpResponseMessage response = await client.PostAsync(_apiUrl, content);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        MessageBox.Show("Department সফলভাবে সেভ হয়েছে!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                        ResetForm();
-                    }
-                    else
-                    {
-                        // ৫. NotFound বা অন্য এরর আসলে বিস্তারিত চেক করা
-                        string errorDetails = await response.Content.ReadAsStringAsync();
-                        MessageBox.Show($"API Error ({response.StatusCode}):\nপাথটি পাওয়া যাচ্ছে না বা ডাটা ফরম্যাটে সমস্যা আছে।\n{errorDetails}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
+                    MessageBox.Show("Department saved successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    ResetForm();
+                }
+                else
+                {
+                    // 4. Check details if NotFound or other error occurs
+                    string errorDetails = await response.Content.ReadAsStringAsync();
+                    MessageBox.Show($"API Error ({response.StatusCode}):\nPath not found or data format issue.\n{errorDetails}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"API-র সাথে সংযোগ স্থাপন করা সম্ভব হয়নি।\nপোর্ট 7073 এবং API সচল আছে কিনা চেক করুন।\nবিস্তারিত: {ex.Message}", "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Unable to establish connection with the API.\nPlease check if the API is running.\nDetails: {ex.Message}", "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

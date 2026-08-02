@@ -8,6 +8,8 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
+using Model_WPF;
+using ModelView_WPF.Helpers;
 
 namespace ModelView_WPF
 {
@@ -40,7 +42,6 @@ namespace ModelView_WPF
         private bool _isLoading = false;
 
         private readonly HttpClient _httpClient;
-        private const string ApiUrl = "https://localhost:7073/api/AssignTechInfo";
         private readonly JsonSerializerOptions _jsonOptions;
 
         public int AssignTechInfoID
@@ -169,7 +170,7 @@ namespace ModelView_WPF
             {
                 ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
             };
-            _httpClient = new HttpClient(handler);
+            _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
             _jsonOptions = new JsonSerializerOptions
             {
@@ -210,8 +211,6 @@ namespace ModelView_WPF
             }
             finally
             {
-            }
-            {
                 _isLoading = false;
             }
         }
@@ -225,7 +224,7 @@ namespace ModelView_WPF
             {
                 _isLoading = true;
 
-                var response = await _httpClient.GetAsync(ApiUrl);
+                var response = await _httpClient.GetAsync(ApiSettings.AssignTechInfoBaseUrl);
                 if (response.IsSuccessStatusCode)
                 {
                     string jsonString = await response.Content.ReadAsStringAsync();
@@ -289,7 +288,7 @@ namespace ModelView_WPF
                     activate = this.Activate
                 };
 
-                var response = await _httpClient.PostAsJsonAsync(ApiUrl, payload);
+                var response = await _httpClient.PostAsJsonAsync(ApiSettings.AssignTechInfoBaseUrl, payload);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -331,7 +330,7 @@ namespace ModelView_WPF
                     activate = this.Activate
                 };
 
-                string updateUrl = $"{ApiUrl}/{this.AssignTechInfoID}";
+                string updateUrl = ApiSettings.GetAssignTechInfoUpdateUrl(this.AssignTechInfoID);
                 var response = await _httpClient.PutAsJsonAsync(updateUrl, payload);
 
                 if (response.IsSuccessStatusCode)

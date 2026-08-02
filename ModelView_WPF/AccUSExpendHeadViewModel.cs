@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Net.Http.Json; // Required for simple JSON Extensions like GetFromJsonAsync and PostAsJsonAsync
 using System.Threading.Tasks;
 using Model_WPF; // For using AccUSExpendHeadModel
+using ModelView_WPF.Helpers;
 
 namespace ModelView_WPF
 {
@@ -22,10 +23,8 @@ namespace ModelView_WPF
         private ObservableCollection<AccUSExpendHeadModel> _expenseList;
         private AccUSExpendHeadModel _selectedExpense;
 
-        // HttpClient field for API communication
+        // HttpClient field for API communication updated to use ApiSettings
         private readonly HttpClient _httpClient;
-        // Base URL of your running Web API
-        private readonly string _apiBaseUrl = "http://74.208.227.170:8050//api/AccUSExpendHead";
 
         #endregion
 
@@ -114,8 +113,8 @@ namespace ModelView_WPF
 
         public AccUSExpendHeadViewModel()
         {
-            // Initialize HttpClient
-            _httpClient = new HttpClient();
+            // Initialize HttpClient with ApiSettings BaseUrl
+            _httpClient = new HttpClient { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
             // Initialize the list
             ExpenseList = new ObservableCollection<AccUSExpendHeadModel>();
@@ -169,8 +168,8 @@ namespace ModelView_WPF
 
             try
             {
-                // Call API POST endpoint to save record into SQL Server database
-                HttpResponseMessage response = await _httpClient.PostAsJsonAsync(_apiBaseUrl, newItem);
+                // Call API POST endpoint using ApiSettings
+                HttpResponseMessage response = await _httpClient.PostAsJsonAsync(ApiSettings.AccUSExpendHeadBaseUrl, newItem);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -211,8 +210,8 @@ namespace ModelView_WPF
 
             try
             {
-                // Call API PUT endpoint using ExpCode as the identifier route
-                HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"{_apiBaseUrl}/{updatedItem.ExpCode}", updatedItem);
+                // Call API PUT endpoint using ApiSettings route helper
+                HttpResponseMessage response = await _httpClient.PutAsJsonAsync(ApiSettings.GetAccUSExpendHeadByIdUrl(updatedItem.ExpCode), updatedItem);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -244,8 +243,8 @@ namespace ModelView_WPF
         {
             try
             {
-                // Call API GET endpoint to fetch all expense records asynchronously
-                var data = await _httpClient.GetFromJsonAsync<AccUSExpendHeadModel[]>(_apiBaseUrl);
+                // Call API GET endpoint using ApiSettings to fetch all expense records asynchronously
+                var data = await _httpClient.GetFromJsonAsync<AccUSExpendHeadModel[]>(ApiSettings.AccUSExpendHeadBaseUrl);
 
                 if (data != null)
                 {

@@ -6,7 +6,8 @@ using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
-using Model_WPF; // References the Model project
+using Model_WPF;
+using ModelView_WPF.Helpers;
 
 namespace ModelView_WPF
 {
@@ -18,8 +19,8 @@ namespace ModelView_WPF
         private DateTime? _entryDate = DateTime.Now;
         private AccIncomeHeadModel _selectedIncome;
 
-        // API Endpoint Configuration
-        private static readonly HttpClient httpClient = new HttpClient { BaseAddress = new Uri("http://74.208.227.170:8050//") };
+        // API Endpoint Configuration updated to use ApiSettings
+        private static readonly HttpClient httpClient = new HttpClient { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
         // Collection to hold database records for the DataGrid
         public ObservableCollection<AccIncomeHeadModel> IncomeList { get; set; }
@@ -122,7 +123,7 @@ namespace ModelView_WPF
         {
             try
             {
-                var data = await httpClient.GetFromJsonAsync<ObservableCollection<AccIncomeHeadModel>>("api/AccIncomeHead");
+                var data = await httpClient.GetFromJsonAsync<ObservableCollection<AccIncomeHeadModel>>(ApiSettings.AccIncomeHeadBaseUrl);
                 if (data != null)
                 {
                     IncomeList.Clear();
@@ -166,7 +167,7 @@ namespace ModelView_WPF
                 };
 
                 // HTTP POST request to API to insert into database
-                HttpResponseMessage response = await httpClient.PostAsJsonAsync("api/AccIncomeHead", newIncome);
+                HttpResponseMessage response = await httpClient.PostAsJsonAsync(ApiSettings.AccIncomeHeadBaseUrl, newIncome);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -204,7 +205,7 @@ namespace ModelView_WPF
                     SelectedIncome.EntryDate = this.EntryDate;
 
                     // HTTP PUT request to API to update database row using IncCode as key
-                    HttpResponseMessage response = await httpClient.PutAsJsonAsync($"api/AccIncomeHead/{IncCode}", SelectedIncome);
+                    HttpResponseMessage response = await httpClient.PutAsJsonAsync(ApiSettings.GetAccIncomeHeadByIdUrl(IncCode), SelectedIncome);
 
                     if (response.IsSuccessStatusCode)
                     {

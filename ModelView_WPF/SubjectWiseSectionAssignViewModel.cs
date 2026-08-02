@@ -12,11 +12,12 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Linq;
-using View_WPF.Model_WPF; // ClassVideoTextModel এর জন্য এটি প্রয়োজন
+using View_WPF.Model_WPF;
+using ModelView_WPF.Helpers;
 
 namespace View_WPF.ModelView_WPF
 {
-    // API থেকে আসা ডেটা ধরার জন্য একটি ছোট ক্লাস
+    // A small class to capture data coming from the API
     public class GroupUserDto
     {
         public string UID { get; set; }
@@ -27,13 +28,13 @@ namespace View_WPF.ModelView_WPF
     {
         private readonly HttpClient _httpClient;
 
-        // Swagger অনুযায়ী সঠিক API URL আপডেট করা হয়েছে
-        private readonly string _apiUrl = "api/Data/SaveSubjectWiseAssign";
+        // API URL updated according to Swagger and ApiSettings
+        private readonly string _apiUrl;
 
-        // সব ভিডিওর মাস্টার লিস্ট রাখার জন্য (ফিল্টারিংয়ের জন্য)
+        // Master list to hold all videos (for filtering)
         private List<ClassVideoTextModel> _allVideosMasterList = new List<ClassVideoTextModel>();
 
-        // এই প্রোপার্টিটি রিসিভ করা UID ধরে রাখবে
+        // This property holds the received UID
         public string EntryByUid { get; set; }
 
         // --- Data Lists for ComboBox ---
@@ -51,7 +52,7 @@ namespace View_WPF.ModelView_WPF
             set { _sectionList = value; OnPropertyChanged(); }
         }
 
-        // নতুন: Group ComboBox-এর জন্য লিস্ট
+        // New: List for Group ComboBox
         private ObservableCollection<GroupUserDto> _groupList;
         public ObservableCollection<GroupUserDto> GroupList
         {
@@ -59,7 +60,7 @@ namespace View_WPF.ModelView_WPF
             set { _groupList = value; OnPropertyChanged(); }
         }
 
-        // --- ListBox-এর জন্য প্রোপার্টি (XAML এর সাথে মিল রেখে) ---
+        // --- Properties for ListBox (matching XAML) ---
         private ObservableCollection<dynamic> _classList;
         public ObservableCollection<dynamic> ClassList
         {
@@ -74,7 +75,7 @@ namespace View_WPF.ModelView_WPF
             set { _studentList = value; OnPropertyChanged(); }
         }
 
-        // --- সেকশন সিলেক্ট করলে ভিডিও ফিল্টার করার জন্য SelectedSection প্রোপার্টি ---
+        // --- SelectedSection property to filter videos when a section is selected ---
         private ClassSection _selectedSection;
         public ClassSection SelectedSection
         {
@@ -85,8 +86,8 @@ namespace View_WPF.ModelView_WPF
                 OnPropertyChanged();
                 if (value != null)
                 {
-                    // Error Fix (CS1503): SectionId string হলে সরাসরি পাস না করে 
-                    // Filter মেথডটি string গ্রহণ করার উপযোগী করা হয়েছে।
+                    // Error Fix (CS1503): Instead of passing SectionId directly if it's a string,
+                    // the Filter method has been adapted to accept a string.
                     SectionID = value.SectionId;
                     FilterVideosBySection(value.SectionId);
                 }
@@ -101,7 +102,7 @@ namespace View_WPF.ModelView_WPF
             set { _uid = value; OnPropertyChanged(); }
         }
 
-        // Swagger-এ 'classId' নাম থাকায় ডাটাবেস অনুযায়ী এটিই Section/Class এর কাজ করবে
+        // Acts as Section/Class work based on database since Swagger has 'classId'
         public string SectionID { get; set; }
         public bool IsActive { get; set; }
 
@@ -115,14 +116,21 @@ namespace View_WPF.ModelView_WPF
         {
             UID = uid;
             EntryByUid = uid;
-            // আপনার পোর্টের সাথে সামঞ্জস্য রেখে HttpClient (বাকি কোডের মতো)
-            _httpClient = new HttpClient { BaseAddress = new Uri("http://74.208.227.170:8050//") };
+
+            // Localhost self-signed SSL certificate error bypass handler setup with ApiSettings BaseUrl
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+
+            _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
+            _apiUrl = ApiSettings.SaveSubjectWiseAssignUrl();
 
             SubjectList = new ObservableCollection<ClassSubject>();
             SectionList = new ObservableCollection<ClassSection>();
             GroupList = new ObservableCollection<GroupUserDto>();
-            ClassList = new ObservableCollection<dynamic>(); // Initialize
-            StudentList = new ObservableCollection<dynamic>(); // Initialize
+            ClassList = new ObservableCollection<dynamic>();
+            StudentList = new ObservableCollection<dynamic>();
 
             SaveCommand = new RelayCommand(async (obj) => await ExecuteSave());
 
@@ -134,29 +142,29 @@ namespace View_WPF.ModelView_WPF
         {
             try
             {
-                // ১. সাবজেক্ট লিস্ট লোড
-                var subjects = await _httpClient.GetFromJsonAsync<List<ClassSubject>>("api/Data/GetSubjects");
+                // 1. Load Subject List
+                var subjects = await _httpClient.GetFromJsonAsync<List<ClassSubject>>(ApiSettings.GetSubjectsUrl());
                 if (subjects != null)
                 {
                     SubjectList = new ObservableCollection<ClassSubject>(subjects);
                 }
 
-                // ২. সেকশন লিস্ট লোড
-                var sections = await _httpClient.GetFromJsonAsync<List<ClassSection>>("api/Data/GetSections");
+                // 2. Load Section List
+                var sections = await _httpClient.GetFromJsonAsync<List<ClassSection>>(ApiSettings.GetSectionsUrl());
                 if (sections != null)
                 {
                     SectionList = new ObservableCollection<ClassSection>(sections);
                 }
 
-                // ৩. নতুন: গ্রুপ/ইউজার লিস্ট লোড (UID - Name ফরম্যাটে)
-                var groups = await _httpClient.GetFromJsonAsync<List<GroupUserDto>>("api/Data/GetGroupUsers");
+                // 3. New: Load Group/User List (in UID - Name format)
+                var groups = await _httpClient.GetFromJsonAsync<List<GroupUserDto>>(ApiSettings.GetGroupUsersUrl());
                 if (groups != null)
                 {
                     GroupList = new ObservableCollection<GroupUserDto>(groups);
                 }
 
-                // ৪. সব ভিডিও লোড করে মাস্টার লিস্টে রাখা (ফিল্টারিংয়ের জন্য)
-                var videos = await _httpClient.GetFromJsonAsync<List<ClassVideoTextModel>>("api/Data/GetVideos");
+                // 4. Load all videos and store in master list (for filtering)
+                var videos = await _httpClient.GetFromJsonAsync<List<ClassVideoTextModel>>(ApiSettings.GetVideosUrl());
                 if (videos != null)
                 {
                     _allVideosMasterList = videos;
@@ -168,12 +176,12 @@ namespace View_WPF.ModelView_WPF
             }
         }
 
-        // Error Fix: প্যারামিটার int থেকে string এ পরিবর্তন করা হয়েছে
+        // Error Fix: Changed parameter type from int to string
         private void FilterVideosBySection(string sectionId)
         {
             if (_allVideosMasterList == null) return;
 
-            // Error Fix (CS0019): v.SectionID এবং sectionId এখন উভয়ই string, তাই '==' কাজ করবে
+            // Error Fix (CS0019): v.SectionID and sectionId are now both strings, so '==' will work properly
             var filteredVideos = _allVideosMasterList.Where(v => v.SectionID == sectionId).ToList();
 
             Application.Current.Dispatcher.Invoke(() =>
@@ -188,20 +196,20 @@ namespace View_WPF.ModelView_WPF
 
         private async Task ExecuteSave()
         {
-            // ভ্যালিডেশন চেক
+            // Validation checks
             if (string.IsNullOrEmpty(UID)) { MessageBox.Show("Please select a User (Group)!"); return; }
             if (UID?.Length > 10) { MessageBox.Show("UID max 10 chars!"); return; }
             if (string.IsNullOrEmpty(SectionID)) { MessageBox.Show("Please select a Section!"); return; }
             if (SectionID?.Length > 10) { MessageBox.Show("Section ID max 10 chars!"); return; }
 
-            // Swagger Schema অনুযায়ী অবজেক্ট প্রোপার্টি নেমগুলো আপডেট করা হয়েছে
-            // এখানে entryByUid হিসেবে রিসিভ করা EntryByUid প্রোপার্টিটি ব্যবহার করা হয়েছে
+            // Updated object property names according to Swagger Schema
+            // The received EntryByUid property is used here as entryByUid
             var data = new
             {
                 uid = UID,
                 classId = SectionID,
                 activate = IsActive ? "Y" : "N",
-                entryByUid = this.EntryByUid, // এখানে রিসিভ করা UID টি বসবে
+                entryByUid = this.EntryByUid,
                 lastUpdate = DateTime.Now
             };
 

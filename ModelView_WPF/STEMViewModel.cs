@@ -10,12 +10,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using ModelView_WPF.Helpers;
 
 namespace ModelView_WPF
 {
     public class STEMViewModel : INotifyPropertyChanged
     {
-        // UID ধরে রাখার জন্য প্রপার্টি
+        // Property to hold the UID
         private string _adminID;
         public string AdminID
         {
@@ -23,7 +24,7 @@ namespace ModelView_WPF
             set { _adminID = value; OnPropertyChanged(); }
         }
 
-        // TransID অটো-জেনারেট হবে
+        // TransID will be auto-generated
         private string _transID;
         public string TransID
         {
@@ -101,7 +102,7 @@ namespace ModelView_WPF
             set { _paid = value; OnPropertyChanged(); }
         }
 
-        // রাইট প্যানেলের ভিজিবিলিটি কন্ট্রোল করার জন্য
+        // To control the visibility of the right panel
         private bool _isInputVisible = false;
         public bool IsInputVisible
         {
@@ -109,7 +110,7 @@ namespace ModelView_WPF
             set { _isInputVisible = value; OnPropertyChanged(); }
         }
 
-        // DataGrid এ সিলেক্ট করা আইটেম রাখার জন্য
+        // To hold the selected item from the DataGrid
         private STEMViewModel _selectedSTEM;
         public STEMViewModel SelectedSTEM
         {
@@ -124,7 +125,7 @@ namespace ModelView_WPF
             set { _stemList = value; OnPropertyChanged(); }
         }
 
-        // বাটন কমান্ড
+        // Button Commands
         public ICommand SaveCommand { get; }
         public ICommand AddCommand { get; }
         public ICommand DeleteCommand { get; }
@@ -135,14 +136,14 @@ namespace ModelView_WPF
         {
             PayDate = DateTime.Now;
 
-            // কমান্ডসমূহ ইনিশিয়ালাইজ
+            // Initialize commands
             SaveCommand = new RelayCommand(async (obj) => await SaveSTEMDataAsync());
 
             AddCommand = new RelayCommand(async (obj) =>
             {
                 ClearFields();
                 IsInputVisible = true;
-                await GenerateNextTransID(); // API থেকে ডাটা চেক করে আইডি আনবে
+                await GenerateNextTransID(); // Checks data from API and fetches the ID
             });
 
             DeleteCommand = new RelayCommand((obj) => DeleteSTEMData());
@@ -155,7 +156,7 @@ namespace ModelView_WPF
             });
         }
 
-        // এডিট করার মেথড
+        // Method to edit data
         private void EditSTEMData()
         {
             if (SelectedSTEM != null)
@@ -180,7 +181,7 @@ namespace ModelView_WPF
             }
         }
 
-        // ডিলিট করার মেথড
+        // Method to delete data
         private void DeleteSTEMData()
         {
             if (SelectedSTEM != null)
@@ -199,7 +200,7 @@ namespace ModelView_WPF
             }
         }
 
-        // ইনপুট ফিল্ড ক্লিয়ার করার মেথড
+        // Method to clear input fields
         private void ClearFields()
         {
             StudentUID = string.Empty;
@@ -214,24 +215,29 @@ namespace ModelView_WPF
             PayDate = DateTime.Now;
         }
 
-        // TransID অটো জেনারেট করার লজিক (API থেকে লেটেস্ট আইডি নিয়ে আসবে)
+        // Logic to auto-generate TransID (fetches latest ID from API)
         private async Task GenerateNextTransID()
         {
             try
             {
-                using (HttpClient client = new HttpClient())
+                // Localhost self-signed SSL certificate error bypass handler setup
+                var handler = new HttpClientHandler
                 {
-                    string apiUrl = "http://74.208.227.170:8050//api/Data/GetLastTransID";
-                    var response = await client.GetAsync(apiUrl);
+                    ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+                };
+
+                using (HttpClient client = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) })
+                {
+                    var response = await client.GetAsync(ApiSettings.GetLastTransIDUrl());
 
                     if (response.IsSuccessStatusCode)
                     {
                         string lastIdStr = await response.Content.ReadAsStringAsync();
-                        lastIdStr = lastIdStr.Trim('\"'); // কোটেশন রিমুভ করা
+                        lastIdStr = lastIdStr.Trim('\"'); // Remove quotation marks
 
                         if (int.TryParse(lastIdStr, out int lastId))
                         {
-                            // ডাটাবেজের সর্বশেষ নাম্বারের সাথে ১ যোগ করে ৬ ডিজিটের ফরম্যাট করা
+                            // Adds 1 to the latest database number and formats to 6 digits
                             TransID = (lastId + 1).ToString("D6");
                         }
                         else
@@ -247,7 +253,7 @@ namespace ModelView_WPF
             }
             catch (Exception)
             {
-                TransID = "000001"; // কানেকশন এরর হলে ডিফল্ট
+                TransID = "000001"; // Default if connection error occurs
             }
         }
 
@@ -260,10 +266,14 @@ namespace ModelView_WPF
         {
             try
             {
-                using (HttpClient client = new HttpClient())
+                // Localhost self-signed SSL certificate error bypass handler setup
+                var handler = new HttpClientHandler
                 {
-                    string apiUrl = "http://74.208.227.170:8050//api/Data/SaveSTEM";
+                    ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+                };
 
+                using (HttpClient client = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) })
+                {
                     var stemData = new
                     {
                         TransID = this.TransID,
@@ -280,7 +290,7 @@ namespace ModelView_WPF
                         Paid = this.Paid
                     };
 
-                    var response = await client.PostAsJsonAsync(apiUrl, stemData);
+                    var response = await client.PostAsJsonAsync(ApiSettings.SaveSTEMUrl(), stemData);
 
                     if (response.IsSuccessStatusCode)
                     {

@@ -8,6 +8,8 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Model_WPF;
+using ModelView_WPF.Helpers;
 
 namespace ModelView_WPF
 {
@@ -24,7 +26,14 @@ namespace ModelView_WPF
 
         public ClassWiseExamBatchStudentViewModel()
         {
-            _httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:7073/") };
+            // Localhost self-signed SSL certificate error bypass handler setup
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+
+            // HttpClient configuration updated with ApiSettings.BaseUrl
+            _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
             StudentList = new ObservableCollection<Student>();
             AssignedStudentList = new ObservableCollection<Student>();
@@ -42,7 +51,8 @@ namespace ModelView_WPF
         {
             try
             {
-                var students = await _httpClient.GetFromJsonAsync<List<Student>>("api/ClassWiseExamBatchStudent/GetStudents");
+                // Loading students using ApiSettings endpoint
+                var students = await _httpClient.GetFromJsonAsync<List<Student>>(ApiSettings.GetClassWiseExamBatchStudentsUrl());
                 if (students != null)
                 {
                     StudentList.Clear();
@@ -95,7 +105,8 @@ namespace ModelView_WPF
                 Activate = "s"
             };
 
-            var response = await _httpClient.PostAsJsonAsync("api/ClassWiseExamBatchStudent", payload);
+            // Saving assigned student using ApiSettings endpoint
+            var response = await _httpClient.PostAsJsonAsync(ApiSettings.SaveClassWiseExamBatchStudentUrl(), payload);
 
             if (response.IsSuccessStatusCode)
             {
@@ -118,7 +129,8 @@ namespace ModelView_WPF
 
             var student = SelectedAssignedStudent;
 
-            var response = await _httpClient.DeleteAsync($"api/ClassWiseExamBatchStudent/{student.StudentID}");
+            // Deleting assigned student using ApiSettings endpoint
+            var response = await _httpClient.DeleteAsync(ApiSettings.DeleteClassWiseExamBatchStudentUrl(student.StudentID));
 
             if (response.IsSuccessStatusCode)
             {

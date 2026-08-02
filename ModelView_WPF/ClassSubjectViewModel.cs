@@ -8,6 +8,8 @@ using System.Windows;
 using System.Windows.Input;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Model_WPF;
+using ModelView_WPF.Helpers;
 
 namespace ModelView_WPF
 {
@@ -27,9 +29,8 @@ namespace ModelView_WPF
     public class ClassSubjectViewModel : INotifyPropertyChanged
     {
         private readonly HttpClient _httpClient;
-        private string _receivedUid; // UID সংরক্ষণের জন্য
+        private string _receivedUid;
 
-        // ডাটাবেস থেকে আসা লিস্টটি রাখার জন্য এটি প্রয়োজন
         private ObservableCollection<ClassSubject> _subjectList;
         public ObservableCollection<ClassSubject> SubjectList
         {
@@ -42,6 +43,33 @@ namespace ModelView_WPF
         {
             get => _currentSubject;
             set { _currentSubject = value; OnPropertyChanged(); }
+        }
+
+        private ClassSubject _selectedSubject;
+        public ClassSubject SelectedSubject
+        {
+            get => _selectedSubject;
+            set
+            {
+                _selectedSubject = value;
+                OnPropertyChanged();
+                if (_selectedSubject != null)
+                {
+                    CurrentSubject = new ClassSubject
+                    {
+                        SubjectCode = _selectedSubject.SubjectCode,
+                        CourseCode = _selectedSubject.CourseCode,
+                        SubjectDesc = _selectedSubject.SubjectDesc,
+                        EntryDate = _selectedSubject.EntryDate,
+                        StartDate = _selectedSubject.StartDate,
+                        EndDate = _selectedSubject.EndDate,
+                        EntryByUid = _selectedSubject.EntryByUid,
+                        LastUpdate = _selectedSubject.LastUpdate,
+                        Activate = _selectedSubject.Activate
+                    };
+                    IsActiveChecked = _selectedSubject.Activate == "1";
+                }
+            }
         }
 
         private bool _isActiveChecked;
@@ -62,39 +90,98 @@ namespace ModelView_WPF
         public ICommand SaveCommand { get; }
         public ICommand AddCommand { get; }
         public ICommand DeleteCommand { get; }
+        public ICommand EditCommand { get; }
+        public ICommand ExitCommand { get; }
+        public ICommand ToggleStatusCommand { get; }
 
-        // ডিফল্ট কনস্ট্রাক্টর (XAML ডিজাইনারের জন্য)
         public ClassSubjectViewModel() : this(null)
         {
         }
 
-        // কনস্ট্রাক্টর আপডেট করা হয়েছে UID রিসিভ করার জন্য
         public ClassSubjectViewModel(string uid)
         {
             _receivedUid = uid;
-            _httpClient = new HttpClient { BaseAddress = new Uri("http://74.208.227.170:8050//") };
+
+            // Localhost self-signed SSL certificate error bypass handler setup
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+
+            // HttpClient configuration updated with ApiSettings.BaseUrl
+            _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
             SubjectList = new ObservableCollection<ClassSubject>();
 
             SaveCommand = new RelayCommand(async (obj) => await ExecuteSave());
-            AddCommand = new RelayCommand((obj) => ResetForm());
+            AddCommand = new RelayCommand((obj) => ExecuteAdd());
             DeleteCommand = new RelayCommand(async (obj) => await ExecuteDelete());
+            EditCommand = new RelayCommand((obj) => ExecuteEdit());
+            ExitCommand = new RelayCommand((obj) => ExecuteExit());
+            ToggleStatusCommand = new RelayCommand((obj) => ExecuteToggleStatus());
 
             ResetForm();
-            _ = LoadSubjects(); // অ্যাপ চালু হলে ডাটা লোড হবে
+            _ = LoadSubjects();
         }
 
-        // ডাটাবেস থেকে ডাটা রিফ্রেশ করার মেথড
         private async Task LoadSubjects()
         {
             try
             {
-                var subjects = await _httpClient.GetFromJsonAsync<List<ClassSubject>>("api/Data/GetSubjects");
+                // Loading subjects using ApiSettings endpoint
+                var subjects = await _httpClient.GetFromJsonAsync<List<ClassSubject>>(ApiSettings.GetClassSubjectsUrl());
                 if (subjects != null)
                 {
                     SubjectList = new ObservableCollection<ClassSubject>(subjects);
                 }
             }
-            catch { /* API call logic error handle */ }
+            catch { }
+        }
+
+        private void ExecuteAdd()
+        {
+            ResetForm();
+            SelectedSubject = null;
+        }
+
+        private void ExecuteEdit()
+        {
+            if (SelectedSubject == null)
+            {
+                MessageBox.Show("Please select a subject from the list to edit.");
+                return;
+            }
+
+            CurrentSubject = new ClassSubject
+            {
+                SubjectCode = SelectedSubject.SubjectCode,
+                CourseCode = SelectedSubject.CourseCode,
+                SubjectDesc = SelectedSubject.SubjectDesc,
+                EntryDate = SelectedSubject.EntryDate,
+                StartDate = SelectedSubject.StartDate,
+                EndDate = SelectedSubject.EndDate,
+                EntryByUid = SelectedSubject.EntryByUid,
+                LastUpdate = SelectedSubject.LastUpdate,
+                Activate = SelectedSubject.Activate
+            };
+            IsActiveChecked = CurrentSubject.Activate == "1";
+        }
+
+        private void ExecuteExit()
+        {
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window.DataContext == this)
+                {
+                    window.Close();
+                    break;
+                }
+            }
+        }
+
+        private void ExecuteToggleStatus()
+        {
+            IsActiveChecked = !IsActiveChecked;
+            MessageBox.Show($"Status updated to: {(IsActiveChecked ? "Active" : "Inactive")}");
         }
 
         private async Task ExecuteSave()
@@ -106,17 +193,17 @@ namespace ModelView_WPF
             }
 
             CurrentSubject.LastUpdate = DateTime.Now;
-            // Admin এর পরিবর্তে রিসিভ করা UID ব্যবহার করা হচ্ছে
             CurrentSubject.EntryByUid = _receivedUid;
 
             try
             {
-                var response = await _httpClient.PostAsJsonAsync("api/Data/SaveSubject", CurrentSubject);
+                // Saving subject using ApiSettings endpoint
+                var response = await _httpClient.PostAsJsonAsync(ApiSettings.SaveClassSubjectUrl(), CurrentSubject);
 
                 if (response.IsSuccessStatusCode)
                 {
                     MessageBox.Show("Class Subject Saved/Updated Successfully!");
-                    await LoadSubjects(); // সেভ করার পর লিস্ট রিফ্রেশ হবে
+                    await LoadSubjects();
                     ResetForm();
                 }
                 else
@@ -145,12 +232,13 @@ namespace ModelView_WPF
             {
                 try
                 {
-                    var response = await _httpClient.DeleteAsync($"api/Data/DeleteSubject/{CurrentSubject.SubjectCode}");
+                    // Deleting subject using ApiSettings endpoint
+                    var response = await _httpClient.DeleteAsync(ApiSettings.DeleteClassSubjectUrl(CurrentSubject.SubjectCode));
 
                     if (response.IsSuccessStatusCode)
                     {
                         MessageBox.Show("Deleted Successfully!");
-                        await LoadSubjects(); // ডিলিট করার পর লিস্ট রিফ্রেশ হবে
+                        await LoadSubjects();
                         ResetForm();
                     }
                     else
@@ -176,7 +264,7 @@ namespace ModelView_WPF
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddMonths(3),
                 Activate = "0",
-                EntryByUid = _receivedUid // রিসেট করার সময়ও UID ধরে রাখা হচ্ছে
+                EntryByUid = _receivedUid
             };
             IsActiveChecked = false;
         }

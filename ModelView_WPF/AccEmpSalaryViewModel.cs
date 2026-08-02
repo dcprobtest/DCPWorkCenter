@@ -1,15 +1,16 @@
-﻿using System;
+﻿using Model_WPF;
+using ModelView_WPF.Helpers; // Namespace for ApiSettings class
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows;
-using System.Windows.Input;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using System.Linq;
-using System.Collections.Generic;
-using Model_WPF;
+using System.Windows;
+using System.Windows.Input;
 
 namespace ModelView_WPF
 {
@@ -30,7 +31,8 @@ namespace ModelView_WPF
 
         public AccEmpSalaryViewModel()
         {
-            _httpClient = new HttpClient { BaseAddress = new Uri("http://74.208.227.170:8050//") };
+            // Using ApiSettings.BaseUrl directly in HttpClient
+            _httpClient = new HttpClient { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
             SalaryList = new ObservableCollection<AccEmpSalaryModel>();
             ExpSubCodeList = new ObservableCollection<AccExpBubModel>();
@@ -85,7 +87,8 @@ namespace ModelView_WPF
         {
             try
             {
-                var response = await _httpClient.GetFromJsonAsync<List<AccExpBubModel>>("api/AccEmpSalary/GetExpSubCodes");
+                // Root endpoint used from ApiSettings
+                var response = await _httpClient.GetFromJsonAsync<List<AccExpBubModel>>(ApiSettings.AccEmpSalaryGetExpSubCodesUrl);
                 if (response != null)
                 {
                     ExpSubCodeList = new ObservableCollection<AccExpBubModel>(response);
@@ -101,7 +104,8 @@ namespace ModelView_WPF
         {
             try
             {
-                var salaries = await _httpClient.GetFromJsonAsync<ObservableCollection<AccEmpSalaryModel>>("api/AccEmpSalary");
+                // Root endpoint used from ApiSettings
+                var salaries = await _httpClient.GetFromJsonAsync<ObservableCollection<AccEmpSalaryModel>>(ApiSettings.AccEmpSalaryBaseUrl);
                 if (salaries != null)
                 {
                     SalaryList.Clear();
@@ -144,11 +148,11 @@ namespace ModelView_WPF
                 // Therefore, 0 is treated as a new record (POST) and more than 0 is an update (PUT).
                 if (SelectedSalary.ExpenditurID == 0)
                 {
-                    response = await _httpClient.PostAsJsonAsync("api/AccEmpSalary", SelectedSalary);
+                    response = await _httpClient.PostAsJsonAsync(ApiSettings.AccEmpSalaryBaseUrl, SelectedSalary);
                 }
                 else
                 {
-                    response = await _httpClient.PostAsJsonAsync($"api/AccEmpSalary/{SelectedSalary.ExpenditurID}", SelectedSalary);
+                    response = await _httpClient.PostAsJsonAsync(ApiSettings.UpdateAccEmpSalaryUrl(SelectedSalary.ExpenditurID), SelectedSalary);
                 }
 
                 if (response.IsSuccessStatusCode)

@@ -5,10 +5,10 @@ using System.ComponentModel;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Model_WPF; // References the Model project
+using ModelView_WPF.Helpers;
 
 namespace ModelView_WPF
 {
@@ -22,8 +22,8 @@ namespace ModelView_WPF
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        // HttpClient instance for API Communication
-        private readonly HttpClient _httpClient = new HttpClient { BaseAddress = new Uri("http://74.208.227.170:8050//") };
+        // HttpClient instance for API Communication updated to use ApiSettings
+        private readonly HttpClient _httpClient = new HttpClient { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
         // Privates for Form Visibility and States
         private bool _isEntryVisible;
@@ -110,12 +110,12 @@ namespace ModelView_WPF
             LoadDropdowns();
         }
 
-        // Methods to pull lists from database repository/service layers via API
+        // Methods to pull lists from database repository/service layers via API using ApiSettings
         private async void LoadGridData()
         {
             try
             {
-                var records = await _httpClient.GetFromJsonAsync<List<AccUSExpBubModel>>("api/AccUSExpBub");
+                var records = await _httpClient.GetFromJsonAsync<List<AccUSExpBubModel>>(ApiSettings.AccUSExpBubBaseUrl);
                 if (records != null)
                 {
                     ExpBubList.Clear();
@@ -135,8 +135,8 @@ namespace ModelView_WPF
         {
             try
             {
-                // Fetches data from tblAccUSExpendHead controller endpoint
-                var expHeads = await _httpClient.GetFromJsonAsync<List<AccUSExpendHeadModel>>("api/AccUSExpBub/GetExpCodes");
+                // Fetches data from tblAccUSExpendHead controller endpoint using ApiSettings
+                var expHeads = await _httpClient.GetFromJsonAsync<List<AccUSExpendHeadModel>>(ApiSettings.AccUSExpBubGetExpCodesUrl);
                 if (expHeads != null)
                 {
                     ExpCodeList.Clear();
@@ -172,8 +172,8 @@ namespace ModelView_WPF
         {
             try
             {
-                // API call to insert or update CurrentEntry inside database table tblUSExpBub
-                var response = await _httpClient.PostAsJsonAsync("api/AccUSExpBub", CurrentEntry);
+                // API call to insert or update CurrentEntry inside database table tblUSExpBub using ApiSettings
+                var response = await _httpClient.PostAsJsonAsync(ApiSettings.AccUSExpBubBaseUrl, CurrentEntry);
 
                 if (response.IsSuccessStatusCode)
                 {

@@ -25,6 +25,7 @@ namespace View_WPF
         // Private variables to hold logged-in user ID and name
         private string _uid;
         private string _userName;
+        private int _userRole;
 
         // Default constructor
         public Main_Adminfrm()
@@ -40,9 +41,24 @@ namespace View_WPF
             _userName = name;
         }
 
+        // Overloaded constructor to receive role as well
+        public Main_Adminfrm(string uid, string name, int role)
+        {
+            InitializeComponent();
+            _uid = uid;
+            _userName = name;
+            _userRole = role;
+        }
+
         // Department button click event
         private void BtnDepartment_Click(object sender, RoutedEventArgs e)
         {
+            if (_userRole != 1)
+            {
+                MessageBox.Show("Your account status does not allow access to Department.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             try
             {
                 frmAdmin_Department deptWin = new frmAdmin_Department();
@@ -57,6 +73,12 @@ namespace View_WPF
         // Designation button click event
         private void BtnDesignation_Click(object sender, RoutedEventArgs e)
         {
+            if (_userRole != 1)
+            {
+                MessageBox.Show("Your account status does not allow access to Designation.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             try
             {
                 frmAdmin_Designation desigWin = new frmAdmin_Designation();
@@ -71,6 +93,12 @@ namespace View_WPF
         // STEM button click event
         private void BtnSTEM_Click(object sender, RoutedEventArgs e)
         {
+            if (_userRole != 1)
+            {
+                MessageBox.Show("Your account status does not allow access to STEM.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             try
             {
                 frm_STEM stemWin = new frm_STEM(_uid);
@@ -85,9 +113,15 @@ namespace View_WPF
         // Employee Info button click event
         private void BtnEmployeeInfo_Click(object sender, RoutedEventArgs e)
         {
+            if (_userRole != 1 && _userRole != 3)
+            {
+                MessageBox.Show("Your account status does not allow access to Employee Info.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             try
             {
-                frmAdmin_EmpInfo empWin = new frmAdmin_EmpInfo();
+                frmAdmin_EmpInfo empWin = new frmAdmin_EmpInfo(_uid);
                 empWin.Show();
             }
             catch (Exception ex)
@@ -99,6 +133,12 @@ namespace View_WPF
         // User Table button click event
         private void BtnUserTable_Click(object sender, RoutedEventArgs e)
         {
+            if (_userRole != 1)
+            {
+                MessageBox.Show("Your account status does not allow access to User Table.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             try
             {
                 frmAdmin_User userWin = new frmAdmin_User();
@@ -113,6 +153,12 @@ namespace View_WPF
         // Create Docx button click event
         private void BtnCreateDocx_Click(object sender, RoutedEventArgs e)
         {
+            if (_userRole != 1)
+            {
+                MessageBox.Show("Your account status does not allow access to Create Docx.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             try
             {
                 frm_createdocx docxWin = new frm_createdocx(_uid, _userName);

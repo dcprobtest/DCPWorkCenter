@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Newtonsoft.Json;
 using Model_WPF;
+using ModelView_WPF.Helpers;
 using System.ComponentModel;
 using System.Windows;
 
@@ -12,8 +13,7 @@ namespace ModelView_WPF
 {
     public class DesignationViewModel : INotifyPropertyChanged
     {
-        // আপনার অনুরোধ অনুযায়ী পোর্ট এবং কন্ট্রোলার রুট সেট করা হয়েছে
-        private readonly string _apiUrl = "http://74.208.227.170:8050//api/Data/SaveDesignation";
+        private readonly HttpClient _httpClient;
 
         private DesignationModel _designation = new DesignationModel();
         public DesignationModel Designation
@@ -35,7 +35,7 @@ namespace ModelView_WPF
                 _isActiveChecked = value;
                 if (Designation != null)
                 {
-                    // API লজিক অনুযায়ী 'Y' বা 'N' সেট করা হচ্ছে
+                    // Set 'Y' or 'N' according to API logic
                     Designation.Activate = value ? "Y" : "N";
                 }
                 OnPropertyChanged(nameof(IsActiveChecked));
@@ -46,14 +46,23 @@ namespace ModelView_WPF
 
         public DesignationViewModel()
         {
+            // Localhost self-signed SSL certificate error bypass handler setup
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+
+            // HttpClient configuration updated with ApiSettings.BaseUrl
+            _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
+
             ResetForm();
-            // RelayCommand ব্যবহার করে Save লজিক বাইন্ড করা হয়েছে
+            // Bind Save logic using RelayCommand
             SaveCommand = new RelayCommand(async (obj) => await SaveDesignation());
         }
 
         private async Task SaveDesignation()
         {
-            // ভ্যালিডেশন: DesigCode ছাড়া সেভ হবে না
+            // Validation: Cannot save without DesigCode
             if (string.IsNullOrWhiteSpace(Designation.DesigCode))
             {
                 MessageBox.Show("Please enter a Designation Code.");
@@ -62,37 +71,35 @@ namespace ModelView_WPF
 
             try
             {
-                using (HttpClient client = new HttpClient())
+                // Update LastUpdate to match API model requirements
+                Designation.LastUpdate = DateTime.Now;
+
+                var json = JsonConvert.SerializeObject(Designation);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                // Send data to API using ApiSettings endpoint
+                var response = await _httpClient.PostAsync(ApiSettings.SaveDesignationUrl(), content);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    // API-এর মডেলের সাথে সামঞ্জস্য রাখতে LastUpdate আপডেট করা হচ্ছে
-                    Designation.LastUpdate = DateTime.Now;
-
-                    var json = JsonConvert.SerializeObject(Designation);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                    var response = await client.PostAsync(_apiUrl, content);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        MessageBox.Show("Designation Saved Successfully!");
-                        ResetForm();
-                    }
-                    else
-                    {
-                        string errorMsg = await response.Content.ReadAsStringAsync();
-                        MessageBox.Show($"Error: {response.StatusCode}\nDetails: {errorMsg}");
-                    }
+                    MessageBox.Show("Designation Saved Successfully!");
+                    ResetForm();
+                }
+                else
+                {
+                    string errorMsg = await response.Content.ReadAsStringAsync();
+                    MessageBox.Show($"Error: {response.StatusCode}\nDetails: {errorMsg}");
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Could not connect to API at {_apiUrl}. \nException: {ex.Message}");
+                MessageBox.Show($"Could not connect to API.\nException: {ex.Message}");
             }
         }
 
         private void ResetForm()
         {
-            // নতুন এন্ট্রি করার জন্য ফর্ম রিসেট
+            // Reset form for a new entry
             Designation = new DesignationModel
             {
                 DesigCode = string.Empty,
@@ -101,7 +108,7 @@ namespace ModelView_WPF
                 EntryDate = DateTime.Now,
                 StartDate = DateTime.Now,
                 EndDate = null,
-                EntryByUid = "Admin", // প্রয়োজন অনুযায়ী ডাইনামিক করতে পারেন
+                EntryByUid = "Admin", // Can be made dynamic if required
                 LastUpdate = DateTime.Now,
                 Activate = "N"
             };

@@ -10,12 +10,13 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using DCPWorkCenter.Model_WPF;
 using System.Linq;
+using ModelView_WPF.Helpers;
 
 namespace ModelView_WPF
 {
     public class ClassWiseExamViewModel : INotifyPropertyChanged
     {
-        private static readonly HttpClient client = new HttpClient { BaseAddress = new Uri("https://localhost:7073/api/") };
+        private readonly HttpClient _httpClient;
 
         private string _mcqId;
         public string McqId { get => _mcqId; set { _mcqId = value; OnPropertyChanged(); } }
@@ -43,6 +44,15 @@ namespace ModelView_WPF
 
         public ClassWiseExamViewModel()
         {
+            // Localhost self-signed SSL certificate error bypass handler setup
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+
+            // HttpClient configuration updated with ApiSettings.BaseUrl
+            _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
+
             SavedMCQs = new ObservableCollection<ClassWiseExamModel>();
             Sections = new ObservableCollection<string>();
 
@@ -56,7 +66,8 @@ namespace ModelView_WPF
         {
             try
             {
-                var sectionResponse = await client.GetStringAsync("ClassWiseExam/Sections");
+                // Loading sections using ApiSettings endpoint
+                var sectionResponse = await _httpClient.GetStringAsync(ApiSettings.GetClassWiseExamSectionsUrl());
                 var sectionList = JsonConvert.DeserializeObject<List<string>>(sectionResponse);
 
                 Application.Current.Dispatcher.Invoke(() =>
@@ -65,7 +76,8 @@ namespace ModelView_WPF
                     if (sectionList != null) foreach (var item in sectionList) Sections.Add(item);
                 });
 
-                var mcqResponse = await client.GetStringAsync("ClassWiseExam");
+                // Loading MCQs using ApiSettings endpoint
+                var mcqResponse = await _httpClient.GetStringAsync(ApiSettings.GetClassWiseExamsUrl());
                 var mcqList = JsonConvert.DeserializeObject<List<ClassWiseExamModel>>(mcqResponse);
 
                 Application.Current.Dispatcher.Invoke(() =>
@@ -100,7 +112,8 @@ namespace ModelView_WPF
 
                 var content = new StringContent(JsonConvert.SerializeObject(newExam), System.Text.Encoding.UTF8, "application/json");
 
-                var response = await client.PostAsync("ClassWiseExam", content);
+                // Saving MCQ using ApiSettings endpoint
+                var response = await _httpClient.PostAsync(ApiSettings.SaveClassWiseExamUrl(), content);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -128,7 +141,7 @@ namespace ModelView_WPF
                 // Find the highest numeric value from existing MCQIDs (assuming format Q-0001)
                 var lastId = SavedMCQs
                     .Select(m => m.MCQID)
-                    .Where(id => id.StartsWith("Q-"))
+                    .Where(id => id != null && id.StartsWith("Q-"))
                     .Select(id => id.Replace("Q-", ""))
                     .Select(numStr => { int.TryParse(numStr, out int val); return val; })
                     .DefaultIfEmpty(0)

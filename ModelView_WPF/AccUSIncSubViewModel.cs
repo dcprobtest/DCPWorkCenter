@@ -9,6 +9,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Model_WPF; // For AccUSIncSubModel and other models
+using ModelView_WPF.Helpers;
 
 namespace ModelView_WPF
 {
@@ -22,7 +23,6 @@ namespace ModelView_WPF
         private DateTime? _entryDate = DateTime.Now;
         private AccUSIncSubModel? _selectedUSIncSub;
         private readonly HttpClient _httpClient;
-        private const string ApiBaseUrl = "http://74.208.227.170:8050//api/AccUSIncSub";
 
         // Collections for DataGrid and ComboBox
         public ObservableCollection<AccUSIncSubModel> USIncSubList { get; set; }
@@ -37,8 +37,8 @@ namespace ModelView_WPF
         // Default Constructor
         public AccUSIncSubViewModel()
         {
-            // Initialize HttpClient Handler
-            _httpClient = new HttpClient();
+            // Initialize HttpClient Handler with ApiSettings BaseAddress
+            _httpClient = new HttpClient { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
             // Collection Initialization
             USIncSubList = new ObservableCollection<AccUSIncSubModel>();
@@ -57,8 +57,8 @@ namespace ModelView_WPF
         // Parameterized Constructor to receive UID from View
         public AccUSIncSubViewModel(string uid)
         {
-            // Initialize HttpClient Handler
-            _httpClient = new HttpClient();
+            // Initialize HttpClient Handler with ApiSettings BaseAddress
+            _httpClient = new HttpClient { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
             // Collection Initialization
             USIncSubList = new ObservableCollection<AccUSIncSubModel>();
@@ -197,13 +197,13 @@ namespace ModelView_WPF
                 // Determine whether to perform POST (New) or PUT (Update) based on SelectedUSIncSub context
                 if (SelectedUSIncSub == null)
                 {
-                    // POST Request to API
-                    response = await _httpClient.PostAsJsonAsync(ApiBaseUrl, targetSubHead);
+                    // POST Request to API using ApiSettings
+                    response = await _httpClient.PostAsJsonAsync(ApiSettings.AccUSIncSubBaseUrl, targetSubHead);
                 }
                 else
                 {
-                    // PUT Request to API
-                    response = await _httpClient.PutAsJsonAsync($"{ApiBaseUrl}/{targetSubHead.IncSubCode}", targetSubHead);
+                    // PUT Request to API using ApiSettings route helper
+                    response = await _httpClient.PutAsJsonAsync(ApiSettings.GetAccUSIncSubByIdUrl(targetSubHead.IncSubCode), targetSubHead);
                 }
 
                 if (response.IsSuccessStatusCode)
@@ -267,8 +267,8 @@ namespace ModelView_WPF
         {
             try
             {
-                // Call dedicated Controller Endpoint to fetch IncCode list from AccUSIncomeHead table
-                var rawCodes = await _httpClient.GetFromJsonAsync<List<string>>($"{ApiBaseUrl}/GetIncCodes");
+                // Call dedicated Controller Endpoint to fetch IncCode list using ApiSettings route helper
+                var rawCodes = await _httpClient.GetFromJsonAsync<List<string>>(ApiSettings.GetAccUSIncSubIncCodesUrl());
                 if (rawCodes != null)
                 {
                     IncCodeList.Clear();
@@ -299,8 +299,8 @@ namespace ModelView_WPF
         {
             try
             {
-                // Fetch full existing table records from API
-                var items = await _httpClient.GetFromJsonAsync<List<AccUSIncSubModel>>(ApiBaseUrl);
+                // Fetch full existing table records from API using ApiSettings
+                var items = await _httpClient.GetFromJsonAsync<List<AccUSIncSubModel>>(ApiSettings.AccUSIncSubBaseUrl);
                 if (items != null)
                 {
                     USIncSubList.Clear();

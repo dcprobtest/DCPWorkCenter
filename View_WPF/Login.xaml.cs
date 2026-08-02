@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Text.Json;
+using ModelView_WPF.Helpers;
 
 // Aliases to avoid conflicts
 using MessageBox = System.Windows.MessageBox;
@@ -17,9 +18,6 @@ namespace View_WPF
     /// </summary>
     public partial class Login : Window
     {
-        // Updated Base URL for your Swagger API
-        private readonly string apiBaseUrl = "https://localhost:7073/";
-
         public Login()
         {
             InitializeComponent();
@@ -43,7 +41,12 @@ namespace View_WPF
 
             try
             {
-                using (HttpClient client = new HttpClient())
+                var handler = new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+                };
+
+                using (HttpClient client = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) })
                 {
                     // Create data according to API model
                     var loginRequest = new
@@ -52,8 +55,8 @@ namespace View_WPF
                         Password = password
                     };
 
-                    // Sending POST request to API
-                    var response = await client.PostAsJsonAsync($"{apiBaseUrl}api/Data/Login", loginRequest);
+                    // Sending POST request to API using ApiSettings
+                    var response = await client.PostAsJsonAsync(ApiSettings.LoginUrl(), loginRequest);
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -103,7 +106,7 @@ namespace View_WPF
                                     StartDate = DateTime.Now
                                 };
 
-                                var sessionResponse = await client.PostAsJsonAsync($"{apiBaseUrl}api/LoginSessionInfo", sessionData);
+                                var sessionResponse = await client.PostAsJsonAsync(ApiSettings.LoginSessionInfoUrl(), sessionData);
 
                                 if (sessionResponse.IsSuccessStatusCode)
                                 {
@@ -130,7 +133,6 @@ namespace View_WPF
                     }
                     else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                     {
-                        MessageBox.Show("Invalid User ID or Password! Please try again.", "Login Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                         txtPassword.Clear();
                         txtUserId.Focus();
                     }

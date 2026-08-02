@@ -10,5 +10,11 @@ namespace View_WPF
             InitializeComponent();
             this.DataContext = new EmpInfoViewModel();
         }
+
+        public frmAdmin_EmpInfo(string uid)
+        {
+            InitializeComponent();
+            this.DataContext = new EmpInfoViewModel(uid);
+        }
     }
 }

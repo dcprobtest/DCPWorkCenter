@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Net.Http;
 using System.Net.Http.Json; // Required for Json extension methods
 using Model_WPF; // References the project containing AccUSIncomeHeadModel
+using ModelView_WPF.Helpers;
 
 namespace ModelView_WPF
 {
@@ -15,9 +16,8 @@ namespace ModelView_WPF
         // For keeping track of whether the current operation is an ADD or EDIT mode
         private bool _isEditMode = false;
 
-        // HttpClient instance for API interaction
+        // HttpClient instance for API interaction updated to use ApiSettings
         private readonly HttpClient _httpClient;
-        private const string ApiUrl = "http://74.208.227.170:8050//api/AccUSIncomeHead";
 
         // Private field to retain the passed-in User ID across operations
         private readonly string _currentUID = string.Empty;
@@ -96,8 +96,8 @@ namespace ModelView_WPF
         // Default constructor
         public AccUSIncomeHeadViewModel()
         {
-            // Initializing HttpClient
-            _httpClient = new HttpClient();
+            // Initializing HttpClient with ApiSettings BaseAddress
+            _httpClient = new HttpClient { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
             // Initializing the collection
             USIncomeList = new ObservableCollection<AccUSIncomeHeadModel>();
@@ -148,8 +148,8 @@ namespace ModelView_WPF
 
                 if (_isEditMode)
                 {
-                    // Update processing logic for existing records using HTTP PUT
-                    HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"{ApiUrl}/{IncCode}", inputData);
+                    // Update processing logic for existing records using HTTP PUT with ApiSettings
+                    HttpResponseMessage response = await _httpClient.PutAsJsonAsync(ApiSettings.GetAccUSIncomeHeadByIdUrl(IncCode), inputData);
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -169,8 +169,8 @@ namespace ModelView_WPF
                 }
                 else
                 {
-                    // Creation and insertion logic for brand new records using HTTP POST
-                    HttpResponseMessage response = await _httpClient.PostAsJsonAsync(ApiUrl, inputData);
+                    // Creation and insertion logic for brand new records using HTTP POST with ApiSettings
+                    HttpResponseMessage response = await _httpClient.PostAsJsonAsync(ApiSettings.AccUSIncomeHeadBaseUrl, inputData);
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -238,8 +238,8 @@ namespace ModelView_WPF
         {
             try
             {
-                // Fetch data from the running API setup using HTTP GET
-                var items = await _httpClient.GetFromJsonAsync<ObservableCollection<AccUSIncomeHeadModel>>(ApiUrl);
+                // Fetch data from the running API setup using HTTP GET with ApiSettings
+                var items = await _httpClient.GetFromJsonAsync<ObservableCollection<AccUSIncomeHeadModel>>(ApiSettings.AccUSIncomeHeadBaseUrl);
                 if (items != null)
                 {
                     USIncomeList.Clear();

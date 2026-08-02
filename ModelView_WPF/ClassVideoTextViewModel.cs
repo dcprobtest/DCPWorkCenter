@@ -1,4 +1,5 @@
 ﻿using ModelView_WPF;
+using ModelView_WPF.Helpers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -20,13 +21,12 @@ namespace View_WPF.ModelView_WPF
 {
     public class ClassVideoTextViewModel : INotifyPropertyChanged
     {
-        private readonly string _apiUrl = "http://74.208.227.170:8050//api/Data/SaveVideo";
-        private readonly string _baseApiUrl = "http://74.208.227.170:8050//api/Data/";
+        private readonly HttpClient _httpClient;
 
         private ClassVideoTextModel _classVideo;
         private bool _isActive;
         private string _selectedFileSourcePath;
-        private ClassVideoTextModel _selectedItemInGrid; // Grid থেকে সিলেক্ট করার জন্য
+        private ClassVideoTextModel _selectedItemInGrid; // Used for selecting an item from the grid
 
         public ObservableCollection<ClassSubject> SubjectList { get; set; } = new ObservableCollection<ClassSubject>();
         public ObservableCollection<ClassSection> SectionList { get; set; } = new ObservableCollection<ClassSection>();
@@ -57,7 +57,7 @@ namespace View_WPF.ModelView_WPF
             }
         }
 
-        // DataGrid-এ কোনো রো সিলেক্ট করলে তা এই প্রপার্টিতে আসবে
+        // Selected row from the DataGrid will be captured in this property
         public ClassVideoTextModel SelectedItemInGrid
         {
             get => _selectedItemInGrid;
@@ -66,6 +66,15 @@ namespace View_WPF.ModelView_WPF
 
         public ClassVideoTextViewModel(string uid)
         {
+            // Localhost self-signed SSL certificate error bypass handler setup
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+
+            // HttpClient configuration updated with ApiSettings.BaseUrl
+            _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
+
             InitializeClassVideo();
 
             if (ClassVideo != null)
@@ -80,7 +89,7 @@ namespace View_WPF.ModelView_WPF
             SaveCommand = new RelayCommand(async (obj) => await ExecuteSave());
             BrowseCommand = new RelayCommand((obj) => ExecuteBrowse());
 
-            // --- নতুন কমান্ড ---
+            // --- New Commands ---
             AddCommand = new RelayCommand((obj) => ResetForm());
             EditCommand = new RelayCommand((obj) => ExecuteEdit());
             DeleteFileCommand = new RelayCommand(async (obj) => await ExecuteDelete());
@@ -121,21 +130,18 @@ namespace View_WPF.ModelView_WPF
         {
             try
             {
-                using (HttpClient client = new HttpClient())
+                var response = await _httpClient.GetAsync(ApiSettings.GetClassVideosUrl());
+                if (response.IsSuccessStatusCode)
                 {
-                    var response = await client.GetAsync(_baseApiUrl + "GetVideos");
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var json = await response.Content.ReadAsStringAsync();
-                        var list = JsonConvert.DeserializeObject<List<ClassVideoTextModel>>(json);
+                    var json = await response.Content.ReadAsStringAsync();
+                    var list = JsonConvert.DeserializeObject<List<ClassVideoTextModel>>(json);
 
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            ClassVideoList.Clear();
-                            foreach (var item in list) { ClassVideoList.Add(item); }
-                            BuildTreeView(list);
-                        });
-                    }
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        ClassVideoList.Clear();
+                        foreach (var item in list) { ClassVideoList.Add(item); }
+                        BuildTreeView(list);
+                    });
                 }
             }
             catch (Exception ex) { MessageBox.Show("Video List Load Error: " + ex.Message); }
@@ -176,16 +182,13 @@ namespace View_WPF.ModelView_WPF
         {
             try
             {
-                using (HttpClient client = new HttpClient())
+                var response = await _httpClient.GetAsync(ApiSettings.GetClassSubjectsUrl());
+                if (response.IsSuccessStatusCode)
                 {
-                    var response = await client.GetAsync(_baseApiUrl + "GetSubjects");
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var json = await response.Content.ReadAsStringAsync();
-                        var list = JsonConvert.DeserializeObject<List<ClassSubject>>(json);
-                        SubjectList.Clear();
-                        foreach (var item in list) SubjectList.Add(item);
-                    }
+                    var json = await response.Content.ReadAsStringAsync();
+                    var list = JsonConvert.DeserializeObject<List<ClassSubject>>(json);
+                    SubjectList.Clear();
+                    foreach (var item in list) SubjectList.Add(item);
                 }
             }
             catch (Exception ex) { MessageBox.Show("Subject Load Error: " + ex.Message); }
@@ -195,16 +198,13 @@ namespace View_WPF.ModelView_WPF
         {
             try
             {
-                using (HttpClient client = new HttpClient())
+                var response = await _httpClient.GetAsync(ApiSettings.GetClassSectionsUrl());
+                if (response.IsSuccessStatusCode)
                 {
-                    var response = await client.GetAsync(_baseApiUrl + "GetSections");
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var json = await response.Content.ReadAsStringAsync();
-                        var list = JsonConvert.DeserializeObject<List<ClassSection>>(json);
-                        SectionList.Clear();
-                        foreach (var item in list) SectionList.Add(item);
-                    }
+                    var json = await response.Content.ReadAsStringAsync();
+                    var list = JsonConvert.DeserializeObject<List<ClassSection>>(json);
+                    SectionList.Clear();
+                    foreach (var item in list) SectionList.Add(item);
                 }
             }
             catch (Exception ex) { MessageBox.Show("Section Load Error: " + ex.Message); }
@@ -247,23 +247,20 @@ namespace View_WPF.ModelView_WPF
 
                 ClassVideo.LastUpdate = DateTime.Now;
 
-                using (HttpClient client = new HttpClient())
-                {
-                    var json = JsonConvert.SerializeObject(ClassVideo);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
-                    HttpResponseMessage response = await client.PostAsync(_apiUrl, content);
+                var json = JsonConvert.SerializeObject(ClassVideo);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await _httpClient.PostAsync(ApiSettings.SaveClassVideoUrl(), content);
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        MessageBox.Show("Class Video Saved Successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                        ResetForm();
-                        LoadClassVideos();
-                    }
-                    else
-                    {
-                        string errorMsg = await response.Content.ReadAsStringAsync();
-                        MessageBox.Show($"API Error: {errorMsg}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
+                if (response.IsSuccessStatusCode)
+                {
+                    MessageBox.Show("Class Video Saved Successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    ResetForm();
+                    LoadClassVideos();
+                }
+                else
+                {
+                    string errorMsg = await response.Content.ReadAsStringAsync();
+                    MessageBox.Show($"API Error: {errorMsg}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (Exception ex) { MessageBox.Show($"Error: {ex.Message}", "Operation Error", MessageBoxButton.OK, MessageBoxImage.Error); }
@@ -276,7 +273,7 @@ namespace View_WPF.ModelView_WPF
                 ClassVideo = SelectedItemInGrid;
                 IsActive = ClassVideo.Activate;
 
-                // মডেল এ SubjectCode না থাকায় SectionID দিয়ে SectionList থেকে SubjectCode বের করা হচ্ছে
+                // Since SubjectCode is not directly in the model, extracting SubjectCode from SectionList using SectionID
                 var section = SectionList.FirstOrDefault(s => s.SectionId == ClassVideo.SectionID);
                 if (section != null)
                 {
@@ -295,15 +292,12 @@ namespace View_WPF.ModelView_WPF
             {
                 try
                 {
-                    using (HttpClient client = new HttpClient())
+                    var response = await _httpClient.DeleteAsync(ApiSettings.DeleteClassVideoUrl(SelectedItemInGrid.ClassID.ToString()));
+                    if (response.IsSuccessStatusCode)
                     {
-                        var response = await client.DeleteAsync(_baseApiUrl + "DeleteVideo/" + SelectedItemInGrid.ClassID);
-                        if (response.IsSuccessStatusCode)
-                        {
-                            MessageBox.Show("Deleted Successfully");
-                            LoadClassVideos();
-                            ResetForm();
-                        }
+                        MessageBox.Show("Deleted Successfully");
+                        LoadClassVideos();
+                        ResetForm();
                     }
                 }
                 catch (Exception ex) { MessageBox.Show("Delete Error: " + ex.Message); }

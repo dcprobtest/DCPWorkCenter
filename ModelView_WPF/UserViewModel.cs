@@ -1,4 +1,5 @@
 ﻿using ModelView_WPF;
+using ModelView_WPF.Helpers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.ObjectModel;
@@ -14,8 +15,8 @@ namespace View_WPF.ModelView_WPF
 {
     public class UserViewModel : INotifyPropertyChanged
     {
-        // 'User' পরিবর্তন করে 'Data' করা হলো
-        private readonly string _baseUrl = "http://74.208.227.170:8050//api/Data/";
+        private readonly HttpClient _httpClient;
+        private readonly string _apiUrl;
 
         // Properties
         public string UID { get; set; }
@@ -31,44 +32,49 @@ namespace View_WPF.ModelView_WPF
 
         public UserViewModel()
         {
-            // আপনার আলাদা ফাইলে থাকা RelayCommand ব্যবহার করা হয়েছে
+            // Initialize HttpClient with SSL certificate bypass handler and ApiSettings BaseAddress
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+
+            _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
+            _apiUrl = ApiSettings.SaveUserUrl();
+
+            // RelayCommand from your separate file is utilized here
             SaveCommand = new RelayCommand(async (obj) => await ExecuteSave());
         }
 
         private async Task ExecuteSave()
         {
-            // API-এর TblUser মডেলের প্রপার্টি নামের সাথে মিল রেখে অবজেক্ট তৈরি করা হলো
+            // Object is created aligning with the property names of the API's TblUser model
             var userData = new
             {
-                Uid = UID,              // API তে প্রপার্টি নাম Uid
+                Uid = UID,              // Property name in API is Uid
                 Password = Password,
                 Phone = Phone,
                 Email = Email,
                 EntryDate = EntryDate,
-                // কন্ট্রোলার মেথডে 'Activate' ফিল্ডটি string হিসেবে (Y/N) পাঠানো হচ্ছে
+                // 'Activate' field is sent as a string (Y/N) to the controller method
                 Activate = IsActive ? "Y" : "N"
             };
 
             try
             {
-                using (HttpClient client = new HttpClient())
+                var json = JsonConvert.SerializeObject(userData);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PostAsync(_apiUrl, content);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    var json = JsonConvert.SerializeObject(userData);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                    // সঠিক URL: api/Data/SaveUser
-                    var response = await client.PostAsync(_baseUrl + "SaveUser", content);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        MessageBox.Show("User Information Saved Successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
-                    else
-                    {
-                        // এরর ডিটেইলস দেখার জন্য Content রিড করা হচ্ছে
-                        var errorMsg = await response.Content.ReadAsStringAsync();
-                        MessageBox.Show($"Error: {response.StatusCode}\nDetails: {errorMsg}", "API Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
+                    MessageBox.Show("User Information Saved Successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    // Content is read to view error details
+                    var errorMsg = await response.Content.ReadAsStringAsync();
+                    MessageBox.Show($"Error: {response.StatusCode}\nDetails: {errorMsg}", "API Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (Exception ex)

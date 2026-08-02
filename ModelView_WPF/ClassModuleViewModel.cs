@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Newtonsoft.Json;
 using Model_WPF;
+using ModelView_WPF.Helpers;
 using System.ComponentModel;
 using System.Windows;
 
@@ -53,13 +54,19 @@ namespace ModelView_WPF
 
             try
             {
-                using (HttpClient client = new HttpClient())
+                // Localhost self-signed SSL certificate error bypass handler setup if needed, using standard HttpClient with ApiSettings base address
+                var handler = new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+                };
+
+                using (HttpClient client = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) })
                 {
                     var json = JsonConvert.SerializeObject(ClassModule);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    // API endpoint updated to ClassModule
-                    var response = await client.PostAsync("http://74.208.227.170:8050//api/ClassModule", content);
+                    // API endpoint updated to use ApiSettings
+                    var response = await client.PostAsync(ApiSettings.ClassModuleBaseUrl, content);
 
                     if (response.IsSuccessStatusCode)
                     {

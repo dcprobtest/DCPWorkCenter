@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
 using Model_WPF;
+using ModelView_WPF.Helpers;
 
 namespace ModelView_WPF
 {
@@ -20,7 +21,6 @@ namespace ModelView_WPF
         private bool _isLoading = false;
 
         private readonly HttpClient _httpClient;
-        private const string ApiUrl = "https://localhost:7073/api/AssignmentScrum";
         private readonly JsonSerializerOptions _jsonOptions;
 
         // Collections for ComboBox data binding
@@ -106,7 +106,7 @@ namespace ModelView_WPF
             {
                 ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
             };
-            _httpClient = new HttpClient(handler);
+            _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
             _jsonOptions = new JsonSerializerOptions
             {
@@ -173,8 +173,8 @@ namespace ModelView_WPF
             {
                 _isLoading = true;
 
-                // 1. Load AssignmentScrum data for the main grid/list
-                var response = await _httpClient.GetAsync(ApiUrl);
+                // 1. Load AssignmentScrum data for the main grid/list using ApiSettings
+                var response = await _httpClient.GetAsync(ApiSettings.AssignmentScrumBaseUrl);
                 if (response.IsSuccessStatusCode)
                 {
                     string jsonString = await response.Content.ReadAsStringAsync();
@@ -190,8 +190,8 @@ namespace ModelView_WPF
                     }
                 }
 
-                // 2. Load AssignID dropdown data from API endpoint
-                var assignResponse = await _httpClient.GetAsync($"{ApiUrl}/GetAvailableAssignIDs");
+                // 2. Load AssignID dropdown data from API endpoint using ApiSettings
+                var assignResponse = await _httpClient.GetAsync(ApiSettings.GetAssignmentScrumAvailableAssignIDsUrl());
                 if (assignResponse.IsSuccessStatusCode)
                 {
                     string assignJson = await assignResponse.Content.ReadAsStringAsync();
@@ -206,8 +206,8 @@ namespace ModelView_WPF
                     }
                 }
 
-                // 3. Load ScrumID dropdown data from API endpoint
-                var scrumResponse = await _httpClient.GetAsync($"{ApiUrl}/GetAvailableScrumIDs");
+                // 3. Load ScrumID dropdown data from API endpoint using ApiSettings
+                var scrumResponse = await _httpClient.GetAsync(ApiSettings.GetAssignmentScrumAvailableScrumIDsUrl());
                 if (scrumResponse.IsSuccessStatusCode)
                 {
                     string scrumJson = await scrumResponse.Content.ReadAsStringAsync();
@@ -242,7 +242,7 @@ namespace ModelView_WPF
                     return;
                 }
 
-                var response = await _httpClient.PostAsJsonAsync(ApiUrl, Scrum);
+                var response = await _httpClient.PostAsJsonAsync(ApiSettings.AssignmentScrumBaseUrl, Scrum);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -272,8 +272,7 @@ namespace ModelView_WPF
                     return;
                 }
 
-                string updateUrl = $"{ApiUrl}/UpdateStatus";
-                var response = await _httpClient.PutAsJsonAsync(updateUrl, Scrum);
+                var response = await _httpClient.PutAsJsonAsync(ApiSettings.AssignmentScrumUpdateStatusUrl, Scrum);
 
                 if (response.IsSuccessStatusCode)
                 {

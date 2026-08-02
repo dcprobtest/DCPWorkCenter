@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Model_WPF;
+using ModelView_WPF.Helpers;
 
 namespace ModelView_WPF
 {
@@ -34,8 +35,8 @@ namespace ModelView_WPF
         // Default constructor
         public AccIncSubViewModel()
         {
-            // API Base URL Setup (Adjust port if necessary based on your DCPWorkCenter_Api)
-            _httpClient = new HttpClient { BaseAddress = new Uri("http://74.208.227.170:8050//") };
+            // API Base URL Setup updated to use ApiSettings
+            _httpClient = new HttpClient { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
             IncSubList = new ObservableCollection<AccIncSubModel>();
             IncCodeList = new ObservableCollection<string>();
@@ -121,8 +122,8 @@ namespace ModelView_WPF
 
             try
             {
-                // API endpoint call matching your project style
-                HttpResponseMessage response = await _httpClient.PostAsJsonAsync("api/AccIncSub", CurrentEntry);
+                // API endpoint call updated to use ApiSettings
+                HttpResponseMessage response = await _httpClient.PostAsJsonAsync(ApiSettings.AccIncSubBaseUrl, CurrentEntry);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -178,8 +179,8 @@ namespace ModelView_WPF
         {
             try
             {
-                // Fetch dynamic IncCode list from the API endpoint
-                var codes = await _httpClient.GetFromJsonAsync<List<string>>("api/AccIncSub/IncomeHeadCodes");
+                // Fetch dynamic IncCode list from the API endpoint using ApiSettings
+                var codes = await _httpClient.GetFromJsonAsync<List<string>>(ApiSettings.AccIncSubGetIncomeHeadCodesUrl);
                 if (codes != null)
                 {
                     IncCodeList.Clear();

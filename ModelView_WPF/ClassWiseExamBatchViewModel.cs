@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Model_WPF;
+using ModelView_WPF.Helpers;
 
 namespace ModelView_WPF
 {
     public class ClassWiseExamBatchViewModel : INotifyPropertyChanged
     {
         private readonly HttpClient _httpClient;
-        private readonly string _baseUrl = "https://localhost:7073/api/ClassWiseExamBatch";
 
         private string _batchID;
         public string BatchID { get => _batchID; set { _batchID = value; OnPropertyChanged(); } }
@@ -47,7 +47,14 @@ namespace ModelView_WPF
 
         public ClassWiseExamBatchViewModel()
         {
-            _httpClient = new HttpClient();
+            // Localhost self-signed SSL certificate error bypass handler setup
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+
+            // HttpClient configuration updated with ApiSettings.BaseUrl
+            _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
             BatchList = new ObservableCollection<ClassWiseExamBatchModel>();
 
             AddCommand = new RelayCommand(o => ClearFields());
@@ -77,7 +84,8 @@ namespace ModelView_WPF
                     Activate = "Y"
                 };
 
-                var response = await _httpClient.PostAsJsonAsync(_baseUrl, newBatch);
+                // Saving data using ApiSettings endpoint
+                var response = await _httpClient.PostAsJsonAsync(ApiSettings.GetClassWiseExamBatchesUrl(), newBatch);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -108,7 +116,8 @@ namespace ModelView_WPF
         {
             try
             {
-                var response = await _httpClient.GetAsync(_baseUrl);
+                // Loading data using ApiSettings endpoint
+                var response = await _httpClient.GetAsync(ApiSettings.GetClassWiseExamBatchesUrl());
                 if (response.IsSuccessStatusCode)
                 {
                     var data = await response.Content.ReadFromJsonAsync<ObservableCollection<ClassWiseExamBatchModel>>();

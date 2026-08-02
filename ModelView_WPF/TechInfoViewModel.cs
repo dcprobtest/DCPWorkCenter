@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using Model_WPF; // Adjust namespace if your TechInfoModel is located elsewhere
 using ModelView_WPF; // Added to reference the RelayCommand namespace and fix compilation errors
+using ModelView_WPF.Helpers; // Added for ApiSettings reference
 
 namespace View_WPF.ModelView_WPF
 {
@@ -17,7 +18,7 @@ namespace View_WPF.ModelView_WPF
         private TechInfoModel _selectedTech;
         private ObservableCollection<TechInfoModel> _techList;
         private readonly HttpClient _httpClient;
-        private const string ApiUrl = "https://localhost:7073/api/TechInfo"; // Configured from Swagger URL Context
+        private readonly string _apiUrl; // Updated to use ApiSettings dynamically
 
         // Global variable to store the logged-in UID passed from the view
         private string _passedUid = "USR001";
@@ -74,28 +75,7 @@ namespace View_WPF.ModelView_WPF
         public ICommand EditCommand { get; private set; }
         public ICommand ExitCommand { get; private set; }
 
-        public TechInfoViewModel()
-        {
-            // Initialize HttpClient for API pipeline communication
-            _httpClient = new HttpClient();
-
-            // Initialize working instances
-            Tech = new TechInfoModel();
-            TechList = new ObservableCollection<TechInfoModel>();
-
-            // Setup default user profile data if necessary
-            Tech.EntryByUid = _passedUid;
-            Tech.EntryDate = DateTime.Now;
-
-            // Initialize form operations mapping to your RelayCommand class
-            AddCommand = new RelayCommand(ExecuteAdd);
-            SaveCommand = new RelayCommand(ExecuteSave, CanExecuteSave);
-            EditCommand = new RelayCommand(ExecuteEdit, CanExecuteEdit);
-            ExitCommand = new RelayCommand(ExecuteExit);
-
-            // Load live state data from API instead of local mock data
-            LoadApiData();
-        }
+        public TechInfoViewModel() : this(null) { }
 
         // Overloaded constructor to receive the Uid from the View
         public TechInfoViewModel(string uid)
@@ -105,8 +85,14 @@ namespace View_WPF.ModelView_WPF
                 _passedUid = uid;
             }
 
-            // Initialize HttpClient for API pipeline communication
-            _httpClient = new HttpClient();
+            // Initialize HttpClient with SSL certificate bypass handler and ApiSettings BaseAddress
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+
+            _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
+            _apiUrl = ApiSettings.GetTechInfoUrl(); // Assigned via ApiSettings helper
 
             // Initialize working instances
             Tech = new TechInfoModel();
@@ -157,7 +143,7 @@ namespace View_WPF.ModelView_WPF
                     activate = Tech.Activate ?? "Y"
                 };
 
-                HttpResponseMessage response = await _httpClient.PostAsJsonAsync(ApiUrl, payload);
+                HttpResponseMessage response = await _httpClient.PostAsJsonAsync(_apiUrl, payload);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -202,7 +188,7 @@ namespace View_WPF.ModelView_WPF
                         activate = Tech.Activate ?? "Y"
                     };
 
-                    string putUrl = $"{ApiUrl}/{Tech.TechId}";
+                    string putUrl = $"{_apiUrl}/{Tech.TechId}";
                     HttpResponseMessage response = await _httpClient.PutAsJsonAsync(putUrl, payload);
 
                     if (response.IsSuccessStatusCode)
@@ -238,7 +224,7 @@ namespace View_WPF.ModelView_WPF
             try
             {
                 // Fetch dynamic array matching backend structure representation safely
-                var apiRecords = await _httpClient.GetFromJsonAsync<System.Collections.Generic.List<dynamic>>(ApiUrl);
+                var apiRecords = await _httpClient.GetFromJsonAsync<System.Collections.Generic.List<dynamic>>(_apiUrl);
 
                 TechList.Clear();
                 if (apiRecords != null)

@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Input;
 using Microsoft.Win32;
 using ModelView_WPF;
+using ModelView_WPF.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
@@ -18,8 +19,9 @@ namespace View_WPF.ModelView_WPF
 {
     public class UserDocInfoViewModel : INotifyPropertyChanged
     {
-        private readonly string _apiUrl = "http://74.208.227.170:8050//api/Data/SaveUserDoc";
-        private readonly string _empDetailApiUrl = "http://74.208.227.170:8050//api/Data/GetEmployeeDetail/";
+        private readonly HttpClient _httpClient;
+        private readonly string _apiUrl;
+        private readonly string _empDetailApiUrl;
 
         // --- Properties for Main Window ---
         private string _uid;
@@ -112,6 +114,16 @@ namespace View_WPF.ModelView_WPF
 
         public UserDocInfoViewModel()
         {
+            // Setup HttpClient with SSL certificate bypass handler and ApiSettings BaseAddress
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+
+            _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
+            _apiUrl = ApiSettings.SaveUserDocUrl();
+            _empDetailApiUrl = ApiSettings.GetEmployeeDetailUrl();
+
             SaveCommand = new RelayCommand(async (obj) => await ExecuteSave());
 
             AddCommand = new RelayCommand(async (obj) => {
@@ -139,7 +151,7 @@ namespace View_WPF.ModelView_WPF
                 PopupTitle = obj as string ?? SelectedDocType;
                 IsPopupVisible = true;
 
-                // পপআপ খোলার সময়ও ডেট সেট করে দেওয়া
+                // পপআপ খোলার সময়ও ডেট সেট করে দেওয়া
                 PopupStartDate = this.StartDate;
                 PopupEndDate = this.EndDate;
             });
@@ -220,12 +232,12 @@ namespace View_WPF.ModelView_WPF
                 case "I-20":
                 case "EAD":
                 case "I-983":
-                    EndDate = StartDate.AddYears(1); // ১ বছর মেয়াদ
+                    EndDate = StartDate.AddYears(1); // ১ বছর মেয়াদ
                     break;
                 case "Resume":
                 case "Picture":
                 case "Certificate":
-                    EndDate = StartDate.AddYears(1); // এইগুলোর ফিক্সড মেয়াদ না থাকলেও ডিফল্ট ১ বছর
+                    EndDate = StartDate.AddYears(1); // এইগুলোর ফিক্সড মেয়াদ না থাকলেও ডিফল্ট ১ বছর
                     break;
                 default:
                     EndDate = StartDate.AddYears(1);
@@ -237,19 +249,16 @@ namespace View_WPF.ModelView_WPF
         {
             try
             {
-                using (HttpClient client = new HttpClient())
+                var response = await _httpClient.GetAsync(_empDetailApiUrl + uid);
+                if (response.IsSuccessStatusCode)
                 {
-                    var response = await client.GetAsync(_empDetailApiUrl + uid);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var json = await response.Content.ReadAsStringAsync();
-                        var data = JsonConvert.DeserializeObject<dynamic>(json);
-                        this.EmployeeName = data.fullName;
-                    }
-                    else
-                    {
-                        this.EmployeeName = "Unknown Employee";
-                    }
+                    var json = await response.Content.ReadAsStringAsync();
+                    var data = JsonConvert.DeserializeObject<dynamic>(json);
+                    this.EmployeeName = data.fullName;
+                }
+                else
+                {
+                    this.EmployeeName = "Unknown Employee";
                 }
             }
             catch
@@ -340,20 +349,17 @@ namespace View_WPF.ModelView_WPF
 
             try
             {
-                using (HttpClient client = new HttpClient())
-                {
-                    var json = JsonConvert.SerializeObject(saveRequest);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
-                    var response = await client.PostAsync(_apiUrl, content);
+                var json = JsonConvert.SerializeObject(saveRequest);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync(_apiUrl, content);
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        ServerStatus = $"Data Saved Successfully at {DateTime.Now:HH:mm:ss}";
-                    }
-                    else
-                    {
-                        MessageBox.Show($"Server Error: {response.StatusCode}");
-                    }
+                if (response.IsSuccessStatusCode)
+                {
+                    ServerStatus = $"Data Saved Successfully at {DateTime.Now:HH:mm:ss}";
+                }
+                else
+                {
+                    MessageBox.Show($"Server Error: {response.StatusCode}");
                 }
             }
             catch (Exception ex)

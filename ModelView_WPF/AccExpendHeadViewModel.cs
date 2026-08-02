@@ -9,14 +9,14 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Model_WPF;
+using ModelView_WPF.Helpers;
 
 namespace ModelView_WPF
 {
     public class AccExpendHeadViewModel : INotifyPropertyChanged
     {
         private readonly HttpClient _httpClient;
-        private const string ApiUrl = "api/AccExpendHead";
-        private readonly string _receivedUid = string.Empty; // রিসিভ করা uid ধরে রাখার জন্য লোকাল ফিল্ড
+        private readonly string _receivedUid = string.Empty; // Local field to hold the received uid
 
         // Collection for DataGrid
         private ObservableCollection<AccExpendHeadModel> _expenseList = new();
@@ -85,29 +85,29 @@ namespace ModelView_WPF
 
         public AccExpendHeadViewModel()
         {
-            // আপনার API পোর্ট অনুযায়ী URL চেক করে নিবেন (যেমন: 7073)
-            _httpClient = new HttpClient { BaseAddress = new Uri("http://74.208.227.170:8050//") };
+            // Using ApiSettings.BaseUrl directly in HttpClient
+            _httpClient = new HttpClient { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
             AddCommand = new RelayCommand(ExecuteAdd);
             SaveCommand = new RelayCommand(async (p) => await ExecuteSave());
             EditCommand = new RelayCommand(async (p) => await ExecuteEdit());
             ExitCommand = new RelayCommand(ExecuteExit);
 
-            _ = LoadData(); // উইন্ডো লোড হওয়ার সময় ডেটা ফেচ করবে
+            _ = LoadData(); // Fetches data when the window loads
         }
 
-        // frmAccExpendHead.xaml.cs থেকে uid রিসিভ করার জন্য নতুন কনস্ট্রাক্টর
+        // New constructor to receive uid from frmAccExpendHead.xaml.cs
         public AccExpendHeadViewModel(string uid) : this()
         {
             _receivedUid = uid;
-            UID = uid; // রিসিভ করা uid ইনিশিয়ালি ফর্মে শো করার জন্য সেট করা হলো
+            UID = uid; // Set received uid initially to show in the form
         }
 
         private async Task LoadData()
         {
             try
             {
-                var response = await _httpClient.GetFromJsonAsync<List<AccExpendHeadModel>>(ApiUrl);
+                var response = await _httpClient.GetFromJsonAsync<List<AccExpendHeadModel>>(ApiSettings.AccExpendHeadBaseUrl);
                 if (response != null)
                 {
                     ExpenseList = new ObservableCollection<AccExpendHeadModel>(response);
@@ -142,7 +142,7 @@ namespace ModelView_WPF
 
             try
             {
-                var response = await _httpClient.PostAsJsonAsync(ApiUrl, newEntry);
+                var response = await _httpClient.PostAsJsonAsync(ApiSettings.AccExpendHeadBaseUrl, newEntry);
                 if (response.IsSuccessStatusCode)
                 {
                     MessageBox.Show("Saved Successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -171,7 +171,7 @@ namespace ModelView_WPF
 
             var updatedEntry = new AccExpendHeadModel
             {
-                // Primary key/Code আপডেটযোগ্য না হলে আগেরটাই পাঠাবে
+                // If primary key/Code is not updatable, it sends the previous one
                 ExpCode = this.ExpCode,
                 ExpDetail = this.ExpDetail,
                 UID = this.UID,
@@ -180,8 +180,8 @@ namespace ModelView_WPF
 
             try
             {
-                // আপনার Controller-এর Put মেথড শুধু অবজেক্ট নিচ্ছে, তাই সরাসরি URL এ অবজেক্ট পাঠানো হচ্ছে
-                var response = await _httpClient.PutAsJsonAsync(ApiUrl, updatedEntry);
+                // Since your controller's Put method only takes an object, the object is passed directly to the URL
+                var response = await _httpClient.PutAsJsonAsync(ApiSettings.AccExpendHeadBaseUrl, updatedEntry);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -216,7 +216,7 @@ namespace ModelView_WPF
         {
             ExpCode = string.Empty;
             ExpDetail = string.Empty;
-            UID = _receivedUid; // ক্লিয়ার করার সময় ব্ল্যাঙ্ক না করে রিসিভ করা আইডিটি ধরে রাখা হলো
+            UID = _receivedUid; // Retains the received ID instead of clearing it when resetting fields
             EntryDate = DateTime.Now;
             SelectedExpense = null;
         }

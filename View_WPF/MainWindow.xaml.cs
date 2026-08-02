@@ -87,12 +87,7 @@ namespace View_WPF
 
         private void btnVideoClass_Click(object sender, RoutedEventArgs e)
         {
-            if (_userRole == 3)
-            {
-                MessageBox.Show("Access Denied: Your account status does not allow access to Video Class.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
+            // Student (_userRole == 3) and Admin (_userRole == 1) can access Video Class
             try
             {
                 frmClass_ClassPlayer classPlayer = new frmClass_ClassPlayer(_loggedInUID);
@@ -109,12 +104,7 @@ namespace View_WPF
 
         private void btnFileManager_Click(object sender, RoutedEventArgs e)
         {
-            if (_userRole == 3)
-            {
-                MessageBox.Show("Access Denied: Your account status does not allow access to File Manager.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
+            // Student (_userRole == 3) and Admin (_userRole == 1) can access File Manager
             try
             {
                 frmAdmin_DocInfo docManager = new frmAdmin_DocInfo(_loggedInUID);
@@ -131,15 +121,15 @@ namespace View_WPF
 
         private void btnAdminForms_Click(object sender, RoutedEventArgs e)
         {
-            if (_userRole == 2 || _userRole == 3)
+            if (_userRole == 2)
             {
-                MessageBox.Show("Access Denied: You do not have permission to access Admin Forms.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("You do not have permission to access Admin Forms.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             try
             {
-                Main_Adminfrm adminForms = new Main_Adminfrm(_loggedInUID, _loggedInName);
+                Main_Adminfrm adminForms = new Main_Adminfrm(_loggedInUID, _loggedInName, _userRole);
                 this.Hide();
                 adminForms.Closed += (s, args) => { this.Show(); };
                 adminForms.Show();
@@ -155,7 +145,7 @@ namespace View_WPF
         {
             if (_userRole == 3)
             {
-                MessageBox.Show("Access Denied: Your account status does not allow access to Class Forms.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Your account status does not allow access to Class Forms.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -175,6 +165,12 @@ namespace View_WPF
 
         private void btnAccounts_Click(object sender, RoutedEventArgs e)
         {
+            if (_userRole == 3)
+            {
+                MessageBox.Show("Your account status does not allow access to Accounts.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             try
             {
                 System.Windows.Application.Current.MainWindow = this;
@@ -192,6 +188,12 @@ namespace View_WPF
 
         private void btnUSAccounts_Click(object sender, RoutedEventArgs e)
         {
+            if (_userRole == 3)
+            {
+                MessageBox.Show("Your account status does not allow access to US Accounts.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             try
             {
                 System.Windows.Application.Current.MainWindow = this;
@@ -226,6 +228,18 @@ namespace View_WPF
 
         private void btnScrum_Click(object sender, RoutedEventArgs e)
         {
+            if (_userRole == 3)
+            {
+                MessageBox.Show("Your account status does not allow access to Scrum.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (_userRole != 1)
+            {
+                MessageBox.Show("Your account status does not allow access to Scrum.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             try
             {
                 Main_ScrumWindow scrumWindow = new Main_ScrumWindow(_loggedInUID);

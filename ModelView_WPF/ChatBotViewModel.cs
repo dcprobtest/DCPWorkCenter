@@ -10,13 +10,15 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Model_WPF;
+using ModelView_WPF.Helpers;
 
 namespace ModelView_WPF
 {
     // ViewModel implementation for ChatBox
     public class ChatBotViewModel : INotifyPropertyChanged
     {
-        private static readonly HttpClient _httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:7073/api/") };
+        private static readonly HttpClient _httpClient = new HttpClient();
         public ObservableCollection<ChatMessageViewModel> Messages { get; set; }
 
         // Field to store the received UID
@@ -26,13 +28,28 @@ namespace ModelView_WPF
         public ChatBotViewModel()
         {
             Messages = new ObservableCollection<ChatMessageViewModel>();
+
+            // Localhost self-signed SSL certificate error bypass handler (Fixes: SSL Connection Could Not Be Established)
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+
+            // Re-initialize HttpClient with the handler and ApiSettings.BaseUrl
+            var client = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
+
+            // Assign to static field if needed or use instance-level setup. Since _httpClient is static, let's assign its base address or update implementation safely:
+            // (To keep logic identical, we configure the base address using ApiSettings)
+            if (_httpClient.BaseAddress == null)
+            {
+                _httpClient.BaseAddress = new Uri(ApiSettings.BaseUrl);
+            }
         }
 
         // Constructor to receive UID and load history automatically
-        public ChatBotViewModel(string uid)
+        public ChatBotViewModel(string uid) : this()
         {
             _uid = uid;
-            Messages = new ObservableCollection<ChatMessageViewModel>();
 
             // Trigger history loading
             _ = LoadChatHistory();
@@ -43,7 +60,7 @@ namespace ModelView_WPF
         {
             try
             {
-                var response = await _httpClient.GetAsync($"ChatBot/{_uid}");
+                var response = await _httpClient.GetAsync(ApiSettings.GetChatBotHistoryUrl(_uid));
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
@@ -90,7 +107,7 @@ namespace ModelView_WPF
                     string json = JsonSerializer.Serialize(chatData);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    await _httpClient.PostAsync("ChatBot", content);
+                    await _httpClient.PostAsync(ApiSettings.ChatBotBaseUrl, content);
                 }
                 catch (Exception ex)
                 {

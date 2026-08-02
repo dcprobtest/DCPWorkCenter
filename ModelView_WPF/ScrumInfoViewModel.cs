@@ -8,6 +8,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.AspNetCore.SignalR.Client;
+using ModelView_WPF.Helpers;
 
 namespace ModelView_WPF
 {
@@ -17,7 +18,6 @@ namespace ModelView_WPF
         private ScrumInfoModel _selectedScrum;
         private ObservableCollection<ScrumInfoModel> _scrumList;
         private readonly HttpClient _httpClient;
-        private const string ApiUrl = "http://74.208.227.170:8050//api/ScrumInfo";
 
         // Global variable to store the logged-in UID passed from the view
         private string _passedUid = "ADMIN";
@@ -69,8 +69,14 @@ namespace ModelView_WPF
 
         public ScrumInfoViewModel()
         {
-            // Initialize HttpClient for API connection
-            _httpClient = new HttpClient();
+            // Localhost self-signed SSL certificate error bypass handler setup
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+
+            // HttpClient configuration updated with ApiSettings.BaseUrl
+            _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
             // Initialize model and collection
             Scrum = new ScrumInfoModel();
@@ -100,8 +106,14 @@ namespace ModelView_WPF
                 _passedUid = uid;
             }
 
-            // Initialize HttpClient for API connection
-            _httpClient = new HttpClient();
+            // Localhost self-signed SSL certificate error bypass handler setup
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+
+            // HttpClient configuration updated with ApiSettings.BaseUrl
+            _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
             // Initialize model and collection
             Scrum = new ScrumInfoModel();
@@ -127,7 +139,7 @@ namespace ModelView_WPF
         public async void InitializeSignalR()
         {
             _hubConnection = new HubConnectionBuilder()
-                .WithUrl("http://74.208.227.170:8050//scrumHub")
+                .WithUrl(ApiSettings.ScrumHubUrl())
                 .WithAutomaticReconnect()
                 .Build();
 
@@ -158,7 +170,7 @@ namespace ModelView_WPF
         {
             try
             {
-                var response = await _httpClient.GetFromJsonAsync<ObservableCollection<ScrumInfoModel>>(ApiUrl);
+                var response = await _httpClient.GetFromJsonAsync<ObservableCollection<ScrumInfoModel>>(ApiSettings.GetScrumInfoRoute());
                 if (response != null)
                 {
                     ScrumList = response;
@@ -181,7 +193,7 @@ namespace ModelView_WPF
             // Logic to save new record to database via API
             try
             {
-                var response = await _httpClient.PostAsJsonAsync(ApiUrl, Scrum);
+                var response = await _httpClient.PostAsJsonAsync(ApiSettings.GetScrumInfoRoute(), Scrum);
                 if (response.IsSuccessStatusCode)
                 {
                     ScrumList.Add(new ScrumInfoModel
@@ -222,7 +234,7 @@ namespace ModelView_WPF
             {
                 try
                 {
-                    string putUrl = $"{ApiUrl}/{Scrum.ScrumID}";
+                    string putUrl = $"{ApiSettings.GetScrumInfoRoute()}/{Scrum.ScrumID}";
                     var response = await _httpClient.PutAsJsonAsync(putUrl, Scrum);
 
                     if (response.IsSuccessStatusCode)

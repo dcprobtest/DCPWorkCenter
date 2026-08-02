@@ -14,6 +14,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ModelView_WPF.Helpers;
 
 using Point = System.Drawing.Point;
 
@@ -26,7 +27,7 @@ namespace View_WPF
         private string _rawUID;
         private string _backendUID;
         private string _screenshotRootPath = @"C:\DCP_UserActivity";
-        private readonly HttpClient _httpClient = new HttpClient();
+        private readonly HttpClient _httpClient;
 
         private int _currentSessionId = 2;
         private string _currentSectionId = null;
@@ -41,6 +42,12 @@ namespace View_WPF
             this.WindowState = WindowState.Maximized;
             this.DataContext = this;
 
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+            _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
+
             SetupTimer();
             _ = LoadDataFromApi();
 
@@ -52,28 +59,29 @@ namespace View_WPF
         {
             try
             {
+                // ডেটাবেজের time(1) টাইপের সাথে সামঞ্জস্য রেখে EventTime-এ slideTime (TimeSpan স্ট্রিং) পাঠানো হলো
                 var payload = new
                 {
-                    SessionID = _currentSessionId,
                     SectionID = _currentSectionId,
-                    EventTime = DateTime.Now,
+                    EventTime = slideTime,
                     MonitorTypeID = monitorTypeId,
                     SlideBarPercent = slidePercent,
                     SlideBarTime = slideTime
                 };
 
-                string apiUrl = "https://localhost:7073/api/ClassFocusMonitor";
-                var response = await _httpClient.PostAsJsonAsync(apiUrl, payload);
+                var response = await _httpClient.PostAsJsonAsync(ApiSettings.ClassFocusMonitorUrl(), payload);
 
                 if (!response.IsSuccessStatusCode)
                 {
                     var error = await response.Content.ReadAsStringAsync();
                     System.Diagnostics.Debug.WriteLine("API Error: " + error);
+                    System.Windows.MessageBox.Show("API Save Failed! Error: " + error, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine("Exception: " + ex.Message);
+                System.Windows.MessageBox.Show("Exception Occurred: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -82,7 +90,7 @@ namespace View_WPF
             try
             {
                 CourseContent.Clear();
-                string url = $"https://localhost:7073/api/Data/GetAssignedVideos/{_rawUID}";
+                string url = ApiSettings.GetAssignedVideosUrl(_rawUID);
 
                 var response = await _httpClient.GetAsync(url);
                 if (response.IsSuccessStatusCode)
