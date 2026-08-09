@@ -139,16 +139,16 @@
                                 </Grid.RowDefinitions>
 
                                 <TextBlock Grid.Column="0" Grid.Row="0" Text="User ID (UID)"/>
-                                <TextBox Grid.Column="0" Grid.Row="1" Text="{Binding Emp.UID, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBox Grid.Column="0" Grid.Row="1" Text="{Binding Emp.UID, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,56,15"/>
 
-                                <TextBlock Grid.Column="2" Grid.Row="0" Text="First Name"/>
-                                <TextBox Grid.Column="2" Grid.Row="1" Text="{Binding Emp.FName, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Grid.Row="0" Text="First Name" Grid.ColumnSpan="3" Margin="147,5,0,2"/>
+                                <TextBox Grid.Row="1" Text="{Binding Emp.FName, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="3" Margin="147,5,92,15"/>
 
-                                <TextBlock Grid.Column="4" Grid.Row="0" Text="Last Name"/>
-                                <TextBox Grid.Column="4" Grid.Row="1" Text="{Binding Emp.LName, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Grid.Column="2" Grid.Row="0" Text="Last Name" Grid.ColumnSpan="3" Margin="108,5,0,2"/>
+                                <TextBox Grid.Column="2" Grid.Row="1" Text="{Binding Emp.LName, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="3" Margin="108,5,148,15"/>
 
-                                <TextBlock Grid.Column="6" Grid.Row="0" Text="Date of Birth (DOB)"/>
-                                <DatePicker Grid.Column="6" Grid.Row="1" SelectedDate="{Binding Emp.DOB, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Grid.Column="4" Grid.Row="0" Text="Date of Birth (DOB)" Grid.ColumnSpan="3" Margin="54,5,170,2"/>
+                                <DatePicker Grid.Column="4" Grid.Row="1" SelectedDate="{Binding Emp.DOB, UpdateSourceTrigger=PropertyChanged}" Margin="54,5,0,15" Grid.ColumnSpan="2"/>
                             </Grid>
 
                             <!-- Address Line 1 & Address Line 2 -->
@@ -164,10 +164,10 @@
                                 </Grid.RowDefinitions>
 
                                 <TextBlock Grid.Column="0" Grid.Row="0" Text="Address Line 1"/>
-                                <TextBox Grid.Column="0" Grid.Row="1" Text="{Binding Emp.Address1, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBox Grid.Column="0" Grid.Row="1" Text="{Binding Emp.Address1, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,171,15"/>
 
-                                <TextBlock Grid.Column="2" Grid.Row="0" Text="Address Line 2"/>
-                                <TextBox Grid.Column="2" Grid.Row="1" Text="{Binding Emp.Address2, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Grid.Row="0" Text="Address Line 2" Grid.ColumnSpan="3" Margin="228,5,0,2"/>
+                                <TextBox Grid.Row="1" Text="{Binding Emp.Address2, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="3" Margin="228,5,328,15"/>
                             </Grid>
 
                             <!-- Location Fields (City, State, Zip, Country) -->
@@ -187,16 +187,16 @@
                                 </Grid.RowDefinitions>
 
                                 <TextBlock Grid.Column="0" Grid.Row="0" Text="City"/>
-                                <TextBox Grid.Column="0" Grid.Row="1" Text="{Binding Emp.City, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBox Grid.Column="0" Grid.Row="1" Text="{Binding Emp.City, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,56,15"/>
 
-                                <TextBlock Grid.Column="2" Grid.Row="0" Text="State"/>
-                                <ComboBox DisplayMemberPath="DisplayName" Grid.Column="2" Grid.Row="1" ItemsSource="{Binding States}" SelectedValue="{Binding SelectedStateString, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="StateCode"/>
+                                <TextBlock Grid.Row="0" Text="State" Grid.ColumnSpan="3" Margin="144,5,0,2"/>
+                                <ComboBox DisplayMemberPath="DisplayName" Grid.Row="1" ItemsSource="{Binding States}" SelectedValue="{Binding SelectedStateString, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="StateCode" Grid.ColumnSpan="3" Margin="144,5,92,15"/>
 
-                                <TextBlock Grid.Column="4" Grid.Row="0" Text="Zip Code"/>
-                                <TextBox Grid.Column="4" Grid.Row="1" Text="{Binding Emp.Zip, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Grid.Column="2" Grid.Row="0" Text="Zip Code" Grid.ColumnSpan="3" Margin="108,5,0,2"/>
+                                <TextBox Grid.Column="2" Grid.Row="1" Text="{Binding Emp.Zip, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="3" Margin="108,5,136,15"/>
 
-                                <TextBlock Grid.Column="6" Grid.Row="0" Text="Country"/>
-                                <TextBox Grid.Column="6" Grid.Row="1" Text="{Binding Emp.Country, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Grid.Column="4" Grid.Row="0" Text="Country" Grid.ColumnSpan="3" Margin="66,5,0,2"/>
+                                <TextBox Grid.Column="4" Grid.Row="1" Text="{Binding Emp.Country, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="3" Margin="66,5,170,15"/>
                             </Grid>
 
                             <!-- Contact Info (Phone, Email) -->
@@ -212,9 +212,9 @@
                                 </Grid.RowDefinitions>
 
                                 <TextBlock Grid.Column="0" Grid.Row="0" Text="Phone"/>
-                                <TextBox Grid.Column="0" Grid.Row="1" Text="{Binding Emp.Phone, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBox Grid.Column="0" Grid.Row="1" Text="{Binding Emp.Phone, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,189,15"/>
 
-                                <TextBlock Grid.Column="2" Grid.Row="0" Text="Email"/>
+                                <TextBlock Grid.Row="0" Text="Email" Grid.ColumnSpan="3" Margin="238,5,0,2"/>
                                 <TextBox Grid.Column="2" Grid.Row="1" Text="{Binding Emp.Email, UpdateSourceTrigger=PropertyChanged}"/>
                             </Grid>
 
