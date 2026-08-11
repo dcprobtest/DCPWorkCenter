@@ -52,7 +52,7 @@
             <ItemsControl x:Name="ChatListBox" Margin="15,0">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Grid Margin="0,8" Opacity="1" RenderTransformOrigin="0.5,0.5">
+                        <Grid Margin="0,8" Opacity="1" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="{Binding Alignment}">
                             <Grid.RenderTransform>
                                 <TranslateTransform Y="0"/>
                             </Grid.RenderTransform>
@@ -66,13 +66,19 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Row="0" Text="{Binding DateSeparator}" HorizontalAlignment="Center" 
                                        Foreground="#AAB8C2" FontSize="10" Margin="5" Visibility="{Binding DateVisibility}"/>
 
-                            <Border Grid.Row="1" CornerRadius="{Binding BubbleRadius}" Background="{Binding BubbleColor}" 
-                                    Padding="14,10" HorizontalAlignment="{Binding Alignment}" MaxWidth="320"
+                            <TextBlock Grid.Row="1" Text="{Binding SenderInfo}" 
+                                       FontSize="10" 
+                                       Foreground="Gray" 
+                                       Margin="2,0,0,2"/>
+
+                            <Border Grid.Row="2" CornerRadius="{Binding BubbleRadius}" Background="{Binding BubbleColor}" 
+                                    Padding="14,10" MaxWidth="320"
                                     Effect="{DynamicResource DropShadowEffect}">
                                 <Grid>
                                     <Grid.RowDefinitions>

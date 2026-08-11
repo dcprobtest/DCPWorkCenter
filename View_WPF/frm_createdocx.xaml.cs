@@ -10,13 +10,12 @@ using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using Spire.Doc; // FreeSpire.Doc library is used
+using ModelView_WPF.Helpers;
 
 namespace View_WPF
 {
     public partial class frm_createdocx : Window
     {
-        private readonly string _baseUrl = "https://localhost:7073/api/Data/";
-
         // Changed 'EmployeeInfo' to 'EmpInfoModel' according to your model
         private List<EmpInfoModel> _allEmployees = new List<EmpInfoModel>();
 
@@ -37,12 +36,16 @@ namespace View_WPF
             try
             {
                 txtUserID.Text = _currentLoggedInUID;
-                using HttpClient client = new HttpClient();
+                var handler = new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+                };
+                using HttpClient client = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
                 // --- Fetch logged-in user name ---
                 try
                 {
-                    var nameResponse = await client.GetAsync(_baseUrl + $"GetUserName/{_currentLoggedInUID}");
+                    var nameResponse = await client.GetAsync(ApiSettings.GetUserNameUrl(_currentLoggedInUID));
                     if (nameResponse.IsSuccessStatusCode)
                     {
                         var nameJson = await nameResponse.Content.ReadAsStringAsync();
@@ -65,7 +68,7 @@ namespace View_WPF
                 }
 
                 // --- Load candidate data (using GetEmployeeInfo) ---
-                var response = await client.GetAsync(_baseUrl + "GetEmployeeInfo");
+                var response = await client.GetAsync(ApiSettings.GetEmployeeInfoUrl());
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonString = await response.Content.ReadAsStringAsync();
@@ -193,7 +196,11 @@ namespace View_WPF
                 document.SaveToFile(tempFilePath, FileFormat.Docx);
                 document.Close();
 
-                using HttpClient client = new HttpClient();
+                var handler = new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+                };
+                using HttpClient client = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
                 using var content = new MultipartFormDataContent();
 
                 byte[] fileBytes = File.ReadAllBytes(tempFilePath);
@@ -212,7 +219,7 @@ namespace View_WPF
                 content.Add(new StringContent(txtWeeklyHours.Text), "WeeklyHours");
                 content.Add(new StringContent(txtEmail.Text), "Email");
 
-                var response = await client.PostAsync(_baseUrl + "CreateUserDocRequest", content);
+                var response = await client.PostAsync(ApiSettings.CreateUserDocRequestUrl(), content);
 
                 if (response.IsSuccessStatusCode)
                 {

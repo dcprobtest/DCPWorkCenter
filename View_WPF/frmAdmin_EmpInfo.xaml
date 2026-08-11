@@ -1,32 +1,36 @@
-﻿<Window Background="White" Height="900" ResizeMode="NoResize" Title="Employee Information" Width="1000" WindowStartupLocation="CenterScreen" x:Class="View_WPF.frmAdmin_EmpInfo" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<Window x:Class="View_WPF.frmAdmin_EmpInfo"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Employee Information" Height="750" Width="850" 
+        Background="White" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
         <Style TargetType="TextBox">
             <Setter Property="Background" Value="White"/>
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="BorderBrush" Value="#333"/>
-            <Setter Property="Padding" Value="8,5"/>
-            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="6,4"/>
+            <Setter Property="FontSize" Value="13"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="0,5,0,15"/>
+            <Setter Property="Margin" Value="0,3,0,10"/>
         </Style>
 
         <Style TargetType="DatePicker">
-            <Setter Property="Margin" Value="0,5,0,15"/>
-            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0,3,0,10"/>
+            <Setter Property="FontSize" Value="13"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
 
         <Style TargetType="ComboBox">
-            <Setter Property="Margin" Value="0,5,0,15"/>
-            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0,3,0,10"/>
+            <Setter Property="FontSize" Value="13"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
 
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="#666"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Margin" Value="0,5,0,2"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Margin" Value="0,0,0,2"/>
         </Style>
 
         <Style TargetType="Button" x:Key="RainbowButtonStyle">
@@ -37,7 +41,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Grid x:Name="BtnRoot">
-                            <Border CornerRadius="10" Padding="2">
+                            <Border CornerRadius="8" Padding="2">
                                 <Border.Background>
                                     <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
                                         <LinearGradientBrush.RelativeTransform>
@@ -48,7 +52,7 @@
                                         <GradientStop Color="#0000FF" Offset="1.0"/>
                                     </LinearGradientBrush>
                                 </Border.Background>
-                                <Border Background="#0B0B0D" CornerRadius="8">
+                                <Border Background="#0B0B0D" CornerRadius="6">
                                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
                             </Border>
@@ -57,7 +61,7 @@
                             <EventTrigger RoutedEvent="Loaded">
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Duration="0:0:3" From="0" RepeatBehavior="Forever" Storyboard.TargetName="BtnRotate" Storyboard.TargetProperty="Angle" To="360"/>
+                                        <DoubleAnimation Duration="0:0:3" From="0" To="360" RepeatBehavior="Forever" Storyboard.TargetName="BtnRotate" Storyboard.TargetProperty="Angle"/>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
@@ -69,22 +73,24 @@
     </Window.Resources>
 
     <Grid>
-        <Ellipse Fill="#15007AFF" Height="700" HorizontalAlignment="Right" Margin="0,-250,-250,0" VerticalAlignment="Top" Width="700">
+        <!-- Background Blur Effect -->
+        <Ellipse Fill="#15007AFF" Height="600" Width="600" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,-200,-200,0">
             <Ellipse.Effect>
                 <BlurEffect Radius="150"/>
             </Ellipse.Effect>
         </Ellipse>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <Grid Margin="40">
+            <Grid Margin="20">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock FontSize="32" FontWeight="Bold" Foreground="#FF0A0909" HorizontalAlignment="Center" Margin="0,0,0,25" Text="Employee Information"/>
+                <TextBlock FontSize="28" FontWeight="Bold" Foreground="#FF0A0909" HorizontalAlignment="Center" Margin="0,0,0,15" Text="Employee Information"/>
 
-                <Border CornerRadius="25" Grid.Row="1" HorizontalAlignment="Center" Padding="2" VerticalAlignment="Top" Width="850">
+                <!-- Main Form Area -->
+                <Border CornerRadius="20" Grid.Row="1" HorizontalAlignment="Center" Padding="2" VerticalAlignment="Top" Width="780">
                     <Border.Background>
                         <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
                             <LinearGradientBrush.RelativeTransform>
@@ -98,18 +104,17 @@
                             <GradientStop Color="#FF00FF" Offset="1.0"/>
                         </LinearGradientBrush>
                     </Border.Background>
-
                     <Border.Triggers>
                         <EventTrigger RoutedEvent="Loaded">
                             <BeginStoryboard>
                                 <Storyboard>
-                                    <DoubleAnimation Duration="0:0:8" From="0" RepeatBehavior="Forever" Storyboard.TargetName="MainBorderRotate" Storyboard.TargetProperty="Angle" To="360"/>
+                                    <DoubleAnimation Duration="0:0:8" From="0" To="360" RepeatBehavior="Forever" Storyboard.TargetName="MainBorderRotate" Storyboard.TargetProperty="Angle"/>
                                 </Storyboard>
                             </BeginStoryboard>
                         </EventTrigger>
                     </Border.Triggers>
 
-                    <Border Background="#FFEBEAE9" CornerRadius="23" Padding="35,25">
+                    <Border Background="#FFF4F4F3" CornerRadius="18" Padding="25,20">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -122,15 +127,15 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <!-- User ID, First Name, Last Name & DOB -->
+                            <!-- Row 0: User ID, First Name, Last Name, DOB -->
                             <Grid Grid.Row="0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="10"/>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="10"/>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="10"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
@@ -139,23 +144,23 @@
                                 </Grid.RowDefinitions>
 
                                 <TextBlock Grid.Column="0" Grid.Row="0" Text="User ID (UID)"/>
-                                <TextBox Grid.Column="0" Grid.Row="1" Text="{Binding Emp.UID, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,56,15"/>
+                                <TextBox Grid.Column="0" Grid.Row="1" Text="{Binding Emp.UID, UpdateSourceTrigger=PropertyChanged}"/>
 
-                                <TextBlock Grid.Row="0" Text="First Name" Grid.ColumnSpan="3" Margin="147,5,0,2"/>
-                                <TextBox Grid.Row="1" Text="{Binding Emp.FName, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="3" Margin="147,5,92,15"/>
+                                <TextBlock Grid.Column="2" Grid.Row="0" Text="First Name"/>
+                                <TextBox Grid.Column="2" Grid.Row="1" Text="{Binding Emp.FName, UpdateSourceTrigger=PropertyChanged}"/>
 
-                                <TextBlock Grid.Column="2" Grid.Row="0" Text="Last Name" Grid.ColumnSpan="3" Margin="108,5,0,2"/>
-                                <TextBox Grid.Column="2" Grid.Row="1" Text="{Binding Emp.LName, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="3" Margin="108,5,148,15"/>
+                                <TextBlock Grid.Column="4" Grid.Row="0" Text="Last Name"/>
+                                <TextBox Grid.Column="4" Grid.Row="1" Text="{Binding Emp.LName, UpdateSourceTrigger=PropertyChanged}"/>
 
-                                <TextBlock Grid.Column="4" Grid.Row="0" Text="Date of Birth (DOB)" Grid.ColumnSpan="3" Margin="54,5,170,2"/>
-                                <DatePicker Grid.Column="4" Grid.Row="1" SelectedDate="{Binding Emp.DOB, UpdateSourceTrigger=PropertyChanged}" Margin="54,5,0,15" Grid.ColumnSpan="2"/>
+                                <TextBlock Grid.Column="6" Grid.Row="0" Text="Date of Birth"/>
+                                <DatePicker Grid.Column="6" Grid.Row="1" SelectedDate="{Binding Emp.DOB, UpdateSourceTrigger=PropertyChanged}"/>
                             </Grid>
 
-                            <!-- Address Line 1 & Address Line 2 -->
+                            <!-- Row 1: Address Line 1 & 2 -->
                             <Grid Grid.Row="1">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="10"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
@@ -164,21 +169,21 @@
                                 </Grid.RowDefinitions>
 
                                 <TextBlock Grid.Column="0" Grid.Row="0" Text="Address Line 1"/>
-                                <TextBox Grid.Column="0" Grid.Row="1" Text="{Binding Emp.Address1, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,171,15"/>
+                                <TextBox Grid.Column="0" Grid.Row="1" Text="{Binding Emp.Address1, UpdateSourceTrigger=PropertyChanged}"/>
 
-                                <TextBlock Grid.Row="0" Text="Address Line 2" Grid.ColumnSpan="3" Margin="228,5,0,2"/>
-                                <TextBox Grid.Row="1" Text="{Binding Emp.Address2, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="3" Margin="228,5,328,15"/>
+                                <TextBlock Grid.Column="2" Grid.Row="0" Text="Address Line 2"/>
+                                <TextBox Grid.Column="2" Grid.Row="1" Text="{Binding Emp.Address2, UpdateSourceTrigger=PropertyChanged}"/>
                             </Grid>
 
-                            <!-- Location Fields (City, State, Zip, Country) -->
+                            <!-- Row 2: City, State, Zip, Country -->
                             <Grid Grid.Row="2">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="10"/>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="10"/>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="10"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
@@ -187,23 +192,23 @@
                                 </Grid.RowDefinitions>
 
                                 <TextBlock Grid.Column="0" Grid.Row="0" Text="City"/>
-                                <TextBox Grid.Column="0" Grid.Row="1" Text="{Binding Emp.City, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,56,15"/>
+                                <TextBox Grid.Column="0" Grid.Row="1" Text="{Binding Emp.City, UpdateSourceTrigger=PropertyChanged}"/>
 
-                                <TextBlock Grid.Row="0" Text="State" Grid.ColumnSpan="3" Margin="144,5,0,2"/>
-                                <ComboBox DisplayMemberPath="DisplayName" Grid.Row="1" ItemsSource="{Binding States}" SelectedValue="{Binding SelectedStateString, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="StateCode" Grid.ColumnSpan="3" Margin="144,5,92,15"/>
+                                <TextBlock Grid.Column="2" Grid.Row="0" Text="State"/>
+                                <ComboBox Grid.Column="2" Grid.Row="1" DisplayMemberPath="DisplayName" ItemsSource="{Binding States}" SelectedValue="{Binding SelectedStateString, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="StateCode"/>
 
-                                <TextBlock Grid.Column="2" Grid.Row="0" Text="Zip Code" Grid.ColumnSpan="3" Margin="108,5,0,2"/>
-                                <TextBox Grid.Column="2" Grid.Row="1" Text="{Binding Emp.Zip, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="3" Margin="108,5,136,15"/>
+                                <TextBlock Grid.Column="4" Grid.Row="0" Text="Zip Code"/>
+                                <TextBox Grid.Column="4" Grid.Row="1" Text="{Binding Emp.Zip, UpdateSourceTrigger=PropertyChanged}"/>
 
-                                <TextBlock Grid.Column="4" Grid.Row="0" Text="Country" Grid.ColumnSpan="3" Margin="66,5,0,2"/>
-                                <TextBox Grid.Column="4" Grid.Row="1" Text="{Binding Emp.Country, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="3" Margin="66,5,170,15"/>
+                                <TextBlock Grid.Column="6" Grid.Row="0" Text="Country"/>
+                                <TextBox Grid.Column="6" Grid.Row="1" Text="{Binding Emp.Country, UpdateSourceTrigger=PropertyChanged}"/>
                             </Grid>
 
-                            <!-- Contact Info (Phone, Email) -->
+                            <!-- Row 3: Phone, Email -->
                             <Grid Grid.Row="3">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="10"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
@@ -212,21 +217,21 @@
                                 </Grid.RowDefinitions>
 
                                 <TextBlock Grid.Column="0" Grid.Row="0" Text="Phone"/>
-                                <TextBox Grid.Column="0" Grid.Row="1" Text="{Binding Emp.Phone, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,189,15"/>
+                                <TextBox Grid.Column="0" Grid.Row="1" Text="{Binding Emp.Phone, UpdateSourceTrigger=PropertyChanged}"/>
 
-                                <TextBlock Grid.Row="0" Text="Email" Grid.ColumnSpan="3" Margin="238,5,0,2"/>
+                                <TextBlock Grid.Column="2" Grid.Row="0" Text="Email"/>
                                 <TextBox Grid.Column="2" Grid.Row="1" Text="{Binding Emp.Email, UpdateSourceTrigger=PropertyChanged}"/>
                             </Grid>
 
-                            <!-- 4 Fields in One Line: Primary ID, Secondary ID, Department Code, Designation Code -->
+                            <!-- Row 4: Primary ID, Secondary ID, Dept Code, Desig Code -->
                             <Grid Grid.Row="4">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="10"/>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="10"/>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="10"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
@@ -240,20 +245,20 @@
                                 <TextBlock Grid.Column="2" Grid.Row="0" Text="Secondary ID"/>
                                 <TextBox Grid.Column="2" Grid.Row="1" Text="{Binding Emp.SecondID, UpdateSourceTrigger=PropertyChanged}"/>
 
-                                <TextBlock Grid.Column="4" Grid.Row="0" Text="Department Code"/>
+                                <TextBlock Grid.Column="4" Grid.Row="0" Text="Dept Code"/>
                                 <TextBox Grid.Column="4" Grid.Row="1" Text="{Binding Emp.DeptCode, UpdateSourceTrigger=PropertyChanged}"/>
 
-                                <TextBlock Grid.Column="6" Grid.Row="0" Text="Designation Code"/>
+                                <TextBlock Grid.Column="6" Grid.Row="0" Text="Desig Code"/>
                                 <TextBox Grid.Column="6" Grid.Row="1" Text="{Binding Emp.DesigCode, UpdateSourceTrigger=PropertyChanged}"/>
                             </Grid>
 
-                            <!-- Dates (Entry Date, Start Date, End Date) -->
+                            <!-- Row 5: Entry Date, Start Date, End Date -->
                             <Grid Grid.Row="5">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="10"/>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="15"/>
+                                    <ColumnDefinition Width="10"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
@@ -271,13 +276,13 @@
                                 <DatePicker Grid.Column="4" Grid.Row="1" SelectedDate="{Binding Emp.EndDate, UpdateSourceTrigger=PropertyChanged}"/>
                             </Grid>
 
-                            <!-- Checkbox -->
-                            <CheckBox Grid.Row="6" IsChecked="{Binding IsActive}" Margin="0,10,0,20" VerticalAlignment="Center">
-                                <TextBlock FontSize="15" Foreground="Black" Margin="0" Text="Activate Employee Profile"/>
+                            <!-- Row 6: Checkbox -->
+                            <CheckBox Grid.Row="6" IsChecked="{Binding IsActive}" Margin="0,5,0,15" VerticalAlignment="Center">
+                                <TextBlock FontSize="14" Foreground="Black" Margin="0" Text="Activate Employee Profile"/>
                             </CheckBox>
 
-                            <!-- Submit Button -->
-                            <Button Command="{Binding SaveCommand}" Content="SAVE EMPLOYEE INFO" Grid.Row="7" Height="48" HorizontalAlignment="Center" Style="{StaticResource RainbowButtonStyle}" Width="300"/>
+                            <!-- Row 7: Submit Button -->
+                            <Button Grid.Row="7" Command="{Binding SaveCommand}" Content="SAVE EMPLOYEE INFO" Height="40" Width="220" HorizontalAlignment="Center" Style="{StaticResource RainbowButtonStyle}"/>
                         </Grid>
                     </Border>
                 </Border>

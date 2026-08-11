@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Text.Json;
+using System.Windows.Input;
 using ModelView_WPF.Helpers;
 
 // Aliases to avoid conflicts
@@ -21,6 +22,18 @@ namespace View_WPF
         public Login()
         {
             InitializeComponent();
+
+            // Handle Enter key press on both input fields
+            txtUserId.KeyDown += Input_KeyDown;
+            txtPassword.KeyDown += Input_KeyDown;
+        }
+
+        private void Input_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                btnAuthenticate_Click(btnAuthenticate, new RoutedEventArgs());
+            }
         }
 
         private async void btnAuthenticate_Click(object sender, RoutedEventArgs e)

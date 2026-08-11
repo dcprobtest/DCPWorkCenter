@@ -127,7 +127,7 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="Tech ID" Foreground="#666" Margin="10,0,0,5"/>
@@ -158,15 +158,17 @@
                             <TextBlock Grid.Row="0" Grid.Column="4" Text="Technology Data List" Foreground="#666" Margin="20,0,0,5"/>
 
                             <Border Grid.Row="1" Grid.RowSpan="8" Grid.Column="4" Margin="20,0,10,15" BorderBrush="#333" BorderThickness="1" CornerRadius="5">
-                                <ListBox ItemsSource="{Binding TechList}" SelectedItem="{Binding SelectedTech, Mode=TwoWay}" Background="White" BorderThickness="0">
-                                    <ListBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid>
-                                                <TextBlock Text="{Binding TechDesc}" FontSize="14" Foreground="Black" Margin="5"/>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ListBox.ItemTemplate>
-                                </ListBox>
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                    <ListBox ItemsSource="{Binding TechList}" SelectedItem="{Binding SelectedTech, Mode=TwoWay}" Background="White" BorderThickness="0" Height="375">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <TextBlock Text="{Binding TechDesc}" FontSize="14" Foreground="Black" Margin="5"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </ScrollViewer>
                             </Border>
 
                             <Button Command="{Binding AddCommand}" Content="ADD" Style="{StaticResource RainbowButtonStyle}" Grid.Row="9" Grid.Column="0" Height="45" Margin="10,10,5,0"/>

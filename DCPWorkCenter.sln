@@ -9,13 +9,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Model_WPF", "Model_WPF\Mode
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelView_WPF", "ModelView_WPF\ModelView_WPF.csproj", "{21EF42FD-F6B4-4D95-8CF4-1B398B57B9D8}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "DCP Work Center Setup", "DCP Work Center Setup\DCP Work Center Setup.vdproj", "{C2D8A9A6-8E95-798D-696F-312AFC8F481A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Model_MAUI", "Model_MAUI\Model_MAUI.csproj", "{662AA0CF-DE65-195A-B355-77A41DAC6308}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelView_MAUI", "ModelView_MAUI\ModelView_MAUI.csproj", "{94F1A570-FE4C-D21D-CCF3-9E949E5FAA39}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "View_MAUI", "View_MAUI\View_MAUI.csproj", "{80D23383-BF0A-C613-A312-4BCD746B77EC}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "DCP Work Center", "DCP Work Center\DCP Work Center.vdproj", "{E1BF50C5-A4B2-A9BA-B7FD-79D86DD8D64C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,8 +35,6 @@ Global
 		{21EF42FD-F6B4-4D95-8CF4-1B398B57B9D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21EF42FD-F6B4-4D95-8CF4-1B398B57B9D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21EF42FD-F6B4-4D95-8CF4-1B398B57B9D8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C2D8A9A6-8E95-798D-696F-312AFC8F481A}.Debug|Any CPU.ActiveCfg = Debug
-		{C2D8A9A6-8E95-798D-696F-312AFC8F481A}.Release|Any CPU.ActiveCfg = Release
 		{662AA0CF-DE65-195A-B355-77A41DAC6308}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{662AA0CF-DE65-195A-B355-77A41DAC6308}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{662AA0CF-DE65-195A-B355-77A41DAC6308}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -50,6 +48,8 @@ Global
 		{80D23383-BF0A-C613-A312-4BCD746B77EC}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{80D23383-BF0A-C613-A312-4BCD746B77EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80D23383-BF0A-C613-A312-4BCD746B77EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1BF50C5-A4B2-A9BA-B7FD-79D86DD8D64C}.Debug|Any CPU.ActiveCfg = Debug
+		{E1BF50C5-A4B2-A9BA-B7FD-79D86DD8D64C}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

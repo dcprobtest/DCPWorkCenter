@@ -223,48 +223,38 @@ namespace View_WPF.ModelView_WPF
         {
             try
             {
-                // Fetch dynamic array matching backend structure representation safely
-                var apiRecords = await _httpClient.GetFromJsonAsync<System.Collections.Generic.List<dynamic>>(_apiUrl);
+                var apiRecords = await _httpClient.GetFromJsonAsync<System.Collections.Generic.List<System.Text.Json.JsonElement>>(_apiUrl);
 
                 TechList.Clear();
                 if (apiRecords != null)
                 {
                     foreach (var record in apiRecords)
                     {
+                        string GetStringProp(System.Text.Json.JsonElement el, string name) =>
+                            el.TryGetProperty(name, out var val) && val.ValueKind != System.Text.Json.JsonValueKind.Null ? val.GetString() : string.Empty;
+
+                        DateTime? GetDateProp(System.Text.Json.JsonElement el, string name) =>
+                            el.TryGetProperty(name, out var val) && val.ValueKind != System.Text.Json.JsonValueKind.Null && val.TryGetDateTime(out var dt) ? dt : (DateTime?)null;
+
                         TechList.Add(new TechInfoModel
                         {
-                            TechId = record.GetProperty("techID").GetString(),
-                            TechDesc = record.GetProperty("techDesc").GetString(),
-                            StartDate = record.GetProperty("startDate").GetDateTime(),
-                            EntryDate = record.GetProperty("entryDate").GetDateTime(),
-
-                            // Fixed: Explicit out parameter types provided to resolve dynamic inference constraints (CS8197)
-                            EndDate = record.TryGetProperty("endDate", out System.Text.Json.JsonElement endVal) && endVal.ValueKind != System.Text.Json.JsonValueKind.Null ? endVal.GetDateTime() : (DateTime?)null,
-
-                            EntryByUid = record.GetProperty("entryByUID").GetString(),
-
-                            // Fixed: Explicit out parameter types provided to resolve dynamic inference constraints (CS8197)
-                            LastUpdate = record.TryGetProperty("lastUpdate", out System.Text.Json.JsonElement upVal) && upVal.ValueKind != System.Text.Json.JsonValueKind.Null ? upVal.GetDateTime() : (DateTime?)null,
-
-                            Activate = record.GetProperty("activate").GetString()
+                            TechId = GetStringProp(record, "techID"),
+                            TechDesc = GetStringProp(record, "techDesc"),
+                            StartDate = GetDateProp(record, "startDate") ?? DateTime.Now,
+                            EntryDate = GetDateProp(record, "entryDate") ?? DateTime.Now,
+                            EndDate = GetDateProp(record, "endDate"),
+                            EntryByUid = GetStringProp(record, "entryByUID"),
+                            LastUpdate = GetDateProp(record, "lastUpdate"),
+                            Activate = GetStringProp(record, "activate")
                         });
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Fallback architecture maintaining design-time WPF structural verification
-                LoadMockData();
+                MessageBox.Show($"Failed to load data from API: {ex.Message}", "Loading Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                TechList.Clear();
             }
-        }
-
-        private void LoadMockData()
-        {
-            // Mock records safely illustrating initial grid population mechanics
-            TechList.Clear();
-            TechList.Add(new TechInfoModel { TechId = "001", TechDesc = "WPF Desktop Engineering Architecture", Activate = "Y", EntryByUid = "SYSADMIN", EntryDate = DateTime.Now });
-            TechList.Add(new TechInfoModel { TechId = "002", TechDesc = "ASP.NET Core Enterprise Web API Services", Activate = "Y", EntryByUid = "SYSADMIN", EntryDate = DateTime.Now });
-            TechList.Add(new TechInfoModel { TechId = "003", TechDesc = "SQL Server High-Performance Relational Schema", Activate = "N", EntryByUid = "SYSADMIN", EntryDate = DateTime.Now });
         }
 
         // Property tracking plumbing definition

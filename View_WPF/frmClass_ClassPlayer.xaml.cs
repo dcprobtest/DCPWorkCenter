@@ -32,6 +32,9 @@ namespace View_WPF
         private int _currentSessionId = 2;
         private string _currentSectionId = null;
 
+        private List<VideoTreeItem> _allVideosList = new List<VideoTreeItem>();
+        private VideoTreeItem _currentSelectedVideo = null;
+
         public ObservableCollection<SubjectViewModel> CourseContent { get; set; } = new ObservableCollection<SubjectViewModel>();
 
         public frmClass_ClassPlayer(string uid)
@@ -59,7 +62,12 @@ namespace View_WPF
         {
             try
             {
-                // ডেটাবেজের time(1) টাইপের সাথে সামঞ্জস্য রেখে EventTime-এ slideTime (TimeSpan স্ট্রিং) পাঠানো হলো
+                // SectionID যদি না থাকে বা নাল হয়, তবে API কল এড়িয়ে যাওয়া হবে যেন ভ্যালিডেশন এরর না আসে
+                if (string.IsNullOrEmpty(_currentSectionId))
+                {
+                    return;
+                }
+
                 var payload = new
                 {
                     SectionID = _currentSectionId,
@@ -90,6 +98,7 @@ namespace View_WPF
             try
             {
                 CourseContent.Clear();
+                _allVideosList.Clear();
                 string url = ApiSettings.GetAssignedVideosUrl(_rawUID);
 
                 var response = await _httpClient.GetAsync(url);
@@ -108,12 +117,14 @@ namespace View_WPF
 
                         foreach (var v in apiVideos)
                         {
-                            section.Videos.Add(new VideoTreeItem
+                            var videoItem = new VideoTreeItem
                             {
                                 SectionID = v.SectionID,
                                 VideoTitle = v.ClassContent,
                                 FilePath = v.ClassPath
-                            });
+                            };
+                            section.Videos.Add(videoItem);
+                            _allVideosList.Add(videoItem);
                         }
 
                         subject.Sections.Add(section);
@@ -199,16 +210,22 @@ namespace View_WPF
         {
             if (e.NewValue is VideoTreeItem selectedVideo)
             {
-                if (!string.IsNullOrEmpty(selectedVideo.FilePath) && File.Exists(selectedVideo.FilePath))
-                {
-                    _currentSectionId = selectedVideo.SectionID;
+                _currentSelectedVideo = selectedVideo;
+                await PlaySelectedVideo(selectedVideo);
+            }
+        }
 
-                    Player.Source = new Uri(selectedVideo.FilePath);
-                    Player.Play();
-                    _timer.Start();
-                    BtnPlay.Content = "⏸";
-                    await LogActivity("4");
-                }
+        private async Task PlaySelectedVideo(VideoTreeItem video)
+        {
+            if (video != null && !string.IsNullOrEmpty(video.FilePath) && File.Exists(video.FilePath))
+            {
+                _currentSectionId = video.SectionID;
+
+                Player.Source = new Uri(video.FilePath);
+                Player.Play();
+                _timer.Start();
+                BtnPlay.Content = "⏸";
+                await LogActivity("4");
             }
         }
 
@@ -239,13 +256,37 @@ namespace View_WPF
         private async void Previous_Click(object sender, RoutedEventArgs e)
         {
             await LogActivity("3");
-            System.Windows.MessageBox.Show("The Previous Video feature has not been implemented yet.");
+            if (_allVideosList != null && _allVideosList.Count > 0)
+            {
+                int currentIndex = _currentSelectedVideo != null ? _allVideosList.IndexOf(_currentSelectedVideo) : -1;
+                if (currentIndex > 0)
+                {
+                    _currentSelectedVideo = _allVideosList[currentIndex - 1];
+                    await PlaySelectedVideo(_currentSelectedVideo);
+                }
+                else
+                {
+                    System.Windows.MessageBox.Show("This is the first video.");
+                }
+            }
         }
 
         private async void Next_Click(object sender, RoutedEventArgs e)
         {
             await LogActivity("7");
-            System.Windows.MessageBox.Show("The Next Video feature has not been implemented yet.");
+            if (_allVideosList != null && _allVideosList.Count > 0)
+            {
+                int currentIndex = _currentSelectedVideo != null ? _allVideosList.IndexOf(_currentSelectedVideo) : -1;
+                if (currentIndex >= 0 && currentIndex < _allVideosList.Count - 1)
+                {
+                    _currentSelectedVideo = _allVideosList[currentIndex + 1];
+                    await PlaySelectedVideo(_currentSelectedVideo);
+                }
+                else
+                {
+                    System.Windows.MessageBox.Show("This is the last video.");
+                }
+            }
         }
 
         private void TimelineSlider_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e) => _timer.Stop();

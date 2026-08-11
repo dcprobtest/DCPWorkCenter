@@ -60,21 +60,28 @@ namespace ModelView_WPF
         {
             try
             {
-                var response = await _httpClient.GetAsync(ApiSettings.GetChatBotHistoryUrl(_uid));
+                var response = await _httpClient.GetAsync(ApiSettings.ChatBotBaseUrl);
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
                     var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                    var history = JsonSerializer.Deserialize<List<ChatMessageViewModel>>(json, options);
+                    var history = JsonSerializer.Deserialize<List<ChatMessageDto>>(json, options);
 
                     if (history != null)
                     {
                         Messages.Clear();
                         foreach (var msg in history)
                         {
-                            // Ensure IsMyMessage is set correctly based on UID match
-                            // Assuming msg.Uid is available in your database model
-                            Messages.Add(msg);
+                            bool isMine = (msg.UID == _uid);
+                            Messages.Add(new ChatMessageViewModel
+                            {
+                                Message = msg.Chat,
+                                IsMyMessage = isMine,
+                                StatusText = "",
+                                DateSeparator = "",
+                                // নিজের মেসেজ হলে "You" আর অন্যের মেসেজ হলে API থেকে আসা ইউজারের আসল নাম দেখাবে
+                                SenderInfo = isMine ? "You" : msg.SenderName
+                            });
                         }
                     }
                 }
@@ -94,7 +101,8 @@ namespace ModelView_WPF
                 Message = text,
                 IsMyMessage = isMyMessage,
                 StatusText = status,
-                DateSeparator = dateSeparator
+                DateSeparator = dateSeparator,
+                SenderInfo = "You" // নিজের পাঠানো মেসেজের ওপর "You" দেখাবে
             });
 
             // 2. Send to API (if it's my message)
@@ -123,6 +131,22 @@ namespace ModelView_WPF
         }
     }
 
+    // DTO to match API response containing SenderName and UID
+    public class ChatMessageDto
+    {
+        [JsonPropertyName("uid")]
+        public string UID { get; set; }
+
+        [JsonPropertyName("chat")]
+        public string Chat { get; set; }
+
+        [JsonPropertyName("senderName")]
+        public string SenderName { get; set; }
+
+        [JsonPropertyName("entryDate")]
+        public DateTime EntryDate { get; set; }
+    }
+
     // Helper class to represent individual message properties
     public class ChatMessageViewModel
     {
@@ -133,6 +157,7 @@ namespace ModelView_WPF
         public bool IsMyMessage { get; set; }
         public string StatusText { get; set; }
         public string DateSeparator { get; set; }
+        public string SenderInfo { get; set; }
 
         public Visibility DateVisibility => string.IsNullOrEmpty(DateSeparator) ? Visibility.Collapsed : Visibility.Visible;
         public HorizontalAlignment Alignment => IsMyMessage ? HorizontalAlignment.Right : HorizontalAlignment.Left;

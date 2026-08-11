@@ -1,8 +1,13 @@
-﻿namespace ModelView_WPF.Helpers
+﻿using System;
+using System.Configuration;
+
+namespace ModelView_WPF.Helpers
 {
     public static class ApiSettings
     {
-        public static string BaseUrl => "https://localhost:7073";
+        // TrimEnd('/') এর মাধ্যমে ডাবল স্ল্যাশ (//) এরর ফিক্স করা হয়েছে
+        public static string BaseUrl =>
+            (ConfigurationManager.AppSettings["ApiBaseUrl"] ?? "https://localhost:7073").TrimEnd('/');
 
         public static string SaveUserDocUrl() => $"{BaseUrl}/api/Data/SaveUserDoc";
         public static string GetEmployeeDetailUrl() => $"{BaseUrl}/api/Data/GetEmployeeDetail/";
@@ -68,10 +73,16 @@
         public static string GetVideosUrl() => $"{BaseUrl}/api/Data/GetVideos";
         public static string SaveSubjectWiseAssignUrl() => $"{BaseUrl}/api/Data/SaveSubjectWiseAssign";
         public static string GetTechInfoUrl() => $"{BaseUrl}/api/TechInfo";
+        public static string GetUserNameUrl(string uid) => $"{BaseUrl}/api/Data/GetUserName/{uid}";
+        public static string GetEmployeeInfoUrl() => $"{BaseUrl}/api/Data/GetEmployeeInfo";
+        public static string CreateUserDocRequestUrl() => $"{BaseUrl}/api/Data/CreateUserDocRequest";
         public static string SaveUserUrl() => $"{BaseUrl}/api/Data/SaveUser";
         public static string LoginUrl() => $"{BaseUrl}/api/Data/Login";
+
+        // মেথড হিসেবে অন করার জন্য () যুক্ত করা হয়েছে
         public static string LoginSessionInfoUrl() => $"{BaseUrl}/api/LoginSessionInfo";
         public static string ClassFocusMonitorUrl() => $"{BaseUrl}/api/ClassFocusMonitor";
+
         public static string GetAssignedVideosUrl(string uid) => $"{BaseUrl}/api/Data/GetAssignedVideos/{uid}";
     }
 }
