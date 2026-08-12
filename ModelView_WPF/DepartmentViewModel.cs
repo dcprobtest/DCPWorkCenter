@@ -16,23 +16,27 @@ namespace View_WPF.ModelView_WPF
     public class DepartmentViewModel : INotifyPropertyChanged
     {
         private readonly HttpClient _httpClient;
+        private string _uid;
 
         private DepartmentModel _dept;
         private bool _isActive;
 
         public DepartmentViewModel()
         {
-            // Localhost self-signed SSL certificate error bypass handler setup
             var handler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
             };
 
-            // HttpClient configuration updated with ApiSettings.BaseUrl
             _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
             ResetForm();
             SaveCommand = new RelayCommand(async (obj) => await ExecuteSave());
+        }
+
+        public DepartmentViewModel(string uid) : this()
+        {
+            _uid = uid;
         }
 
         public DepartmentModel Dept
@@ -56,7 +60,6 @@ namespace View_WPF.ModelView_WPF
 
         private async Task ExecuteSave()
         {
-            // 1. Basic validation
             if (Dept == null || string.IsNullOrEmpty(Dept.DeptCode))
             {
                 MessageBox.Show("Please provide a Department Code.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -65,11 +68,14 @@ namespace View_WPF.ModelView_WPF
 
             try
             {
-                // 2. Convert to JSON
+                if (!string.IsNullOrEmpty(_uid))
+                {
+                    Dept.EntryByUID = _uid;
+                }
+
                 var json = JsonConvert.SerializeObject(Dept);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                // 3. Send data to API using ApiSettings endpoint
                 HttpResponseMessage response = await _httpClient.PostAsync(ApiSettings.SaveDepartmentUrl(), content);
 
                 if (response.IsSuccessStatusCode)
@@ -79,7 +85,6 @@ namespace View_WPF.ModelView_WPF
                 }
                 else
                 {
-                    // 4. Check details if NotFound or other error occurs
                     string errorDetails = await response.Content.ReadAsStringAsync();
                     MessageBox.Show($"API Error ({response.StatusCode}):\nPath not found or data format issue.\n{errorDetails}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }

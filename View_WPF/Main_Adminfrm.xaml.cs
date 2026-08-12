@@ -61,7 +61,7 @@ namespace View_WPF
 
             try
             {
-                frmAdmin_Department deptWin = new frmAdmin_Department();
+                frmAdmin_Department deptWin = new frmAdmin_Department(_uid);
                 deptWin.Show();
             }
             catch (Exception ex)
@@ -81,7 +81,7 @@ namespace View_WPF
 
             try
             {
-                frmAdmin_Designation desigWin = new frmAdmin_Designation();
+                frmAdmin_Designation desigWin = new frmAdmin_Designation(_uid);
                 desigWin.Show();
             }
             catch (Exception ex)

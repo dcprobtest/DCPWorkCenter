@@ -15,8 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelView_MAUI", "ModelView
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "View_MAUI", "View_MAUI\View_MAUI.csproj", "{80D23383-BF0A-C613-A312-4BCD746B77EC}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "DCP Work Center", "DCP Work Center\DCP Work Center.vdproj", "{E1BF50C5-A4B2-A9BA-B7FD-79D86DD8D64C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,8 +46,6 @@ Global
 		{80D23383-BF0A-C613-A312-4BCD746B77EC}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{80D23383-BF0A-C613-A312-4BCD746B77EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80D23383-BF0A-C613-A312-4BCD746B77EC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E1BF50C5-A4B2-A9BA-B7FD-79D86DD8D64C}.Debug|Any CPU.ActiveCfg = Debug
-		{E1BF50C5-A4B2-A9BA-B7FD-79D86DD8D64C}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -81,6 +81,8 @@ namespace ModelView_WPF.Helpers
 
         // মেথড হিসেবে অন করার জন্য () যুক্ত করা হয়েছে
         public static string LoginSessionInfoUrl() => $"{BaseUrl}/api/LoginSessionInfo";
+        public static string GetDepartmentsUrl => $"{BaseUrl}/api/Data/GetDepartments";
+        public static string GetDesignationsUrl => $"{BaseUrl}/api/Data/GetDesignations";
         public static string ClassFocusMonitorUrl() => $"{BaseUrl}/api/ClassFocusMonitor";
 
         public static string GetAssignedVideosUrl(string uid) => $"{BaseUrl}/api/Data/GetAssignedVideos/{uid}";

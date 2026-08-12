@@ -11,6 +11,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ModelView_WPF;
+using View_WPF.ModelView_WPF;
 
 namespace View_WPF
 {
@@ -22,6 +24,13 @@ namespace View_WPF
         public frmAdmin_Designation()
         {
             InitializeComponent();
+            this.DataContext = new DesignationViewModel();
+        }
+
+        public frmAdmin_Designation(string uid)
+        {
+            InitializeComponent();
+            this.DataContext = new DesignationViewModel(uid);
         }
     }
 }

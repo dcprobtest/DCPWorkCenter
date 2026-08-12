@@ -14,6 +14,7 @@ namespace ModelView_WPF
     public class DesignationViewModel : INotifyPropertyChanged
     {
         private readonly HttpClient _httpClient;
+        private readonly string _loggedInUserId;
 
         private DesignationModel _designation = new DesignationModel();
         public DesignationModel Designation
@@ -44,8 +45,16 @@ namespace ModelView_WPF
 
         public ICommand SaveCommand { get; }
 
-        public DesignationViewModel()
+        // Default constructor (fallback for design-time or direct instantiation)
+        public DesignationViewModel() : this("Admin")
         {
+        }
+
+        // Parameterized constructor to receive UID from Main_Adminfrm or other forms
+        public DesignationViewModel(string userId)
+        {
+            _loggedInUserId = string.IsNullOrWhiteSpace(userId) ? "Admin" : userId;
+
             // Localhost self-signed SSL certificate error bypass handler setup
             var handler = new HttpClientHandler
             {
@@ -99,7 +108,7 @@ namespace ModelView_WPF
 
         private void ResetForm()
         {
-            // Reset form for a new entry
+            // Reset form for a new entry and assign received user ID to EntryByUid
             Designation = new DesignationModel
             {
                 DesigCode = string.Empty,
@@ -108,7 +117,7 @@ namespace ModelView_WPF
                 EntryDate = DateTime.Now,
                 StartDate = DateTime.Now,
                 EndDate = null,
-                EntryByUid = "Admin", // Can be made dynamic if required
+                EntryByUid = _loggedInUserId,
                 LastUpdate = DateTime.Now,
                 Activate = "N"
             };

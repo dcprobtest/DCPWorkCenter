@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Net.Http;
 using System.Text;
@@ -18,6 +19,20 @@ namespace View_WPF.ModelView_WPF
     {
         public string Code { get; set; }
         public string DisplayName { get; set; }
+    }
+
+    public class DepartmentDropdownModel
+    {
+        public string DeptCode { get; set; }
+        public string DeptName { get; set; }
+        public string DisplayName => $"{DeptCode} - {DeptName}";
+    }
+
+    public class DesignationDropdownModel
+    {
+        public string DesigCode { get; set; }
+        public string DesigName { get; set; }
+        public string DisplayName => $"{DesigCode} - {DesigName}";
     }
 
     public class EmpInfoViewModel : INotifyPropertyChanged
@@ -78,6 +93,58 @@ namespace View_WPF.ModelView_WPF
             new StateModel { Code = "WY", DisplayName = "WY – Wyoming" }
         };
 
+        private ObservableCollection<DepartmentDropdownModel> _departments = new ObservableCollection<DepartmentDropdownModel>();
+        public ObservableCollection<DepartmentDropdownModel> Departments
+        {
+            get => _departments;
+            set { _departments = value; OnPropertyChanged(nameof(Departments)); }
+        }
+
+        private string _selectedDeptCode;
+        public string SelectedDeptCode
+        {
+            get => _selectedDeptCode;
+            set
+            {
+                _selectedDeptCode = value;
+                OnPropertyChanged(nameof(SelectedDeptCode));
+                if (!string.IsNullOrEmpty(_selectedDeptCode))
+                {
+                    Emp.DeptCode = _selectedDeptCode;
+                }
+                else
+                {
+                    Emp.DeptCode = null;
+                }
+            }
+        }
+
+        private ObservableCollection<DesignationDropdownModel> _designations = new ObservableCollection<DesignationDropdownModel>();
+        public ObservableCollection<DesignationDropdownModel> Designations
+        {
+            get => _designations;
+            set { _designations = value; OnPropertyChanged(nameof(Designations)); }
+        }
+
+        private string _selectedDesigCode;
+        public string SelectedDesigCode
+        {
+            get => _selectedDesigCode;
+            set
+            {
+                _selectedDesigCode = value;
+                OnPropertyChanged(nameof(SelectedDesigCode));
+                if (!string.IsNullOrEmpty(_selectedDesigCode))
+                {
+                    Emp.DesigCode = _selectedDesigCode;
+                }
+                else
+                {
+                    Emp.DesigCode = null;
+                }
+            }
+        }
+
         private string _selectedStateString;
         public string SelectedStateString
         {
@@ -87,7 +154,6 @@ namespace View_WPF.ModelView_WPF
                 _selectedStateString = value;
                 OnPropertyChanged(nameof(SelectedStateString));
 
-                // Since SelectedValuePath="Code" is specified, the value will directly be the short code (e.g., "NY")
                 if (!string.IsNullOrEmpty(_selectedStateString))
                 {
                     Emp.State = _selectedStateString;
@@ -122,13 +188,11 @@ namespace View_WPF.ModelView_WPF
 
         public EmpInfoViewModel()
         {
-            // Localhost self-signed SSL certificate error bypass handler setup
             var handler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
             };
 
-            // HttpClient configuration updated with ApiSettings.BaseUrl
             _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
             Emp.EntryDate = DateTime.Now;
@@ -137,17 +201,17 @@ namespace View_WPF.ModelView_WPF
             Emp.DOB = DateTime.Now;
 
             SaveCommand = new RelayCommand(async (obj) => await ExecuteSave());
+
+            _ = LoadDropdownDataAsync();
         }
 
         public EmpInfoViewModel(string uid)
         {
-            // Localhost self-signed SSL certificate error bypass handler setup
             var handler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
             };
 
-            // HttpClient configuration updated with ApiSettings.BaseUrl
             _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
             Emp.EntryDate = DateTime.Now;
@@ -157,6 +221,62 @@ namespace View_WPF.ModelView_WPF
             Emp.UID = uid;
 
             SaveCommand = new RelayCommand(async (obj) => await ExecuteSave());
+
+            _ = LoadDropdownDataAsync();
+        }
+
+        private async Task LoadDropdownDataAsync()
+        {
+            try
+            {
+                var deptResponse = await _httpClient.GetAsync(ApiSettings.GetDepartmentsUrl);
+                if (deptResponse.IsSuccessStatusCode)
+                {
+                    var deptJson = await deptResponse.Content.ReadAsStringAsync();
+                    var deptList = JsonConvert.DeserializeObject<List<DepartmentDropdownModel>>(deptJson);
+                    if (deptList != null)
+                    {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            Departments.Clear();
+                            foreach (var item in deptList)
+                            {
+                                Departments.Add(item);
+                            }
+                        });
+                    }
+                }
+                else
+                {
+                    MessageBox.Show($"Dept API Failed: {deptResponse.StatusCode}");
+                }
+
+                var desigResponse = await _httpClient.GetAsync(ApiSettings.GetDesignationsUrl);
+                if (desigResponse.IsSuccessStatusCode)
+                {
+                    var desigJson = await desigResponse.Content.ReadAsStringAsync();
+                    var desigList = JsonConvert.DeserializeObject<List<DesignationDropdownModel>>(desigJson);
+                    if (desigList != null)
+                    {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            Designations.Clear();
+                            foreach (var item in desigList)
+                            {
+                                Designations.Add(item);
+                            }
+                        });
+                    }
+                }
+                else
+                {
+                    MessageBox.Show($"Desig API Failed: {desigResponse.StatusCode}");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("API Exception: " + ex.Message);
+            }
         }
 
         private async Task ExecuteSave()
@@ -178,7 +298,6 @@ namespace View_WPF.ModelView_WPF
                 var json = JsonConvert.SerializeObject(Emp, settings);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                // Saving employee information using ApiSettings endpoint
                 var response = await _httpClient.PostAsync(ApiSettings.SaveEmployeeUrl(), content);
 
                 if (response.IsSuccessStatusCode)
@@ -207,6 +326,8 @@ namespace View_WPF.ModelView_WPF
             Emp.EndDate = DateTime.Now;
             Emp.DOB = DateTime.Now;
             SelectedStateString = null;
+            SelectedDeptCode = null;
+            SelectedDesigCode = null;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
