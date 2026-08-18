@@ -13,6 +13,13 @@ using ModelView_WPF.Helpers;
 
 namespace ModelView_WPF
 {
+    // Inline Model class definition inside the same file to avoid extra files
+    public class UserDropdownModel
+    {
+        public string UID { get; set; }
+        public string DisplayText { get; set; }
+    }
+
     public class AssignmentScrumViewModel : INotifyPropertyChanged
     {
         private AssignmentScrumModel _scrum;
@@ -26,6 +33,7 @@ namespace ModelView_WPF
         // Collections for ComboBox data binding
         public ObservableCollection<int> AvailableAssignIDs { get; set; }
         public ObservableCollection<string> AvailableScrumIDs { get; set; }
+        public ObservableCollection<UserDropdownModel> AvailableUsers { get; set; }
 
         public AssignmentScrumModel Scrum
         {
@@ -101,6 +109,7 @@ namespace ModelView_WPF
             // Initialize collections
             AvailableAssignIDs = new ObservableCollection<int>();
             AvailableScrumIDs = new ObservableCollection<string>();
+            AvailableUsers = new ObservableCollection<UserDropdownModel>();
 
             var handler = new HttpClientHandler
             {
@@ -119,6 +128,7 @@ namespace ModelView_WPF
             ExitCommand = new RelayCommand(ExecuteExit);
 
             LoadDataFromApi();
+            LoadUsersFromApi();
         }
 
         // New overloaded constructor to accept UID from code-behind and bind it to AssignByUID
@@ -229,6 +239,31 @@ namespace ModelView_WPF
             finally
             {
                 _isLoading = false;
+            }
+        }
+
+        private async void LoadUsersFromApi()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync(ApiSettings.UserDropdownUrl);
+                if (response.IsSuccessStatusCode)
+                {
+                    string jsonString = await response.Content.ReadAsStringAsync();
+                    var users = JsonSerializer.Deserialize<List<UserDropdownModel>>(jsonString, _jsonOptions);
+                    if (users != null)
+                    {
+                        AvailableUsers.Clear();
+                        foreach (var user in users)
+                        {
+                            AvailableUsers.Add(user);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading users: {ex.Message}", "API Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

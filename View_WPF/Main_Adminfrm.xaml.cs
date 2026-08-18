@@ -27,6 +27,15 @@ namespace View_WPF
         private string _userName;
         private int _userRole;
 
+        // Form references to prevent opening duplicate windows and handle minimization
+        private frmAdmin_Department deptWin = null;
+        private frmAdmin_Designation desigWin = null;
+        private frm_STEM stemWin = null;
+        private frmAdmin_EmpInfo empWin = null;
+        private frmAdmin_User userWin = null;
+        private frm_createdocx docxWin = null;
+        private ChatBox chatWin = null;
+
         // Default constructor
         public Main_Adminfrm()
         {
@@ -50,6 +59,30 @@ namespace View_WPF
             _userRole = role;
         }
 
+        protected override void OnStateChanged(EventArgs e)
+        {
+            base.OnStateChanged(e);
+
+            if (this.WindowState == WindowState.Minimized)
+            {
+                foreach (Window window in System.Windows.Application.Current.Windows)
+                {
+                    if (window is MainWindow mainWindow)
+                    {
+                        mainWindow.WindowState = WindowState.Normal;
+                        mainWindow.Show();
+                        mainWindow.Activate();
+                        break;
+                    }
+                }
+            }
+        }
+
+        private bool IsWindowOpen(Window window)
+        {
+            return System.Windows.Application.Current.Windows.Cast<Window>().Any(w => w == window);
+        }
+
         // Department button click event
         private void BtnDepartment_Click(object sender, RoutedEventArgs e)
         {
@@ -61,8 +94,21 @@ namespace View_WPF
 
             try
             {
-                frmAdmin_Department deptWin = new frmAdmin_Department(_uid);
-                deptWin.Show();
+                if (deptWin == null || !IsWindowOpen(deptWin))
+                {
+                    deptWin = new frmAdmin_Department(_uid);
+                    deptWin.Closed += (s, args) => { deptWin = null; };
+                    deptWin.Show();
+                }
+                else
+                {
+                    if (deptWin.WindowState == WindowState.Minimized)
+                    {
+                        deptWin.WindowState = WindowState.Normal;
+                    }
+                    deptWin.Show();
+                    deptWin.Activate();
+                }
             }
             catch (Exception ex)
             {
@@ -81,8 +127,21 @@ namespace View_WPF
 
             try
             {
-                frmAdmin_Designation desigWin = new frmAdmin_Designation(_uid);
-                desigWin.Show();
+                if (desigWin == null || !IsWindowOpen(desigWin))
+                {
+                    desigWin = new frmAdmin_Designation(_uid);
+                    desigWin.Closed += (s, args) => { desigWin = null; };
+                    desigWin.Show();
+                }
+                else
+                {
+                    if (desigWin.WindowState == WindowState.Minimized)
+                    {
+                        desigWin.WindowState = WindowState.Normal;
+                    }
+                    desigWin.Show();
+                    desigWin.Activate();
+                }
             }
             catch (Exception ex)
             {
@@ -101,8 +160,21 @@ namespace View_WPF
 
             try
             {
-                frm_STEM stemWin = new frm_STEM(_uid);
-                stemWin.Show();
+                if (stemWin == null || !IsWindowOpen(stemWin))
+                {
+                    stemWin = new frm_STEM(_uid);
+                    stemWin.Closed += (s, args) => { stemWin = null; };
+                    stemWin.Show();
+                }
+                else
+                {
+                    if (stemWin.WindowState == WindowState.Minimized)
+                    {
+                        stemWin.WindowState = WindowState.Normal;
+                    }
+                    stemWin.Show();
+                    stemWin.Activate();
+                }
             }
             catch (Exception ex)
             {
@@ -121,8 +193,21 @@ namespace View_WPF
 
             try
             {
-                frmAdmin_EmpInfo empWin = new frmAdmin_EmpInfo(_uid);
-                empWin.Show();
+                if (empWin == null || !IsWindowOpen(empWin))
+                {
+                    empWin = new frmAdmin_EmpInfo(_uid);
+                    empWin.Closed += (s, args) => { empWin = null; };
+                    empWin.Show();
+                }
+                else
+                {
+                    if (empWin.WindowState == WindowState.Minimized)
+                    {
+                        empWin.WindowState = WindowState.Normal;
+                    }
+                    empWin.Show();
+                    empWin.Activate();
+                }
             }
             catch (Exception ex)
             {
@@ -141,8 +226,21 @@ namespace View_WPF
 
             try
             {
-                frmAdmin_User userWin = new frmAdmin_User();
-                userWin.Show();
+                if (userWin == null || !IsWindowOpen(userWin))
+                {
+                    userWin = new frmAdmin_User();
+                    userWin.Closed += (s, args) => { userWin = null; };
+                    userWin.Show();
+                }
+                else
+                {
+                    if (userWin.WindowState == WindowState.Minimized)
+                    {
+                        userWin.WindowState = WindowState.Normal;
+                    }
+                    userWin.Show();
+                    userWin.Activate();
+                }
             }
             catch (Exception ex)
             {
@@ -161,8 +259,21 @@ namespace View_WPF
 
             try
             {
-                frm_createdocx docxWin = new frm_createdocx(_uid, _userName);
-                docxWin.Show();
+                if (docxWin == null || !IsWindowOpen(docxWin))
+                {
+                    docxWin = new frm_createdocx(_uid, _userName);
+                    docxWin.Closed += (s, args) => { docxWin = null; };
+                    docxWin.Show();
+                }
+                else
+                {
+                    if (docxWin.WindowState == WindowState.Minimized)
+                    {
+                        docxWin.WindowState = WindowState.Normal;
+                    }
+                    docxWin.Show();
+                    docxWin.Activate();
+                }
             }
             catch (Exception ex)
             {
@@ -175,9 +286,21 @@ namespace View_WPF
         {
             try
             {
-                // Opening chatBox and passing the current _uid
-                ChatBox chatWin = new ChatBox(_uid);
-                chatWin.Show();
+                if (chatWin == null || !IsWindowOpen(chatWin))
+                {
+                    chatWin = new ChatBox(_uid);
+                    chatWin.Closed += (s, args) => { chatWin = null; };
+                    chatWin.Show();
+                }
+                else
+                {
+                    if (chatWin.WindowState == WindowState.Minimized)
+                    {
+                        chatWin.WindowState = WindowState.Normal;
+                    }
+                    chatWin.Show();
+                    chatWin.Activate();
+                }
             }
             catch (Exception ex)
             {

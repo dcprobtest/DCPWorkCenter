@@ -63,9 +63,31 @@ namespace View_WPF
                 // TODO: You can add your database or specific password validation logic here if needed
                 // e.g., if (pbAccountPassword.Password == "YourSecurePassword") { ... }
 
-                // Opening the Main_frmUSAccounts window and passing the current UID
-                Main_frmUSAccounts usAccountsWindow = new Main_frmUSAccounts(_loggedInUID);
-                usAccountsWindow.Show();
+                Main_frmUSAccounts usAccountsWindow = null;
+
+                foreach (Window window in System.Windows.Application.Current.Windows)
+                {
+                    if (window is Main_frmUSAccounts existingForm)
+                    {
+                        usAccountsWindow = existingForm;
+                        break;
+                    }
+                }
+
+                if (usAccountsWindow != null)
+                {
+                    if (usAccountsWindow.WindowState == WindowState.Minimized)
+                    {
+                        usAccountsWindow.WindowState = WindowState.Normal;
+                    }
+                    usAccountsWindow.Show();
+                    usAccountsWindow.Activate();
+                }
+                else
+                {
+                    usAccountsWindow = new Main_frmUSAccounts(_loggedInUID);
+                    usAccountsWindow.Show();
+                }
 
                 // Set custom property to true instead of DialogResult to bypass WPF Exception
                 this.IsLoginSuccess = true;

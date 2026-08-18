@@ -5,23 +5,24 @@
         Width="1100" Height="700"
         WindowStartupLocation="CenterScreen"
         WindowState="Maximized" 
-        Background="#1E1E1E"
-        Foreground="White">
+        Background="#F4F6F9"
+        Foreground="#2C3E50">
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="PlaylistColumn" Width="300"/>
+            <ColumnDefinition x:Name="PlaylistColumn" Width="320"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Border x:Name="PlaylistBorder" Grid.Column="0" Background="#252526" BorderBrush="#3F3F46" BorderThickness="0,0,1,0">
+        <!-- Professional Modern Sidebar Playlist -->
+        <Border x:Name="PlaylistBorder" Grid.Column="0" Background="#FFFFFF" BorderBrush="#E1E8ED" BorderThickness="0,0,1,0">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="Course Content" FontSize="18" FontWeight="Bold" Margin="15" Foreground="#007ACC"/>
+                <TextBlock Text="Course Content" FontSize="18" FontWeight="Bold" Margin="20" Foreground="#007ACC"/>
 
                 <TreeView x:Name="TvPlaylist" Grid.Row="1" 
                           Background="Transparent" BorderThickness="0"
@@ -30,35 +31,35 @@
 
                     <TreeView.ItemTemplate>
                         <HierarchicalDataTemplate ItemsSource="{Binding Sections}">
-                            <Grid Margin="2">
+                            <Grid Margin="4">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Text="📚 " VerticalAlignment="Center"/>
-                                <TextBlock Grid.Column="1" Text="{Binding SubjectDesc}" Foreground="#DCDCDC" FontWeight="SemiBold" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                <TextBlock Grid.Column="1" Text="{Binding SubjectDesc}" Foreground="#2C3E50" FontWeight="SemiBold" VerticalAlignment="Center" Margin="8,0,0,0"/>
                             </Grid>
 
                             <HierarchicalDataTemplate.ItemTemplate>
                                 <HierarchicalDataTemplate ItemsSource="{Binding Videos}">
-                                    <Grid Margin="2">
+                                    <Grid Margin="4">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Grid.Column="0" Text="📁 " VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Column="1" Text="{Binding SectionDesc}" Foreground="#B4B4B4" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding SectionDesc}" Foreground="#7F8C8D" VerticalAlignment="Center" Margin="8,0,0,0"/>
                                     </Grid>
 
                                     <HierarchicalDataTemplate.ItemTemplate>
                                         <DataTemplate>
-                                            <Grid Margin="2">
+                                            <Grid Margin="4">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                 </Grid.ColumnDefinitions>
                                                 <TextBlock Grid.Column="0" Text="{Binding Icon}" VerticalAlignment="Center"/>
-                                                <TextBlock Grid.Column="1" Text="{Binding VideoTitle}" Foreground="#9CDCFE" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding VideoTitle}" Foreground="#007ACC" VerticalAlignment="Center" Margin="8,0,0,0"/>
                                             </Grid>
                                         </DataTemplate>
                                     </HierarchicalDataTemplate.ItemTemplate>
@@ -70,7 +71,8 @@
             </Grid>
         </Border>
 
-        <Grid Grid.Column="1">
+        <!-- Main Content Area -->
+        <Grid Grid.Column="1" Margin="20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
@@ -78,28 +80,44 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0" Background="Black">
-                <MediaElement x:Name="Player" 
-                              LoadedBehavior="Manual" 
-                              UnloadedBehavior="Manual" 
-                              Stretch="Uniform" />
+            <!-- Video Player Container with Cinematic Rounded Frame -->
+            <Border Grid.Row="0" Background="#FFFFFF" CornerRadius="12" ClipToBounds="True" Margin="0,0,0,15" BorderBrush="#CBD5E1" BorderThickness="1">
+                <Grid>
+                    <MediaElement x:Name="Player" 
+                                  LoadedBehavior="Manual" 
+                                  UnloadedBehavior="Manual" 
+                                  Stretch="Uniform" />
 
-                <WebBrowser x:Name="PdfViewer" Visibility="Collapsed" />
+                    <WebBrowser x:Name="PdfViewer" Visibility="Collapsed" />
 
-                <Button x:Name="BtnTogglePlaylist" Content="☰ Playlist" 
-                        HorizontalAlignment="Left" VerticalAlignment="Top" 
-                        Margin="10" Padding="8,4" Background="#333" Foreground="White" 
-                        BorderThickness="0" Click="BtnTogglePlaylist_Click"/>
-            </Grid>
+                    <!-- Sleek Overlay Toggle Playlist Button -->
+                    <Button x:Name="BtnTogglePlaylist" Content="☰ Playlist" 
+                            HorizontalAlignment="Left" VerticalAlignment="Top" 
+                            Margin="15" Padding="10,6" Background="#FFFFFF" Foreground="#2C3E50" 
+                            BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" Click="BtnTogglePlaylist_Click">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </Grid>
+            </Border>
 
+            <!-- Modern Styled Timeline Slider -->
             <Slider Grid.Row="1" x:Name="TimelineSlider"
                     Minimum="0" Maximum="1" 
-                    Margin="10,5,10,5"
+                    Margin="10,0,10,15"
+                    Height="24"
                     Thumb.DragStarted="TimelineSlider_DragStarted"
                     Thumb.DragCompleted="TimelineSlider_DragCompleted"/>
 
-            <Grid x:Name="ControlButtons" Grid.Row="2" HorizontalAlignment="Center" Margin="0,10,0,20">
+            <!-- Professional Player Control Bar -->
+            <Grid x:Name="ControlButtons" Grid.Row="2" HorizontalAlignment="Center" Margin="0,0,0,10">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
@@ -107,11 +125,49 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="0" Content="⏮" Click="Previous_Click" Width="50" Margin="5" Background="#333" Foreground="White"/>
-                <Button Grid.Column="1" x:Name="BtnPlay" Content="⏵" Click="Play_Click" Width="60" Height="40" FontSize="20" Margin="5" Background="#007ACC" Foreground="White"/>
-                <Button Grid.Column="2" Content="⏸" Click="Pause_Click" Width="50" Margin="5" Background="#333" Foreground="White"/>
-                <Button Grid.Column="3" Content="⏹" Click="Stop_Click" Width="50" Margin="5" Background="#333" Foreground="White"/>
-                <Button Grid.Column="4" Content="⏭" Click="Next_Click" Width="50" Margin="5" Background="#333" Foreground="White"/>
+                <!-- Previous Button (Matching reference icon layout: Bar + Left Arrow) -->
+                <Button Grid.Column="0" Click="Previous_Click" Width="46" Height="46" Margin="6" Background="#FFFFFF" Foreground="#2C3E50" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="23">
+                                <Path Data="M 12,12 L 15,12 L 15,34 L 12,34 Z M 32,12 L 17,23 L 32,34 Z" Fill="#2C3E50" Width="18" Height="18" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+                <!-- Play Button (Matching reference icon layout: Play Triangle) -->
+                <Button Grid.Column="1" x:Name="BtnPlay" Click="Play_Click" Width="46" Height="46" Margin="6" Background="#FFFFFF" Foreground="#2C3E50" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="23">
+                                <Path Data="M 14,10 L 36,23 L 14,36 Z" Fill="#2C3E50" Width="18" Height="18" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2,0,0,0"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+                <!-- Pause Button (Matching reference icon layout: Two Parallel Bars) -->
+                <Button Grid.Column="3" Click="Pause_Click" Width="46" Height="46" Margin="6" Background="#FFFFFF" Foreground="#2C3E50" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="23">
+                                <Path Data="M 14,12 L 18,12 C 19,12 19,12 19,13 L 19,33 C 19,34 19,34 18,34 L 14,34 C 13,34 13,34 13,33 L 13,13 C 13,12 13,12 14,12 Z M 28,12 L 32,12 C 33,12 33,12 33,13 L 33,33 C 33,34 33,34 32,34 L 28,34 C 27,34 27,34 27,33 L 27,13 C 27,12 27,12 28,12 Z" Fill="#2C3E50" Width="16" Height="16" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+                <!-- Next Button (Matching reference icon layout: Right Arrow + Bar) -->
+                <Button Grid.Column="4" Click="Next_Click" Width="46" Height="46" Margin="6" Background="#FFFFFF" Foreground="#2C3E50" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="23">
+                                <Path Data="M 14,12 L 29,23 L 14,34 Z M 31,12 L 34,12 L 34,34 L 31,34 Z" Fill="#2C3E50" Width="18" Height="18" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
             </Grid>
         </Grid>
     </Grid>

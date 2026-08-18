@@ -172,7 +172,11 @@
                             <TextBox Text="{Binding Scrum.AssignByUID, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" MaxLength="6" Style="{StaticResource SmallFieldStyle}" Grid.Row="3" Grid.Column="0"/>
 
                             <TextBlock Grid.Row="2" Grid.Column="1" Text="Assign For UID" Foreground="#555555" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                            <TextBox Text="{Binding Scrum.AssignForUID, UpdateSourceTrigger=PropertyChanged}" MaxLength="6" Style="{StaticResource SmallFieldStyle}" Grid.Row="3" Grid.Column="1"/>
+                            <ComboBox ItemsSource="{Binding AvailableUsers}" 
+                                      DisplayMemberPath="DisplayText"
+                                      SelectedValuePath="UID"
+                                      SelectedValue="{Binding Scrum.AssignForUID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                      Style="{StaticResource SmallFieldStyle}" Grid.Row="3" Grid.Column="1"/>
 
                             <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Text="Assign By Description" Foreground="#555555" FontWeight="SemiBold" Margin="0,0,0,5"/>
                             <TextBox Text="{Binding Scrum.AssignByDesc, UpdateSourceTrigger=PropertyChanged}" MaxLength="100" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Height="55" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Margin="0,0,20,15"/>

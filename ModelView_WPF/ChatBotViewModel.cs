@@ -10,52 +10,65 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Windows.Input;
 using Model_WPF;
 using ModelView_WPF.Helpers;
 
 namespace ModelView_WPF
 {
-    // ViewModel implementation for ChatBox
     public class ChatBotViewModel : INotifyPropertyChanged
     {
         private static readonly HttpClient _httpClient = new HttpClient();
         public ObservableCollection<ChatMessageViewModel> Messages { get; set; }
 
-        // Field to store the received UID
         private string _uid;
 
-        // Default constructor
+        private bool _isReplying;
+        public bool IsReplying
+        {
+            get => _isReplying;
+            set { _isReplying = value; OnPropertyChanged(); OnPropertyChanged("ReplyContainerVisibility"); }
+        }
+
+        private string _replyingToMessage;
+        public string ReplyingToMessage
+        {
+            get => _replyingToMessage;
+            set { _replyingToMessage = value; OnPropertyChanged(); }
+        }
+
+        public Visibility ReplyContainerVisibility => IsReplying ? Visibility.Visible : Visibility.Collapsed;
+
+        public ICommand CancelReplyCommand => new RelayCommand(o =>
+        {
+            IsReplying = false;
+            ReplyingToMessage = string.Empty;
+        });
+
         public ChatBotViewModel()
         {
             Messages = new ObservableCollection<ChatMessageViewModel>();
 
-            // Localhost self-signed SSL certificate error bypass handler (Fixes: SSL Connection Could Not Be Established)
             var handler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
             };
 
-            // Re-initialize HttpClient with the handler and ApiSettings.BaseUrl
             var client = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
-            // Assign to static field if needed or use instance-level setup. Since _httpClient is static, let's assign its base address or update implementation safely:
-            // (To keep logic identical, we configure the base address using ApiSettings)
             if (_httpClient.BaseAddress == null)
             {
                 _httpClient.BaseAddress = new Uri(ApiSettings.BaseUrl);
             }
         }
 
-        // Constructor to receive UID and load history automatically
         public ChatBotViewModel(string uid) : this()
         {
             _uid = uid;
-
-            // Trigger history loading
             _ = LoadChatHistory();
         }
 
-        // Method to load chat history from database via API
         public async Task LoadChatHistory()
         {
             try
@@ -73,15 +86,45 @@ namespace ModelView_WPF
                         foreach (var msg in history)
                         {
                             bool isMine = (msg.UID == _uid);
-                            Messages.Add(new ChatMessageViewModel
+                            var msgVm = new ChatMessageViewModel
                             {
+                                Id = msg.AssignID, // AssignID ব্যবহার করা হলো
                                 Message = msg.Chat,
                                 IsMyMessage = isMine,
                                 StatusText = "",
                                 DateSeparator = "",
-                                // নিজের মেসেজ হলে "You" আর অন্যের মেসেজ হলে API থেকে আসা ইউজারের আসল নাম দেখাবে
-                                SenderInfo = isMine ? "You" : msg.SenderName
-                            });
+                                SenderInfo = isMine ? "You" : msg.SenderName,
+                                ReplyText = null
+                            };
+
+                            msgVm.OnReplyRequested = (m) =>
+                            {
+                                IsReplying = true;
+                                ReplyingToMessage = m.Message;
+                            };
+
+                            msgVm.OnDeleteForMeRequested = (m) =>
+                            {
+                                Messages.Remove(m);
+                            };
+
+                            msgVm.OnDeleteForEveryoneRequested = async (m) =>
+                            {
+                                Messages.Remove(m);
+                                if (m.Id > 0)
+                                {
+                                    try
+                                    {
+                                        await _httpClient.DeleteAsync($"{ApiSettings.ChatBotBaseUrl}/{m.Id}");
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine("Delete API Error: " + ex.Message);
+                                    }
+                                }
+                            };
+
+                            Messages.Add(msgVm);
                         }
                     }
                 }
@@ -92,30 +135,72 @@ namespace ModelView_WPF
             }
         }
 
-        // Add a new message to the list and send to API
         public async Task AddMessage(string text, bool isMyMessage, string status = "Sent", string dateSeparator = "")
         {
-            // 1. Add to UI
-            Messages.Add(new ChatMessageViewModel
+            string currentReplyText = IsReplying ? ReplyingToMessage : null;
+
+            var newMsgVm = new ChatMessageViewModel
             {
                 Message = text,
                 IsMyMessage = isMyMessage,
                 StatusText = status,
                 DateSeparator = dateSeparator,
-                SenderInfo = "You" // নিজের পাঠানো মেসেজের ওপর "You" দেখাবে
-            });
+                SenderInfo = "You",
+                ReplyText = currentReplyText
+            };
 
-            // 2. Send to API (if it's my message)
+            // Reset reply state after sending
+            IsReplying = false;
+            ReplyingToMessage = string.Empty;
+
+            newMsgVm.OnReplyRequested = (m) =>
+            {
+                IsReplying = true;
+                ReplyingToMessage = m.Message;
+            };
+
+            newMsgVm.OnDeleteForMeRequested = (m) =>
+            {
+                Messages.Remove(m);
+            };
+
+            newMsgVm.OnDeleteForEveryoneRequested = async (m) =>
+            {
+                Messages.Remove(m);
+                if (m.Id > 0)
+                {
+                    try
+                    {
+                        await _httpClient.DeleteAsync($"{ApiSettings.ChatBotBaseUrl}/{m.Id}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Delete API Error: " + ex.Message);
+                    }
+                }
+            };
+
+            Messages.Add(newMsgVm);
+
             if (isMyMessage)
             {
                 try
                 {
-                    // Include the received UID in the payload to be saved in the database
                     var chatData = new { uid = _uid, chat = text };
                     string json = JsonSerializer.Serialize(chatData);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    await _httpClient.PostAsync(ApiSettings.ChatBotBaseUrl, content);
+                    var response = await _httpClient.PostAsync(ApiSettings.ChatBotBaseUrl, content);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseString = await response.Content.ReadAsStringAsync();
+                        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                        var createdMsg = JsonSerializer.Deserialize<ChatMessageDto>(responseString, options);
+                        if (createdMsg != null && createdMsg.AssignID > 0)
+                        {
+                            newMsgVm.Id = createdMsg.AssignID; // ব্যাকএন্ড থেকে আসা আসল AssignID এখানে সেট করা হলো
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -131,9 +216,11 @@ namespace ModelView_WPF
         }
     }
 
-    // DTO to match API response containing SenderName and UID
     public class ChatMessageDto
     {
+        [JsonPropertyName("assignID")]
+        public int AssignID { get; set; } // ব্যাকএন্ডের AssignID এর সাথে ম্যাপ করা হলো
+
         [JsonPropertyName("uid")]
         public string UID { get; set; }
 
@@ -147,10 +234,11 @@ namespace ModelView_WPF
         public DateTime EntryDate { get; set; }
     }
 
-    // Helper class to represent individual message properties
     public class ChatMessageViewModel
     {
-        // Map the 'chat' JSON field from your API to the 'Message' property
+        [JsonPropertyName("assignID")]
+        public int Id { get; set; } // ভিউ-মডেলের Id প্রপার্টি
+
         [JsonPropertyName("chat")]
         public string Message { get; set; }
 
@@ -159,7 +247,59 @@ namespace ModelView_WPF
         public string DateSeparator { get; set; }
         public string SenderInfo { get; set; }
 
-        public Visibility DateVisibility => string.IsNullOrEmpty(DateSeparator) ? Visibility.Collapsed : Visibility.Visible;
+        // Property to hold the replied message text inside the bubble
+        private string _replyText;
+        public string ReplyText
+        {
+            get => _replyText;
+            set { _replyText = value; }
+        }
+
+        public Visibility ReplyPreviewVisibility => string.IsNullOrEmpty(ReplyText) ? Visibility.Collapsed : Visibility.Visible;
+
+        public Action<ChatMessageViewModel> OnReplyRequested { get; set; }
+        public Action<ChatMessageViewModel> OnDeleteForMeRequested { get; set; }
+        public Action<ChatMessageViewModel> OnDeleteForEveryoneRequested { get; set; }
+
+        public ICommand OpenLinkCommand => new RelayCommand(o =>
+        {
+            string url = o as string;
+            if (!string.IsNullOrEmpty(url))
+            {
+                try
+                {
+                    Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error opening link: " + ex.Message);
+                }
+            }
+        });
+
+        public ICommand ReplyCommand => new RelayCommand(o =>
+        {
+            OnReplyRequested?.Invoke(this);
+        });
+
+        public ICommand CopyCommand => new RelayCommand(o =>
+        {
+            if (!string.IsNullOrEmpty(Message))
+            {
+                Clipboard.SetText(Message);
+            }
+        });
+
+        public ICommand DeleteForMeCommand => new RelayCommand(o =>
+        {
+            OnDeleteForMeRequested?.Invoke(this);
+        });
+
+        public ICommand DeleteForEveryoneCommand => new RelayCommand(o =>
+        {
+            OnDeleteForEveryoneRequested?.Invoke(this);
+        });
+
         public HorizontalAlignment Alignment => IsMyMessage ? HorizontalAlignment.Right : HorizontalAlignment.Left;
         public Brush BubbleColor => IsMyMessage ?
             new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6264A7")) :

@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using MessageBox = System.Windows.MessageBox;
 using MessageBoxButton = System.Windows.MessageBoxButton;
 using MessageBoxImage = System.Windows.MessageBoxImage;
+using System.Linq;
 
 namespace View_WPF
 {
@@ -69,9 +70,31 @@ namespace View_WPF
 
                 if (isAuthenticated)
                 {
-                    // Open Main_Accountsfrm if the password is correct
-                    Main_Accountsfrm accountsForm = new Main_Accountsfrm(_loggedInUID);
-                    accountsForm.Show();
+                    Main_Accountsfrm accountsForm = null;
+
+                    foreach (Window window in System.Windows.Application.Current.Windows)
+                    {
+                        if (window is Main_Accountsfrm existingForm)
+                        {
+                            accountsForm = existingForm;
+                            break;
+                        }
+                    }
+
+                    if (accountsForm != null)
+                    {
+                        if (accountsForm.WindowState == WindowState.Minimized)
+                        {
+                            accountsForm.WindowState = WindowState.Normal;
+                        }
+                        accountsForm.Show();
+                        accountsForm.Activate();
+                    }
+                    else
+                    {
+                        accountsForm = new Main_Accountsfrm(_loggedInUID);
+                        accountsForm.Show();
+                    }
 
                     // Set custom property to true instead of DialogResult to bypass WPF Exception
                     this.IsLoginSuccess = true;

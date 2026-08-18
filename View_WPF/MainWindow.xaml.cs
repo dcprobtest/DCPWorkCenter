@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Controls;
@@ -21,6 +25,12 @@ namespace View_WPF
 
         // Base URL for API
         private readonly string apiBaseUrl = "https://localhost:7073/";
+
+        private frmClass_ClassPlayer classPlayerWindow = null;
+        private frmAdmin_DocInfo docManagerWindow = null;
+        private Main_Adminfrm adminFormsWindow = null;
+        private Main_Classfrm classFormsWindow = null;
+        private Main_ScrumWindow scrumWindow = null;
 
         public MainWindow()
         {
@@ -87,13 +97,28 @@ namespace View_WPF
 
         private void btnVideoClass_Click(object sender, RoutedEventArgs e)
         {
-            // Student (_userRole == 3) and Admin (_userRole == 1) can access Video Class
             try
             {
-                frmClass_ClassPlayer classPlayer = new frmClass_ClassPlayer(_loggedInUID);
-                this.Hide();
-                classPlayer.Closed += (s, args) => { this.Show(); };
-                classPlayer.Show();
+                if (classPlayerWindow == null || !IsWindowOpen(classPlayerWindow))
+                {
+                    classPlayerWindow = new frmClass_ClassPlayer(_loggedInUID);
+                    classPlayerWindow.Closed += (s, args) =>
+                    {
+                        classPlayerWindow = null;
+                        this.Show();
+                    };
+                    this.Hide();
+                    classPlayerWindow.Show();
+                }
+                else
+                {
+                    if (classPlayerWindow.WindowState == WindowState.Minimized)
+                    {
+                        classPlayerWindow.WindowState = WindowState.Normal;
+                    }
+                    classPlayerWindow.Show();
+                    classPlayerWindow.Activate();
+                }
             }
             catch (Exception ex)
             {
@@ -104,13 +129,28 @@ namespace View_WPF
 
         private void btnFileManager_Click(object sender, RoutedEventArgs e)
         {
-            // Student (_userRole == 3) and Admin (_userRole == 1) can access File Manager
             try
             {
-                frmAdmin_DocInfo docManager = new frmAdmin_DocInfo(_loggedInUID);
-                this.Hide();
-                docManager.Closed += (s, args) => { this.Show(); };
-                docManager.Show();
+                if (docManagerWindow == null || !IsWindowOpen(docManagerWindow))
+                {
+                    docManagerWindow = new frmAdmin_DocInfo(_loggedInUID);
+                    docManagerWindow.Closed += (s, args) =>
+                    {
+                        docManagerWindow = null;
+                        this.Show();
+                    };
+                    this.Hide();
+                    docManagerWindow.Show();
+                }
+                else
+                {
+                    if (docManagerWindow.WindowState == WindowState.Minimized)
+                    {
+                        docManagerWindow.WindowState = WindowState.Normal;
+                    }
+                    docManagerWindow.Show();
+                    docManagerWindow.Activate();
+                }
             }
             catch (Exception ex)
             {
@@ -129,10 +169,26 @@ namespace View_WPF
 
             try
             {
-                Main_Adminfrm adminForms = new Main_Adminfrm(_loggedInUID, _loggedInName, _userRole);
-                this.Hide();
-                adminForms.Closed += (s, args) => { this.Show(); };
-                adminForms.Show();
+                if (adminFormsWindow == null || !IsWindowOpen(adminFormsWindow))
+                {
+                    adminFormsWindow = new Main_Adminfrm(_loggedInUID, _loggedInName, _userRole);
+                    adminFormsWindow.Closed += (s, args) =>
+                    {
+                        adminFormsWindow = null;
+                        this.Show();
+                    };
+                    this.Hide();
+                    adminFormsWindow.Show();
+                }
+                else
+                {
+                    if (adminFormsWindow.WindowState == WindowState.Minimized)
+                    {
+                        adminFormsWindow.WindowState = WindowState.Normal;
+                    }
+                    adminFormsWindow.Show();
+                    adminFormsWindow.Activate();
+                }
             }
             catch (Exception ex)
             {
@@ -151,10 +207,26 @@ namespace View_WPF
 
             try
             {
-                Main_Classfrm classForms = new Main_Classfrm(_loggedInUID);
-                this.Hide();
-                classForms.Closed += (s, args) => { this.Show(); };
-                classForms.Show();
+                if (classFormsWindow == null || !IsWindowOpen(classFormsWindow))
+                {
+                    classFormsWindow = new Main_Classfrm(_loggedInUID);
+                    classFormsWindow.Closed += (s, args) =>
+                    {
+                        classFormsWindow = null;
+                        this.Show();
+                    };
+                    this.Hide();
+                    classFormsWindow.Show();
+                }
+                else
+                {
+                    if (classFormsWindow.WindowState == WindowState.Minimized)
+                    {
+                        classFormsWindow.WindowState = WindowState.Normal;
+                    }
+                    classFormsWindow.Show();
+                    classFormsWindow.Activate();
+                }
             }
             catch (Exception ex)
             {
@@ -242,16 +314,37 @@ namespace View_WPF
 
             try
             {
-                Main_ScrumWindow scrumWindow = new Main_ScrumWindow(_loggedInUID);
-                this.Hide();
-                scrumWindow.Closed += (s, args) => { this.Show(); };
-                scrumWindow.Show();
+                if (scrumWindow == null || !IsWindowOpen(scrumWindow))
+                {
+                    scrumWindow = new Main_ScrumWindow(_loggedInUID);
+                    scrumWindow.Closed += (s, args) =>
+                    {
+                        scrumWindow = null;
+                        this.Show();
+                    };
+                    this.Hide();
+                    scrumWindow.Show();
+                }
+                else
+                {
+                    if (scrumWindow.WindowState == WindowState.Minimized)
+                    {
+                        scrumWindow.WindowState = WindowState.Normal;
+                    }
+                    scrumWindow.Show();
+                    scrumWindow.Activate();
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error opening Scrum Window: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 this.Show();
             }
+        }
+
+        private bool IsWindowOpen(Window window)
+        {
+            return System.Windows.Application.Current.Windows.Cast<Window>().Any(w => w == window);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

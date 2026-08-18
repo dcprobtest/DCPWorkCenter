@@ -77,6 +77,7 @@ namespace ModelView_WPF.Helpers
         public static string GetEmployeeInfoUrl() => $"{BaseUrl}/api/Data/GetEmployeeInfo";
         public static string CreateUserDocRequestUrl() => $"{BaseUrl}/api/Data/CreateUserDocRequest";
         public static string SaveUserUrl() => $"{BaseUrl}/api/Data/SaveUser";
+        public static string GetUsersUrl => $"{BaseUrl}/api/Data/GetUsers";
         public static string LoginUrl() => $"{BaseUrl}/api/Data/Login";
 
         // মেথড হিসেবে অন করার জন্য () যুক্ত করা হয়েছে
@@ -84,6 +85,7 @@ namespace ModelView_WPF.Helpers
         public static string GetDepartmentsUrl => $"{BaseUrl}/api/Data/GetDepartments";
         public static string GetDesignationsUrl => $"{BaseUrl}/api/Data/GetDesignations";
         public static string ClassFocusMonitorUrl() => $"{BaseUrl}/api/ClassFocusMonitor";
+        public static string UserDropdownUrl => $"{BaseUrl}/api/AssignmentScrum/GetAvailableUsers";
 
         public static string GetAssignedVideosUrl(string uid) => $"{BaseUrl}/api/Data/GetAssignedVideos/{uid}";
     }
