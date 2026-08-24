@@ -1,10 +1,11 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace View_WPF.Model_WPF
 {
-    public class ClassVideoTextModel
+    public class ClassVideoTextModel : INotifyPropertyChanged
     {
-        // API এবং Database এর সাথে মিল রেখে string থেকে int করা হলো
         public int ClassID { get; set; }
 
         public string SectionID { get; set; }
@@ -13,10 +14,9 @@ namespace View_WPF.Model_WPF
 
         public string ClassContent { get; set; }
 
-        // --- নতুন যোগ করা প্রপার্টি ---
-        public string ClassPath { get; set; } // ভিডিওর লোকাল পাথ এখানে থাকবে
+        public string ClassPath { get; set; }
 
-        public string EntryByUID { get; set; } // কে এন্ট্রি দিচ্ছে তার আইডি
+        public string EntryByUID { get; set; }
 
         public DateTime? EntryDate { get; set; }
 
@@ -24,9 +24,19 @@ namespace View_WPF.Model_WPF
 
         public DateTime? EndDate { get; set; }
 
-        public DateTime? LastUpdate { get; set; } // ডাটাবেস ট্র্যাকিং এর জন্য
+        public DateTime? LastUpdate { get; set; }
 
-        // Database এ bit টাইপ হওয়ায় এখানে bool করা হলো যাতে JSON ঠিকমতো কনভার্ট হয়
         public bool Activate { get; set; }
+
+        private bool _isSelected;
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set { _isSelected = value; OnPropertyChanged(); }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string name = null) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }
