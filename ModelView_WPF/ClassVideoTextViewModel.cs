@@ -26,7 +26,7 @@ namespace View_WPF.ModelView_WPF
         private ClassVideoTextModel _classVideo;
         private bool _isActive;
         private string _selectedFileSourcePath;
-        private ClassVideoTextModel _selectedItemInGrid; // Used for selecting an item from the grid
+        private ClassVideoTextModel _selectedItemInGrid;
 
         public ObservableCollection<ClassSubject> SubjectList { get; set; } = new ObservableCollection<ClassSubject>();
         public ObservableCollection<ClassSection> SectionList { get; set; } = new ObservableCollection<ClassSection>();
@@ -57,7 +57,6 @@ namespace View_WPF.ModelView_WPF
             }
         }
 
-        // Selected row from the DataGrid will be captured in this property
         public ClassVideoTextModel SelectedItemInGrid
         {
             get => _selectedItemInGrid;
@@ -66,14 +65,13 @@ namespace View_WPF.ModelView_WPF
 
         public ClassVideoTextViewModel(string uid)
         {
-            // Localhost self-signed SSL certificate error bypass handler setup
             var handler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
             };
 
-            // HttpClient configuration updated with ApiSettings.BaseUrl
             _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
+            _httpClient.Timeout = TimeSpan.FromMinutes(30);
 
             InitializeClassVideo();
 
@@ -85,11 +83,9 @@ namespace View_WPF.ModelView_WPF
             LoadSubjects();
             LoadClassVideos();
 
-            // Existing Commands
             SaveCommand = new RelayCommand(async (obj) => await ExecuteSave());
             BrowseCommand = new RelayCommand((obj) => ExecuteBrowse());
 
-            // --- New Commands ---
             AddCommand = new RelayCommand((obj) => ResetForm());
             EditCommand = new RelayCommand((obj) => ExecuteEdit());
             DeleteFileCommand = new RelayCommand(async (obj) => await ExecuteDelete());
@@ -213,7 +209,7 @@ namespace View_WPF.ModelView_WPF
         private void ExecuteBrowse()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Video files (*.mp4;*.wmv;*.avi)|*.mp4;*.wmv;*.avi";
+            openFileDialog.Filter = "All Video files (*.*)|*.*|Video files (*.mp4;*.wmv;*.avi;*.mkv;*.mov)|*.mp4;*.wmv;*.avi;*.mkv;*.mov";
             if (openFileDialog.ShowDialog() == true)
             {
                 _selectedFileSourcePath = openFileDialog.FileName;
@@ -223,47 +219,54 @@ namespace View_WPF.ModelView_WPF
 
         private async Task ExecuteSave()
         {
-            if (SelectedSubject == null || SelectedSection == null || (string.IsNullOrEmpty(_selectedFileSourcePath) && string.IsNullOrEmpty(ClassVideo.ClassPath)))
+            if (SelectedSubject == null || SelectedSection == null || string.IsNullOrEmpty(_selectedFileSourcePath))
             {
-                MessageBox.Show("Please select Subject, Section and Video File.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Please select Subject, Section and a Video File.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             try
             {
-                if (!string.IsNullOrEmpty(_selectedFileSourcePath))
+                using (var formData = new MultipartFormDataContent())
                 {
-                    string dateStr = DateTime.Now.ToString("ddMMMyyyy");
-                    string fileName = $"{SelectedSubject.SubjectCode}_{SelectedSubject.SubjectDesc}_{ClassVideo.ClassID}_{dateStr}{Path.GetExtension(_selectedFileSourcePath)}";
-                    string rootPath = @"C:\DCP_Videos";
-                    string targetPath = Path.Combine(rootPath, SelectedSubject.SubjectDesc, SelectedSection.SectionDesc);
+                    var fileStream = new FileStream(_selectedFileSourcePath, FileMode.Open, FileAccess.Read);
+                    var streamContent = new StreamContent(fileStream);
 
-                    if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
-                    string fullPath = Path.Combine(targetPath, fileName);
+                    streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream");
 
-                    File.Copy(_selectedFileSourcePath, fullPath, true);
-                    ClassVideo.ClassPath = fullPath;
-                }
+                    formData.Add(streamContent, "File", Path.GetFileName(_selectedFileSourcePath));
 
-                ClassVideo.LastUpdate = DateTime.Now;
+                    formData.Add(new StringContent(ClassVideo.ClassID.ToString()), "ClassID");
+                    formData.Add(new StringContent(ClassVideo.ClassContent ?? ""), "ClassContent");
+                    formData.Add(new StringContent(SelectedSection.SectionId.ToString()), "SectionId");
+                    formData.Add(new StringContent(SelectedSubject.SubjectCode ?? ""), "SubjectCode");
+                    formData.Add(new StringContent(SelectedSubject.SubjectDesc ?? ""), "SubjectDesc");
+                    formData.Add(new StringContent(SelectedSection.SectionDesc ?? ""), "SectionDesc");
+                    formData.Add(new StringContent(ClassVideo.EntryByUID ?? ""), "EntryByUID");
+                    formData.Add(new StringContent(ClassVideo.Activate.ToString()), "Activate");
 
-                var json = JsonConvert.SerializeObject(ClassVideo);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await _httpClient.PostAsync(ApiSettings.SaveClassVideoUrl(), content);
+                    HttpResponseMessage response = await _httpClient.PostAsync("api/Data/UploadAndSaveVideo", formData);
 
-                if (response.IsSuccessStatusCode)
-                {
-                    MessageBox.Show("Class Video Saved Successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                    ResetForm();
-                    LoadClassVideos();
-                }
-                else
-                {
-                    string errorMsg = await response.Content.ReadAsStringAsync();
-                    MessageBox.Show($"API Error: {errorMsg}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show("Video uploaded and path saved to database successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        ResetForm();
+                        LoadClassVideos();
+                    }
+                    else
+                    {
+                        string errorMsg = await response.Content.ReadAsStringAsync();
+                        // ব্যাকএন্ড থেকে আসা সম্পূর্ণ আসল এরর মেসেজটি এখানে পপআপে দেখাবে
+                        MessageBox.Show($"API Error: {errorMsg}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
             }
-            catch (Exception ex) { MessageBox.Show($"Error: {ex.Message}", "Operation Error", MessageBoxButton.OK, MessageBoxImage.Error); }
+            catch (Exception ex)
+            {
+                // ক্লায়েন্ট সাইডের কোনো এক্সেপশন বা নেটওয়ার্ক ফেইলিয়র হলে তার বিস্তারিত কারণ দেখাবে
+                string detailedError = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                MessageBox.Show($"Operation Error: {detailedError}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ExecuteEdit()
@@ -273,7 +276,6 @@ namespace View_WPF.ModelView_WPF
                 ClassVideo = SelectedItemInGrid;
                 IsActive = ClassVideo.Activate;
 
-                // Since SubjectCode is not directly in the model, extracting SubjectCode from SectionList using SectionID
                 var section = SectionList.FirstOrDefault(s => s.SectionId == ClassVideo.SectionID);
                 if (section != null)
                 {

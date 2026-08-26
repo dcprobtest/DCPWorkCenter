@@ -7,7 +7,7 @@ namespace ModelView_WPF.Helpers
     {
         // TrimEnd('/') এর মাধ্যমে ডাবল স্ল্যাশ (//) এরর ফিক্স করা হয়েছে
         public static string BaseUrl =>
-            (ConfigurationManager.AppSettings["ApiBaseUrl"] ?? "https://localhost:7073").TrimEnd('/');
+            (ConfigurationManager.AppSettings["ApiBaseUrl"] ?? "http://74.208.227.170:8050/").TrimEnd('/');
 
         public static string SaveUserDocUrl() => $"{BaseUrl}/api/Data/SaveUserDoc";
         public static string GetEmployeeDetailUrl() => $"{BaseUrl}/api/Data/GetEmployeeDetail/";
