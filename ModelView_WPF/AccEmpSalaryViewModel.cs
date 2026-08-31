@@ -1,5 +1,5 @@
 ﻿using Model_WPF;
-using ModelView_WPF.Helpers; // Namespace for ApiSettings class
+using ModelView_WPF.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -31,8 +31,12 @@ namespace ModelView_WPF
 
         public AccEmpSalaryViewModel()
         {
-            // Using ApiSettings.BaseUrl directly in HttpClient
-            _httpClient = new HttpClient { BaseAddress = new Uri(ApiSettings.BaseUrl) };
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+
+            _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
             SalaryList = new ObservableCollection<AccEmpSalaryModel>();
             ExpSubCodeList = new ObservableCollection<AccExpBubModel>();
@@ -61,7 +65,10 @@ namespace ModelView_WPF
                 _monthID = value;
                 OnPropertyChanged();
                 UpdateExpDate();
-                SelectedSalary.MonthID = value;
+                if (SelectedSalary != null)
+                {
+                    SelectedSalary.MonthID = value;
+                }
             }
         }
 
@@ -87,7 +94,6 @@ namespace ModelView_WPF
         {
             try
             {
-                // Root endpoint used from ApiSettings
                 var response = await _httpClient.GetFromJsonAsync<List<AccExpBubModel>>(ApiSettings.AccEmpSalaryGetExpSubCodesUrl);
                 if (response != null)
                 {
@@ -104,7 +110,6 @@ namespace ModelView_WPF
         {
             try
             {
-                // Root endpoint used from ApiSettings
                 var salaries = await _httpClient.GetFromJsonAsync<ObservableCollection<AccEmpSalaryModel>>(ApiSettings.AccEmpSalaryBaseUrl);
                 if (salaries != null)
                 {
@@ -128,11 +133,8 @@ namespace ModelView_WPF
 
         private void ExecuteAdd(object obj)
         {
-            // Identity Column is used, so no need to generate ID manually
             SelectedSalary = new AccEmpSalaryModel();
             MonthID = string.Empty;
-
-            // Notify to refresh UI
             OnPropertyChanged(nameof(SelectedSalary));
         }
 
@@ -144,8 +146,6 @@ namespace ModelView_WPF
             {
                 HttpResponseMessage response;
 
-                // For new data, ID is usually 0. 
-                // Therefore, 0 is treated as a new record (POST) and more than 0 is an update (PUT).
                 if (SelectedSalary.ExpenditurID == 0)
                 {
                     response = await _httpClient.PostAsJsonAsync(ApiSettings.AccEmpSalaryBaseUrl, SelectedSalary);
@@ -185,7 +185,21 @@ namespace ModelView_WPF
 
         private void ExecuteExit(object obj)
         {
-            Application.Current.Windows[0]?.Close();
+            if (obj is Window window)
+            {
+                window.Close();
+            }
+            else
+            {
+                foreach (Window win in Application.Current.Windows)
+                {
+                    if (win.DataContext == this)
+                    {
+                        win.Close();
+                        break;
+                    }
+                }
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

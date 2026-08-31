@@ -39,7 +39,7 @@ namespace View_WPF.ModelView_WPF
         private readonly HttpClient _httpClient;
         private readonly string _apiUrl;
         private List<ClassVideoTextModel> _allVideosMasterList = new List<ClassVideoTextModel>();
-
+        private List<ClassSection> _allSectionsMasterList = new List<ClassSection>();
         private List<GroupUserDto> _allUsersMasterList = new List<GroupUserDto>();
 
         public string EntryByUid { get; set; }
@@ -49,6 +49,23 @@ namespace View_WPF.ModelView_WPF
         {
             get => _subjectList;
             set { _subjectList = value; OnPropertyChanged(); }
+        }
+
+        private ClassSubject _selectedSubject;
+        public ClassSubject SelectedSubject
+        {
+            get => _selectedSubject;
+            set
+            {
+                if (_selectedSubject != value)
+                {
+                    _selectedSubject = value;
+                    OnPropertyChanged();
+
+                    SelectedSection = null;
+                    FilterSectionsBySubject();
+                }
+            }
         }
 
         private ObservableCollection<ClassSection> _sectionList;
@@ -107,6 +124,7 @@ namespace View_WPF.ModelView_WPF
 
         public ICommand SaveCommand { get; }
         public ICommand LoadUsersCommand { get; }
+        public ICommand ExitCommand { get; }
 
         public SubjectWiseSectionAssignViewModel() : this(null) { }
 
@@ -131,6 +149,7 @@ namespace View_WPF.ModelView_WPF
 
             SaveCommand = new RelayCommand(async (obj) => await ExecuteSave());
             LoadUsersCommand = new RelayCommand((obj) => PopulateUserList());
+            ExitCommand = new RelayCommand((obj) => ExecuteExit(obj));
 
             _ = LoadInitialData();
         }
@@ -148,7 +167,7 @@ namespace View_WPF.ModelView_WPF
                 var sections = await _httpClient.GetFromJsonAsync<List<ClassSection>>(ApiSettings.GetSectionsUrl());
                 if (sections != null)
                 {
-                    SectionList = new ObservableCollection<ClassSection>(sections);
+                    _allSectionsMasterList = sections;
                 }
 
                 var groups = await _httpClient.GetFromJsonAsync<List<GroupUserDto>>(ApiSettings.GetGroupUsersUrl());
@@ -168,6 +187,29 @@ namespace View_WPF.ModelView_WPF
             {
                 Console.WriteLine($"Error loading data: {ex.Message}");
             }
+        }
+
+        private void FilterSectionsBySubject()
+        {
+            SectionList.Clear();
+            ClassList.Clear();
+
+            if (SelectedSubject == null || _allSectionsMasterList == null) return;
+
+            var selectedCode = SelectedSubject.SubjectCode?.Trim();
+
+            var filteredSections = _allSectionsMasterList
+                .Where(s => !string.IsNullOrEmpty(s.SubjectCode) &&
+                            s.SubjectCode.Trim() == selectedCode)
+                .ToList();
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                foreach (var section in filteredSections)
+                {
+                    SectionList.Add(section);
+                }
+            });
         }
 
         private void PopulateUserList()
@@ -251,6 +293,25 @@ namespace View_WPF.ModelView_WPF
             }
 
             MessageBox.Show("Assigned Successfully!");
+        }
+
+        private void ExecuteExit(object parameter)
+        {
+            if (parameter is Window window)
+            {
+                window.Close();
+            }
+            else
+            {
+                foreach (Window win in Application.Current.Windows)
+                {
+                    if (win.DataContext == this)
+                    {
+                        win.Close();
+                        break;
+                    }
+                }
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -5,12 +5,13 @@ namespace ModelView_WPF.Helpers
 {
     public static class ApiSettings
     {
-        // TrimEnd('/') এর মাধ্যমে ডাবল স্ল্যাশ (//) এরর ফিক্স করা হয়েছে
         public static string BaseUrl =>
-            (ConfigurationManager.AppSettings["ApiBaseUrl"] ?? "http://74.208.227.170:8050/").TrimEnd('/');
+            (ConfigurationManager.AppSettings["ApiBaseUrl"] ?? "https://localhost:7073").TrimEnd('/');
 
         public static string SaveUserDocUrl() => $"{BaseUrl}/api/Data/SaveUserDoc";
+        public static string DownloadFileByUidAndTypeUrl(string uid, string docType) => $"{BaseUrl}/api/Data/DownloadFileByUidAndType/{uid}/{docType}";
         public static string GetEmployeeDetailUrl() => $"{BaseUrl}/api/Data/GetEmployeeDetail/";
+        public static string GetSubjectCodeUrl() => $"{BaseUrl}/api/Data/GetSubjectCode";
 
         public static string AccEmpSalaryGetExpSubCodesUrl => $"{BaseUrl}/api/AccEmpSalary/GetExpSubCodes";
         public static string AccEmpSalaryBaseUrl => $"{BaseUrl}/api/AccEmpSalary";
@@ -80,7 +81,6 @@ namespace ModelView_WPF.Helpers
         public static string GetUsersUrl => $"{BaseUrl}/api/Data/GetUsers";
         public static string LoginUrl() => $"{BaseUrl}/api/Data/Login";
 
-        // মেথড হিসেবে অন করার জন্য () যুক্ত করা হয়েছে
         public static string LoginSessionInfoUrl() => $"{BaseUrl}/api/LoginSessionInfo";
         public static string GetDepartmentsUrl => $"{BaseUrl}/api/Data/GetDepartments";
         public static string GetDesignationsUrl => $"{BaseUrl}/api/Data/GetDesignations";

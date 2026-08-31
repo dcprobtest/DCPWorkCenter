@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:ModelView_WPF;assembly=ModelView_WPF"
         Title="Class Subject Management" 
-        Height="720" Width="1050"
+        Height="780" Width="600"
         WindowStartupLocation="CenterScreen" 
         Background="#F4F7F9"
         AllowsTransparency="False" 
@@ -28,87 +28,93 @@
             </Style.Triggers>
         </Style>
 
+        <Style x:Key="ModernTextBox" TargetType="TextBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#DADCE0"/>
+            <Setter Property="Padding" Value="8,5"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Height" Value="32"/>
+            <Style.Triggers>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="#6366F1"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#DADCE0"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="DataGrid">
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="DataGridRow">
+            <Setter Property="Height" Value="42"/>
+        </Style>
+
+        <Style TargetType="DataGridCell">
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+
         <Style x:Key="CRUDButtonStyle" TargetType="Button">
-            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Background" Value="White"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Height" Value="38"/>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                </Setter.Value>
+            </Setter>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="Border" CornerRadius="6" Background="{TemplateBinding Background}" BorderThickness="0">
+                        <Border x:Name="Border" CornerRadius="6" Background="{TemplateBinding Background}" BorderThickness="1" BorderBrush="#DADCE0">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Border" Property="Opacity" Value="0.85"/>
+                                <Setter TargetName="Border" Property="Background" Value="#F3F4F6"/>
+                                <Setter TargetName="Border" Property="BorderBrush" Value="#6366F1"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="Border" Property="Opacity" Value="0.7"/>
+                                <Setter TargetName="Border" Property="Background" Value="#E5E7EB"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX="1.04" ScaleY="1.04"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
         </Style>
 
-        <Style x:Key="AddButtonStyle" TargetType="Button" BasedOn="{StaticResource CRUDButtonStyle}">
-            <Setter Property="Background" Value="#10B981"/>
-        </Style>
-        <Style x:Key="SaveButtonStyle" TargetType="Button" BasedOn="{StaticResource CRUDButtonStyle}">
-            <Setter Property="Background" Value="#2563EB"/>
-        </Style>
-        <Style x:Key="DeleteButtonStyle" TargetType="Button" BasedOn="{StaticResource CRUDButtonStyle}">
-            <Setter Property="Background" Value="#E11D48"/>
-        </Style>
-        <Style x:Key="EditButtonStyle" TargetType="Button" BasedOn="{StaticResource CRUDButtonStyle}">
-            <Setter Property="Background" Value="#F59E0B"/>
-        </Style>
-        <Style x:Key="ExitButtonStyle" TargetType="Button" BasedOn="{StaticResource CRUDButtonStyle}">
-            <Setter Property="Background" Value="#475569"/>
-        </Style>
-
-        <Style x:Key="ActivateButtonStyle" TargetType="Button">
-            <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Grid>
-                            <Border x:Name="RainbowBorder" CornerRadius="6" Padding="2">
-                                <Border.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                        <LinearGradientBrush.RelativeTransform>
-                                            <RotateTransform x:Name="Rotate" CenterX="0.5" CenterY="0.5" />
-                                        </LinearGradientBrush.RelativeTransform>
-                                        <GradientStop Color="#FF0000" Offset="0.0"/>
-                                        <GradientStop Color="#FFFF00" Offset="0.2"/>
-                                        <GradientStop Color="#00FF00" Offset="0.4"/>
-                                        <GradientStop Color="#00FFFF" Offset="0.6"/>
-                                        <GradientStop Color="#0000FF" Offset="0.8"/>
-                                        <GradientStop Color="#FF00FF" Offset="1.0"/>
-                                    </LinearGradientBrush>
-                                </Border.Background>
-                                <Border Background="#F3F4F6" CornerRadius="4">
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                            </Border>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <EventTrigger RoutedEvent="Loaded">
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="Rotate" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:3" RepeatBehavior="Forever"/>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+        <Style x:Key="AddButtonStyle" TargetType="Button" BasedOn="{StaticResource CRUDButtonStyle}"/>
+        <Style x:Key="SaveButtonStyle" TargetType="Button" BasedOn="{StaticResource CRUDButtonStyle}"/>
+        <Style x:Key="DeleteButtonStyle" TargetType="Button" BasedOn="{StaticResource CRUDButtonStyle}"/>
+        <Style x:Key="EditButtonStyle" TargetType="Button" BasedOn="{StaticResource CRUDButtonStyle}"/>
+        <Style x:Key="ExitButtonStyle" TargetType="Button" BasedOn="{StaticResource CRUDButtonStyle}"/>
     </Window.Resources>
 
     <Window.RenderTransform>
@@ -154,122 +160,106 @@
 
             <Border x:Name="ContentBorder" Background="White" CornerRadius="18" Padding="20">
                 <Grid x:Name="InternalLayout">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="1*"/>
-                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                    <Grid x:Name="LeftPanel" Grid.Column="0" Margin="0,0,20,0">
+                    <TextBlock Grid.Row="0" Text="Class Subject Directory" FontSize="22" FontWeight="Bold" Foreground="#1F2937" Margin="0,0,0,10"/>
+
+                    <Expander x:Name="expTimeline" Grid.Row="1" Header="Others info" Foreground="#8B5CF6" FontWeight="SemiBold" IsExpanded="False" Margin="0,0,0,15">
+                        <Border Background="White" CornerRadius="8" Padding="15" Margin="0,10,0,10" BorderBrush="#E2E8F0" BorderThickness="1">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Text="Entry By UID" FontSize="11" Foreground="#64748B" Margin="0,0,0,2"/>
+                                <TextBox x:Name="txtEntryByUID" Grid.Row="1" Style="{StaticResource ModernTextBox}" FontWeight="Bold" Margin="0,0,387,10"
+                                         IsReadOnly="True"
+                                         Text="{Binding CurrentSubject.EntryByUid}"/>
+
+                                <TextBlock Grid.Row="2" Text="Entry Date" FontSize="11" Foreground="#64748B" Margin="0,0,0,2"/>
+                                <TextBox x:Name="txtEntryDate" Grid.Row="2" Style="{StaticResource ModernTextBox}" IsReadOnly="True" Background="#F8FAFC" Margin="0,16,309,10"
+                                         Text="{Binding CurrentSubject.EntryDate, StringFormat={}{0:dd-MMM-yyyy}}" Grid.RowSpan="2"/>
+
+                                <TextBlock Grid.Row="8" Text="Last Update" FontSize="11" Foreground="#64748B" Margin="0,0,0,2"/>
+                                <TextBox x:Name="txtLastUpdate" Grid.Row="8" Style="{StaticResource ModernTextBox}" IsReadOnly="True" Background="#F8FAFC"
+                                         Text="{Binding CurrentSubject.LastUpdate, StringFormat={}{0:dd-MMM-yyyy HH:mm}}" Margin="0,16,309,0" Grid.RowSpan="2"/>
+                            </Grid>
+                        </Border>
+                    </Expander>
+
+                    <DataGrid x:Name="dgSubjectList" Grid.Row="2" 
+                              ItemsSource="{Binding SubjectList}" 
+                              SelectedItem="{Binding SelectedSubject, UpdateSourceTrigger=PropertyChanged}"
+                              AutoGenerateColumns="False" IsReadOnly="True" Background="White" 
+                              GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#F3F4F6" HeadersVisibility="Column" 
+                              Margin="0,0,0,15">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Subject Code" Binding="{Binding SubjectCode}" Width="150">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Subject Desc" Binding="{Binding SubjectDesc}" Width="*">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <Grid x:Name="InputForm" Grid.Row="3" Margin="0,0,0,15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="250"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <TextBlock Text="Class Subject Directory" FontSize="22" FontWeight="Bold" Foreground="#1F2937" Margin="0,0,0,15"/>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Subject Code" Foreground="#6B7280" FontSize="11" Margin="0,0,0,5"/>
+                        <TextBox x:Name="txtSubjectCode" Grid.Row="1" Grid.Column="0" 
+                                 Text="{Binding CurrentSubject.SubjectCode, UpdateSourceTrigger=PropertyChanged}" 
+                                 IsReadOnly="True"
+                                 MaxLength="2" Height="40" FontWeight="Bold" HorizontalContentAlignment="Center" Margin="0,0,60,0"/>
 
-                        <DataGrid x:Name="dgSubjectList" Grid.Row="1" 
-                                  ItemsSource="{Binding SubjectList}" 
-                                  SelectedItem="{Binding SelectedSubject, UpdateSourceTrigger=PropertyChanged}"
-                                  AutoGenerateColumns="False" IsReadOnly="True" Background="White" RowHeight="38"
-                                  GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#F3F4F6" HeadersVisibility="Column">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Subject Code" Binding="{Binding SubjectCode}" Width="150" FontWeight="SemiBold"/>
-                                <DataGridTextColumn Header="Subject Desc" Binding="{Binding SubjectDesc}" Width="*"/>
-                            </DataGrid.Columns>
-                        </DataGrid>
-
-                        <Grid x:Name="InputForm" Grid.Row="2" Margin="0,15,0,15">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="160"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-
-                            <TextBlock Text="Subject Code" Foreground="#6B7280" FontSize="11" Margin="0,0,0,5"/>
-                            <TextBox x:Name="txtSubjectCode" Grid.Row="1" 
-                                     Text="{Binding CurrentSubject.SubjectCode, UpdateSourceTrigger=PropertyChanged}" 
-                                     Height="40" FontWeight="Bold"/>
-
-                            <TextBlock Grid.Column="1" Text="Subject Description" Foreground="#6B7280" FontSize="11" Margin="10,0,0,5"/>
-                            <TextBox x:Name="txtSubjectDesc" Grid.Row="1" Grid.Column="1" 
-                                     Text="{Binding CurrentSubject.SubjectDesc, UpdateSourceTrigger=PropertyChanged}" 
-                                     Height="40" Margin="10,0,0,0"/>
-                        </Grid>
-
-                        <UniformGrid x:Name="ugActionButtons" Grid.Row="3" Columns="5" Height="45">
-                            <Button Content="ADD" Style="{StaticResource AddButtonStyle}" Margin="2" Command="{Binding AddCommand}"/>
-                            <Button Content="SAVE" Style="{StaticResource SaveButtonStyle}" Margin="2" Command="{Binding SaveCommand}"/>
-                            <Button Content="DELETE" Style="{StaticResource DeleteButtonStyle}" Margin="2" Command="{Binding DeleteCommand}"/>
-                            <Button Content="EDIT" Style="{StaticResource EditButtonStyle}" Margin="2" Command="{Binding EditCommand}"/>
-                            <Button Content="EXIT" Style="{StaticResource ExitButtonStyle}" Margin="2" Command="{Binding ExitCommand}"/>
-                        </UniformGrid>
+                        <TextBlock Grid.Row="0" Text="Subject Description" Foreground="#6B7280" FontSize="11" Margin="81,0,0,5" Grid.ColumnSpan="2"/>
+                        <TextBox x:Name="txtSubjectDesc" Grid.Row="1" 
+                                 Text="{Binding CurrentSubject.SubjectDesc, UpdateSourceTrigger=PropertyChanged}" 
+                                 IsReadOnly="{Binding IsNotEditable}"
+                                 Height="40" HorizontalContentAlignment="Center" Margin="81,0,60,0" Grid.ColumnSpan="2"/>
                     </Grid>
 
-                    <Border x:Name="RightSidebar" Grid.Column="1" Background="#F9FAFB" CornerRadius="12" Padding="20">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-
-                            <Grid Grid.Row="0" Margin="0,0,0,15">
-                                <TextBlock Text="Entry By (User UID)" Foreground="#6B7280" FontSize="11"/>
-                                <TextBox Text="{Binding CurrentSubject.EntryByUid, UpdateSourceTrigger=PropertyChanged}" 
-                                         Margin="0,18,0,0" Height="35" IsReadOnly="True" Background="#F3F4F6" BorderThickness="0"/>
-                            </Grid>
-
-                            <Grid Grid.Row="1" Margin="0,0,0,20">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <CheckBox IsChecked="{Binding IsActiveChecked}" VerticalAlignment="Center" Margin="0,0,10,0">
-                                    <TextBlock Text="Active" FontWeight="SemiBold" Foreground="#374151"/>
-                                </CheckBox>
-                                <Button Content="Update Status" Grid.Column="1" 
-                                        Style="{StaticResource ActivateButtonStyle}" Height="35" 
-                                        Command="{Binding ToggleStatusCommand}"/>
-                            </Grid>
-
-                            <Expander Grid.Row="2" Header="Scheduling Timeline" Foreground="#6366F1" FontWeight="SemiBold" IsExpanded="True">
-                                <Border Background="White" CornerRadius="10" Padding="15" Margin="0,10,0,0" BorderBrush="#E5E7EB" BorderThickness="1">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-
-                                        <TextBlock Grid.Row="0" Text="Entry Date" FontSize="10" Foreground="Gray"/>
-                                        <TextBox Grid.Row="1" Text="{Binding CurrentSubject.EntryDate, StringFormat='dd-MMM-yyyy', Mode=OneWay}" IsReadOnly="True" Background="#FAFAFA" Margin="0,2,0,10"/>
-
-                                        <TextBlock Grid.Row="2" Text="Start Date" FontSize="10" Foreground="Gray"/>
-                                        <TextBox Grid.Row="3" Text="{Binding CurrentSubject.StartDate, StringFormat='dd-MMM-yyyy', Mode=OneWay}" IsReadOnly="True" Background="#FAFAFA" Margin="0,2,0,10"/>
-
-                                        <TextBlock Grid.Row="4" Text="End Date" FontSize="10" Foreground="Gray"/>
-                                        <TextBox Grid.Row="5" Text="{Binding CurrentSubject.EndDate, StringFormat='dd-MMM-yyyy', Mode=OneWay}" IsReadOnly="True" Background="#FAFAFA" Margin="0,2,0,10"/>
-
-                                        <TextBlock Grid.Row="6" Text="Last Update" FontSize="10" Foreground="Gray"/>
-                                        <TextBox Grid.Row="7" Text="{Binding CurrentSubject.LastUpdate, StringFormat='dd-MMM-yyyy', Mode=OneWay}" IsReadOnly="True" Background="#FAFAFA"/>
-                                    </Grid>
-                                </Border>
-                            </Expander>
-
-                            <TextBlock Text="DCP Work Center System" Grid.Row="3" Foreground="#D1D5DB" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
-                        </Grid>
-                    </Border>
+                    <UniformGrid x:Name="ugActionButtons" Grid.Row="4" Columns="5" Height="45">
+                        <Button Content="ADD" Style="{StaticResource AddButtonStyle}" Margin="2,0" Command="{Binding AddCommand}"/>
+                        <Button Content="SAVE" Style="{StaticResource SaveButtonStyle}" Margin="2,0" Command="{Binding SaveCommand}"/>
+                        <Button Content="DELETE" Style="{StaticResource DeleteButtonStyle}" Margin="2,0" Command="{Binding DeleteCommand}"/>
+                        <Button Content="EDIT" Style="{StaticResource EditButtonStyle}" Margin="2,0" Command="{Binding EditCommand}"/>
+                        <Button Content="EXIT" Style="{StaticResource ExitButtonStyle}" Margin="2,0" Command="{Binding ExitCommand}"/>
+                    </UniformGrid>
                 </Grid>
             </Border>
         </Border>

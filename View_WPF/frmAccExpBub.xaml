@@ -11,7 +11,6 @@
         UseLayoutRounding="True">
 
     <Window.Resources>
-        <!-- Boolean to Visibility Converter: শুরুতে হাইড রাখার জন্য এটি প্রয়োজন -->
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
         <Style x:Key="RainbowButtonStyle" TargetType="Button">
@@ -126,7 +125,7 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <Label Content="ExpSub Code" Foreground="#555" FontWeight="SemiBold"/>
-                                <!-- ReadOnly="True" করা হয়েছে কারণ এটি অটো জেনারেট হবে -->
+                           
                                 <TextBox x:Name="txtExpSubCode" Grid.Column="1" Style="{StaticResource ModernTextBox}" 
                                          MaxLength="4" IsReadOnly="True" Background="#F9F9F9"
                                          Text="{Binding CurrentEntry.ExpSubCode}"/>

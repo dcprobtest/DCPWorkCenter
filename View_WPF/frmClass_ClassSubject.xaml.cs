@@ -42,5 +42,10 @@ namespace View_WPF
 
             this.DataContext = new ClassSubjectViewModel(_uID);
         }
+
+        private void dgSubjectList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }

@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Model_WPF;
 using ModelView_WPF.Helpers;
 
@@ -68,9 +69,24 @@ namespace ModelView_WPF
                         Activate = _selectedSubject.Activate
                     };
                     IsActiveChecked = _selectedSubject.Activate == "1";
+                    IsEditable = false;
                 }
             }
         }
+
+        private bool _isEditable;
+        public bool IsEditable
+        {
+            get => _isEditable;
+            set
+            {
+                _isEditable = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsNotEditable));
+            }
+        }
+
+        public bool IsNotEditable => !IsEditable;
 
         private bool _isActiveChecked;
         public bool IsActiveChecked
@@ -102,13 +118,11 @@ namespace ModelView_WPF
         {
             _receivedUid = uid;
 
-            // Localhost self-signed SSL certificate error bypass handler setup
             var handler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
             };
 
-            // HttpClient configuration updated with ApiSettings.BaseUrl
             _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
             SubjectList = new ObservableCollection<ClassSubject>();
 
@@ -127,7 +141,6 @@ namespace ModelView_WPF
         {
             try
             {
-                // Loading subjects using ApiSettings endpoint
                 var subjects = await _httpClient.GetFromJsonAsync<List<ClassSubject>>(ApiSettings.GetClassSubjectsUrl());
                 if (subjects != null)
                 {
@@ -139,8 +152,39 @@ namespace ModelView_WPF
 
         private void ExecuteAdd()
         {
-            ResetForm();
             SelectedSubject = null;
+            IsEditable = true;
+
+            CurrentSubject = new ClassSubject
+            {
+                SubjectCode = string.Empty,
+                CourseCode = string.Empty,
+                SubjectDesc = string.Empty,
+                EntryDate = DateTime.Now,
+                StartDate = DateTime.Now,
+                EndDate = DateTime.Now.AddMonths(3),
+                Activate = "1",
+                EntryByUid = _receivedUid
+            };
+            IsActiveChecked = false;
+
+            if (SubjectList != null && SubjectList.Count > 0)
+            {
+                var maxCode = SubjectList
+                    .Select(s => s.SubjectCode)
+                    .Where(code => int.TryParse(code, out _))
+                    .Select(code => int.Parse(code))
+                    .DefaultIfEmpty(0)
+                    .Max();
+
+                CurrentSubject.SubjectCode = (maxCode + 1).ToString("D2");
+            }
+            else
+            {
+                CurrentSubject.SubjectCode = "01";
+            }
+
+            OnPropertyChanged(nameof(CurrentSubject));
         }
 
         private void ExecuteEdit()
@@ -151,19 +195,7 @@ namespace ModelView_WPF
                 return;
             }
 
-            CurrentSubject = new ClassSubject
-            {
-                SubjectCode = SelectedSubject.SubjectCode,
-                CourseCode = SelectedSubject.CourseCode,
-                SubjectDesc = SelectedSubject.SubjectDesc,
-                EntryDate = SelectedSubject.EntryDate,
-                StartDate = SelectedSubject.StartDate,
-                EndDate = SelectedSubject.EndDate,
-                EntryByUid = SelectedSubject.EntryByUid,
-                LastUpdate = SelectedSubject.LastUpdate,
-                Activate = SelectedSubject.Activate
-            };
-            IsActiveChecked = CurrentSubject.Activate == "1";
+            IsEditable = true;
         }
 
         private void ExecuteExit()
@@ -180,6 +212,7 @@ namespace ModelView_WPF
 
         private void ExecuteToggleStatus()
         {
+            if (!IsEditable) return;
             IsActiveChecked = !IsActiveChecked;
             MessageBox.Show($"Status updated to: {(IsActiveChecked ? "Active" : "Inactive")}");
         }
@@ -193,16 +226,18 @@ namespace ModelView_WPF
             }
 
             CurrentSubject.LastUpdate = DateTime.Now;
-            CurrentSubject.EntryByUid = _receivedUid;
+            if (string.IsNullOrEmpty(CurrentSubject.EntryByUid))
+            {
+                CurrentSubject.EntryByUid = _receivedUid;
+            }
 
             try
             {
-                // Saving subject using ApiSettings endpoint
                 var response = await _httpClient.PostAsJsonAsync(ApiSettings.SaveClassSubjectUrl(), CurrentSubject);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    MessageBox.Show("Class Subject Saved/Updated Successfully!");
+                    MessageBox.Show("Class Subject Saved Successfully!");
                     await LoadSubjects();
                     ResetForm();
                 }
@@ -232,7 +267,6 @@ namespace ModelView_WPF
             {
                 try
                 {
-                    // Deleting subject using ApiSettings endpoint
                     var response = await _httpClient.DeleteAsync(ApiSettings.DeleteClassSubjectUrl(CurrentSubject.SubjectCode));
 
                     if (response.IsSuccessStatusCode)
@@ -263,10 +297,11 @@ namespace ModelView_WPF
                 EntryDate = DateTime.Now,
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddMonths(3),
-                Activate = "0",
+                Activate = "1",
                 EntryByUid = _receivedUid
             };
             IsActiveChecked = false;
+            IsEditable = false;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

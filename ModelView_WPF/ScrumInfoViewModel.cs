@@ -19,13 +19,10 @@ namespace ModelView_WPF
         private ObservableCollection<ScrumInfoModel> _scrumList;
         private readonly HttpClient _httpClient;
 
-        // Global variable to store the logged-in UID passed from the view
         private string _passedUid = "ADMIN";
 
-        // SignalR client connection global variable
         private HubConnection _hubConnection;
 
-        // Properties bound to the View
         public ScrumInfoModel Scrum
         {
             get => _scrum;
@@ -33,6 +30,7 @@ namespace ModelView_WPF
             {
                 _scrum = value;
                 OnPropertyChanged();
+                CommandManager.InvalidateRequerySuggested();
             }
         }
 
@@ -45,9 +43,9 @@ namespace ModelView_WPF
                 OnPropertyChanged();
                 if (_selectedScrum != null)
                 {
-                    // Map selected list item to form inputs
                     LoadSelectedScrum(_selectedScrum);
                 }
+                CommandManager.InvalidateRequerySuggested();
             }
         }
 
@@ -61,7 +59,6 @@ namespace ModelView_WPF
             }
         }
 
-        // RelayCommands for Buttons
         public ICommand AddCommand { get; }
         public ICommand SaveCommand { get; }
         public ICommand EditCommand { get; }
@@ -69,73 +66,37 @@ namespace ModelView_WPF
 
         public ScrumInfoViewModel()
         {
-            // Localhost self-signed SSL certificate error bypass handler setup
             var handler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
             };
 
-            // HttpClient configuration updated with ApiSettings.BaseUrl
             _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
-            // Initialize model and collection
             Scrum = new ScrumInfoModel();
             ScrumList = new ObservableCollection<ScrumInfoModel>();
 
-            // Initialize commands using RelayCommand from your project
             AddCommand = new RelayCommand(ExecuteAdd);
             SaveCommand = new RelayCommand(ExecuteSave, CanExecuteSave);
             EditCommand = new RelayCommand(ExecuteEdit, CanExecuteEdit);
             ExitCommand = new RelayCommand(ExecuteExit);
 
-            // Default initial values
             ResetForm();
 
-            // Load data asynchronously from API on startup
             _ = LoadDataFromApiAsync();
 
-            // Initialize and start SignalR live connection setup
             InitializeSignalR();
         }
 
-        // Overloaded constructor to receive the Uid from the View
-        public ScrumInfoViewModel(string uid)
+        public ScrumInfoViewModel(string uid) : this()
         {
             if (!string.IsNullOrEmpty(uid))
             {
                 _passedUid = uid;
+                Scrum.EntryByUID = _passedUid;
             }
-
-            // Localhost self-signed SSL certificate error bypass handler setup
-            var handler = new HttpClientHandler
-            {
-                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
-            };
-
-            // HttpClient configuration updated with ApiSettings.BaseUrl
-            _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
-
-            // Initialize model and collection
-            Scrum = new ScrumInfoModel();
-            ScrumList = new ObservableCollection<ScrumInfoModel>();
-
-            // Initialize commands using RelayCommand from your project
-            AddCommand = new RelayCommand(ExecuteAdd);
-            SaveCommand = new RelayCommand(ExecuteSave, CanExecuteSave);
-            EditCommand = new RelayCommand(ExecuteEdit, CanExecuteEdit);
-            ExitCommand = new RelayCommand(ExecuteExit);
-
-            // Default initial values
-            ResetForm();
-
-            // Load data asynchronously from API on startup
-            _ = LoadDataFromApiAsync();
-
-            // Initialize and start SignalR live connection setup
-            InitializeSignalR();
         }
 
-        // Initialize SignalR and setup listeners
         public async void InitializeSignalR()
         {
             _hubConnection = new HubConnectionBuilder()
@@ -143,29 +104,24 @@ namespace ModelView_WPF
                 .WithAutomaticReconnect()
                 .Build();
 
-            // When API broadcasts "RefreshScrumList", WPF executes this logic
             _hubConnection.On("RefreshScrumList", () =>
             {
                 System.Windows.Application.Current.Dispatcher.Invoke(async () =>
                 {
-                    // Triggers the existing API fetch method to reload data instantly
                     await LoadDataFromApiAsync();
                 });
             });
 
             try
             {
-                // Start connection
                 await _hubConnection.StartAsync();
             }
             catch (Exception ex)
             {
-                // Soft log if connection fails initially, avoids crashing UI
                 System.Diagnostics.Debug.WriteLine($"SignalR Connection Error: {ex.Message}");
             }
         }
 
-        // Fetch Data from API
         private async Task LoadDataFromApiAsync()
         {
             try
@@ -182,37 +138,29 @@ namespace ModelView_WPF
             }
         }
 
-        // Business Logic Methods
         private void ExecuteAdd(object parameter)
         {
             ResetForm();
+            SelectedScrum = null;
         }
 
         private async void ExecuteSave(object parameter)
         {
-            // Logic to save new record to database via API
             try
             {
+                Scrum.LastUpdate = DateTime.Now;
                 var response = await _httpClient.PostAsJsonAsync(ApiSettings.GetScrumInfoRoute(), Scrum);
                 if (response.IsSuccessStatusCode)
                 {
-                    ScrumList.Add(new ScrumInfoModel
-                    {
-                        ScrumID = Scrum.ScrumID,
-                        ScrumDesc = Scrum.ScrumDesc,
-                        EntryDate = Scrum.EntryDate,
-                        StartDate = Scrum.StartDate,
-                        EndDate = Scrum.EndDate,
-                        EntryByUID = Scrum.EntryByUID,
-                        LastUpdate = Scrum.LastUpdate,
-                        Activate = Scrum.Activate
-                    });
-
+                    await LoadDataFromApiAsync();
                     ResetForm();
+                    SelectedScrum = null;
+                    MessageBox.Show("Data saved successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
-                    MessageBox.Show($"Failed to save data. Status Code: {response.StatusCode}", "API Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    var errorMsg = await response.Content.ReadAsStringAsync();
+                    MessageBox.Show($"Failed to save data. Status Code: {response.StatusCode}\n{errorMsg}", "API Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
             catch (Exception ex)
@@ -223,34 +171,28 @@ namespace ModelView_WPF
 
         private bool CanExecuteSave(object parameter)
         {
-            // Validation: ScrumID is required (Unchecked/NotNull in database)
             return !string.IsNullOrWhiteSpace(Scrum?.ScrumID);
         }
 
         private async void ExecuteEdit(object parameter)
         {
-            // Logic to update existing selected record via API
             if (SelectedScrum != null)
             {
                 try
                 {
+                    Scrum.LastUpdate = DateTime.Now;
                     string putUrl = $"{ApiSettings.GetScrumInfoRoute()}/{Scrum.ScrumID}";
                     var response = await _httpClient.PutAsJsonAsync(putUrl, Scrum);
 
                     if (response.IsSuccessStatusCode)
                     {
-                        SelectedScrum.ScrumID = Scrum.ScrumID;
-                        SelectedScrum.ScrumDesc = Scrum.ScrumDesc;
-                        SelectedScrum.EntryDate = Scrum.EntryDate;
-                        SelectedScrum.StartDate = Scrum.StartDate;
-                        SelectedScrum.EndDate = Scrum.EndDate;
-                        SelectedScrum.EntryByUID = Scrum.EntryByUID;
-                        SelectedScrum.LastUpdate = Scrum.LastUpdate;
-                        SelectedScrum.Activate = Scrum.Activate;
+                        await LoadDataFromApiAsync();
+                        MessageBox.Show("Data updated successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
                     {
-                        MessageBox.Show($"Failed to update data. Status Code: {response.StatusCode}", "API Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        var errorMsg = await response.Content.ReadAsStringAsync();
+                        MessageBox.Show($"Failed to update data. Status Code: {response.StatusCode}\n{errorMsg}", "API Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                 }
                 catch (Exception ex)
@@ -262,13 +204,26 @@ namespace ModelView_WPF
 
         private bool CanExecuteEdit(object parameter)
         {
-            return SelectedScrum != null;
+            return SelectedScrum != null && !string.IsNullOrWhiteSpace(Scrum?.ScrumID);
         }
 
         private void ExecuteExit(object parameter)
         {
-            // Logic to close window or system application
-            System.Windows.Application.Current.Shutdown();
+            if (parameter is Window window)
+            {
+                window.Close();
+            }
+            else
+            {
+                foreach (Window win in System.Windows.Application.Current.Windows)
+                {
+                    if (win.DataContext == this)
+                    {
+                        win.Close();
+                        break;
+                    }
+                }
+            }
         }
 
         private void LoadSelectedScrum(ScrumInfoModel source)
@@ -285,17 +240,19 @@ namespace ModelView_WPF
 
         private void ResetForm()
         {
-            Scrum.ScrumID = string.Empty;
-            Scrum.ScrumDesc = string.Empty;
-            Scrum.EntryDate = DateTime.Now;
-            Scrum.StartDate = DateTime.Now;
-            Scrum.EndDate = DateTime.Now.AddDays(30);
-            Scrum.EntryByUID = _passedUid; // Sets the dynamically received UID or custom default
-            Scrum.LastUpdate = DateTime.Now;
-            Scrum.Activate = "Y";
+            Scrum = new ScrumInfoModel
+            {
+                ScrumID = string.Empty,
+                ScrumDesc = string.Empty,
+                EntryDate = DateTime.Now,
+                StartDate = DateTime.Now,
+                EndDate = DateTime.Now.AddDays(30),
+                EntryByUID = _passedUid,
+                LastUpdate = DateTime.Now,
+                Activate = "Y"
+            };
         }
 
-        // INotifyPropertyChanged Implementation
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 
         protected void OnPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)

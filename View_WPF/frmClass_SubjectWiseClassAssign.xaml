@@ -114,6 +114,7 @@
 
             <ComboBox Grid.Column="0" Style="{StaticResource CustomComboBoxStyle}" 
                       ItemsSource="{Binding SubjectList}"
+                      SelectedItem="{Binding SelectedSubject, Mode=TwoWay}"
                       DisplayMemberPath="SubjectDesc" 
                       SelectedValuePath="SubjectCode"
                       Text="Subject" />
@@ -236,7 +237,7 @@
                 </Button.Resources>
             </Button>
 
-            <Button Grid.Column="2" Content="Cancel" Background="#5DADE2" Foreground="Red" Height="35" Margin="5" FontSize="16" BorderThickness="0">
+            <Button Grid.Column="2" Content="Exit" Command="{Binding ExitCommand}" Background="#5DADE2" Foreground="Red" Height="35" Margin="5" FontSize="16" BorderThickness="0">
                 <Button.Resources>
                     <Style TargetType="Border">
                         <Setter Property="CornerRadius" Value="8"/>

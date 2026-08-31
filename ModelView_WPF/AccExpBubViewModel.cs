@@ -11,14 +11,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Linq;
 using Model_WPF;
-using ModelView_WPF.Helpers; // Namespace added for ApiSettings class
+using ModelView_WPF.Helpers;
 
 namespace ViewModel_WPF
 {
     public class AccExpBubViewModel : INotifyPropertyChanged
     {
         private readonly HttpClient _httpClient;
-        private readonly string _receivedUid = "Admin"; // Set "Admin" as default value
+        private readonly string _receivedUid = "Admin";
 
         #region Properties
 
@@ -59,7 +59,12 @@ namespace ViewModel_WPF
         public bool IsEntryVisible
         {
             get => _isEntryVisible;
-            set { _isEntryVisible = value; OnPropertyChanged(); }
+            set
+            {
+                _isEntryVisible = value;
+                OnPropertyChanged();
+                CommandManager.InvalidateRequerySuggested();
+            }
         }
 
         #endregion
@@ -73,11 +78,15 @@ namespace ViewModel_WPF
 
         public AccExpBubViewModel()
         {
-            // ApiSettings.BaseUrl used directly in HttpClient
-            _httpClient = new HttpClient { BaseAddress = new Uri(ApiSettings.BaseUrl) };
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+
+            _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
             ExpBubList = new ObservableCollection<AccExpBubModel>();
-            ExpCodeList = new ObservableCollection<string>(); // Will remain empty initially
+            ExpCodeList = new ObservableCollection<string>();
             IsEntryVisible = false;
 
             AddCommand = new RelayCommand(ExecuteAdd);
@@ -86,32 +95,28 @@ namespace ViewModel_WPF
             ExitCommand = new RelayCommand(ExecuteExit);
 
             LoadDataFromApi();
-            LoadExpCodes(); // This method has been newly added
+            LoadExpCodes();
         }
 
-        // New constructor to receive uid from frmAccExpBub.xaml.cs
         public AccExpBubViewModel(string uid) : this()
         {
-            _receivedUid = uid; // Set received uid to local variable
+            _receivedUid = uid;
         }
 
         private async void LoadDataFromApi()
         {
             try
             {
-                // Endpoint used from ApiSettings
                 var data = await _httpClient.GetFromJsonAsync<ObservableCollection<AccExpBubModel>>(ApiSettings.AccExpBubBaseUrl);
                 if (data != null) ExpBubList = data;
             }
-            catch (Exception) { /* To avoid errors if API is not running */ }
+            catch (Exception) { }
         }
 
-        // Method to load ExpCodes from API
         private async void LoadExpCodes()
         {
             try
             {
-                // New endpoint being called from ApiSettings
                 var codes = await _httpClient.GetFromJsonAsync<List<string>>(ApiSettings.AccExpBubGetExpendHeadCodesUrl);
 
                 if (codes != null)
@@ -128,7 +133,6 @@ namespace ViewModel_WPF
             }
             catch (Exception ex)
             {
-                // Handling if data does not arrive or an error occurs
             }
         }
 
@@ -138,19 +142,17 @@ namespace ViewModel_WPF
         {
             IsEntryVisible = true;
 
-            // 1. Auto ExpSubCode generation logic (001, 002 like that)
             string nextSubCode = "001";
             if (ExpBubList != null && ExpBubList.Any())
             {
                 var lastCode = ExpBubList.Max(x => int.Parse(x.ExpSubCode));
-                nextSubCode = (lastCode + 1).ToString("D3"); // Formats to 3 digits
+                nextSubCode = (lastCode + 1).ToString("D3");
             }
 
-            // 2. New entry creation (Received _receivedUid set instead of hardcoded "Admin")
             CurrentEntry = new AccExpBubModel
             {
                 EntryDate = DateTime.Now,
-                UID = _receivedUid, // Received User ID will be set here and shown in the form
+                UID = _receivedUid,
                 ExpSubCode = nextSubCode,
                 ExpDetail = ""
             };
@@ -164,7 +166,6 @@ namespace ViewModel_WPF
             {
                 try
                 {
-                    // Endpoint used from ApiSettings
                     var response = await _httpClient.PostAsJsonAsync(ApiSettings.AccExpBubBaseUrl, CurrentEntry);
 
                     if (response.IsSuccessStatusCode)
@@ -188,12 +189,31 @@ namespace ViewModel_WPF
 
         private void ExecuteEdit(object obj)
         {
+            if (obj is AccExpBubModel model)
+            {
+                CurrentEntry = model;
+                SelectedExpCode = model.ExpCode;
+            }
             if (IsEntryVisible == false) IsEntryVisible = true;
         }
 
         private void ExecuteExit(object obj)
         {
-            Application.Current.Windows[0]?.Close();
+            if (obj is Window window)
+            {
+                window.Close();
+            }
+            else
+            {
+                foreach (Window win in Application.Current.Windows)
+                {
+                    if (win.DataContext == this)
+                    {
+                        win.Close();
+                        break;
+                    }
+                }
+            }
         }
 
         private bool CanExecuteAction(object obj)

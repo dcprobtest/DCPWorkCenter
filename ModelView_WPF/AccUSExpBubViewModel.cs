@@ -7,14 +7,13 @@ using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
-using Model_WPF; // References the Model project
+using Model_WPF;
 using ModelView_WPF.Helpers;
 
 namespace ModelView_WPF
 {
     public class AccUSExpBubViewModel : INotifyPropertyChanged
     {
-        // Property Changed Event for UI Data Binding Notification
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -22,24 +21,25 @@ namespace ModelView_WPF
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        // HttpClient instance for API Communication updated to use ApiSettings
-        private readonly HttpClient _httpClient = new HttpClient { BaseAddress = new Uri(ApiSettings.BaseUrl) };
+        private readonly HttpClient _httpClient;
 
-        // Privates for Form Visibility and States
         private bool _isEntryVisible;
         private AccUSExpBubModel _currentEntry;
         private ObservableCollection<AccUSExpBubModel> _expBubList;
-        private ObservableCollection<string> _expCodeList; // Keeping simple list for dropdown strings as requested
+        private ObservableCollection<string> _expCodeList;
         private string _selectedExpCode;
 
-        // Private variable to hold the passed logged-in User ID
         private string _loggedInUID = string.Empty;
 
-        // Public Properties for Binding with frmAccUSExpBub.xaml
         public bool IsEntryVisible
         {
             get => _isEntryVisible;
-            set { _isEntryVisible = value; OnPropertyChanged(); }
+            set
+            {
+                _isEntryVisible = value;
+                OnPropertyChanged();
+                CommandManager.InvalidateRequerySuggested();
+            }
         }
 
         public AccUSExpBubModel CurrentEntry
@@ -74,43 +74,41 @@ namespace ModelView_WPF
             }
         }
 
-        // ICommands mapped to your XAML Buttons
         public ICommand AddCommand { get; }
         public ICommand SaveCommand { get; }
         public ICommand EditCommand { get; }
         public ICommand ExitCommand { get; }
 
-        // Default Constructor
         public AccUSExpBubViewModel() : this(string.Empty)
         {
         }
 
-        // Parameterized Constructor to receive UID from the View
         public AccUSExpBubViewModel(string uid)
         {
-            // Store the received UID
             _loggedInUID = uid;
 
-            // Initialize collections and entities
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+
+            _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
+
             ExpBubList = new ObservableCollection<AccUSExpBubModel>();
             ExpCodeList = new ObservableCollection<string>();
             CurrentEntry = new AccUSExpBubModel();
 
-            // Default Form States
             IsEntryVisible = false;
 
-            // Link commands with methods using your project's RelayCommand
             AddCommand = new RelayCommand(ExecuteAdd);
             SaveCommand = new RelayCommand(ExecuteSave, CanExecuteSave);
             EditCommand = new RelayCommand(ExecuteEdit, CanExecuteEdit);
             ExitCommand = new RelayCommand(ExecuteExit);
 
-            // Load data initial states from API
             LoadGridData();
             LoadDropdowns();
         }
 
-        // Methods to pull lists from database repository/service layers via API using ApiSettings
         private async void LoadGridData()
         {
             try
@@ -135,7 +133,6 @@ namespace ModelView_WPF
         {
             try
             {
-                // Fetches data from tblAccUSExpendHead controller endpoint using ApiSettings
                 var expHeads = await _httpClient.GetFromJsonAsync<List<AccUSExpendHeadModel>>(ApiSettings.AccUSExpBubGetExpCodesUrl);
                 if (expHeads != null)
                 {
@@ -144,7 +141,7 @@ namespace ModelView_WPF
                     {
                         if (!string.IsNullOrEmpty(head.ExpCode))
                         {
-                            ExpCodeList.Add(head.ExpCode); // Populating the ComboBox items string collection
+                            ExpCodeList.Add(head.ExpCode);
                         }
                     }
                 }
@@ -155,37 +152,35 @@ namespace ModelView_WPF
             }
         }
 
-        // Triggered when ADD button is pressed
         private void ExecuteAdd(object parameter)
         {
             CurrentEntry = new AccUSExpBubModel
             {
                 EntryDate = DateTime.Now,
-                UID = _loggedInUID // Assigns the actual logged-in user id dynamically instead of hardcoded "U001"
+                UID = _loggedInUID
             };
-            SelectedExpCode = null; // Clear old dropdown states
+            SelectedExpCode = null;
             IsEntryVisible = true;
         }
 
-        // Triggered when SAVE button is pressed
         private async void ExecuteSave(object parameter)
         {
             try
             {
-                // API call to insert or update CurrentEntry inside database table tblUSExpBub using ApiSettings
                 var response = await _httpClient.PostAsJsonAsync(ApiSettings.AccUSExpBubBaseUrl, CurrentEntry);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    // Refresh list and clear selection panel
                     LoadGridData();
                     IsEntryVisible = false;
                     CurrentEntry = new AccUSExpBubModel();
                     SelectedExpCode = null;
+                    MessageBox.Show("Data saved successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
-                    MessageBox.Show("Failed to save data to server.", "API Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    var errorMsg = await response.Content.ReadAsStringAsync();
+                    MessageBox.Show($"Failed to save data to server.\nError: {errorMsg}", "API Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
             catch (Exception ex)
@@ -196,11 +191,9 @@ namespace ModelView_WPF
 
         private bool CanExecuteSave(object parameter)
         {
-            // Validation criteria logic before hitting database save operation
             return CurrentEntry != null && !string.IsNullOrEmpty(CurrentEntry.ExpCode);
         }
 
-        // Triggered when EDIT button is pressed
         private void ExecuteEdit(object parameter)
         {
             if (parameter is AccUSExpBubModel selectedItem)
@@ -213,14 +206,26 @@ namespace ModelView_WPF
 
         private bool CanExecuteEdit(object parameter)
         {
-            return true; // Controls when the Edit operation can run
+            return true;
         }
 
-        // Triggered when EXIT button is pressed
         private void ExecuteExit(object parameter)
         {
-            // Close form logic or clear current panel visualization
-            IsEntryVisible = false;
+            if (parameter is Window window)
+            {
+                window.Close();
+            }
+            else
+            {
+                foreach (Window win in Application.Current.Windows)
+                {
+                    if (win.DataContext == this)
+                    {
+                        win.Close();
+                        break;
+                    }
+                }
+            }
         }
     }
 }

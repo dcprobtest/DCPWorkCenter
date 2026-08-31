@@ -14,6 +14,7 @@ using ModelView_WPF.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.Windows.Controls;
 
 namespace View_WPF.ModelView_WPF
 {
@@ -23,14 +24,15 @@ namespace View_WPF.ModelView_WPF
         private readonly string _apiUrl;
         private readonly string _empDetailApiUrl;
 
-        // --- Properties for Main Window ---
         private string _uid;
         private string _employeeName;
         private string _selectedDocumentPath;
         private string _serverStatus = "Online";
         private DateTime _startDate = DateTime.Now;
         private DateTime _endDate = DateTime.Now;
-        private string _selectedDocType; // নতুন প্রপার্টি ব্যাকলাইন লজিকের জন্য
+        private string _selectedDocType;
+
+        private List<DocumentModel> _allDocuments = new List<DocumentModel>();
 
         public string UID
         {
@@ -42,6 +44,7 @@ namespace View_WPF.ModelView_WPF
                 if (!string.IsNullOrEmpty(_uid))
                 {
                     _ = LoadEmployeeNameAsync(_uid);
+                    _ = InitializeAsync();
                 }
             }
         }
@@ -58,7 +61,6 @@ namespace View_WPF.ModelView_WPF
         public DateTime StartDate { get => _startDate; set { _startDate = value; OnPropertyChanged(); } }
         public DateTime EndDate { get => _endDate; set { _endDate = value; OnPropertyChanged(); } }
 
-        // ComboBox এর সিলেক্টেড আইটেমের জন্য প্রপার্টি
         public string SelectedDocType
         {
             get => _selectedDocType;
@@ -66,11 +68,11 @@ namespace View_WPF.ModelView_WPF
             {
                 _selectedDocType = value;
                 OnPropertyChanged();
-                SetDatesByDocumentType(_selectedDocType); // টাইপ চেঞ্জ হলে ডেট সেট হবে
+                SetDatesByDocumentType(_selectedDocType);
+                FilterDocumentsByType();
             }
         }
 
-        // --- Properties for Popup Window ---
         private bool _isPopupVisible = false;
         private string _popupTitle;
         private string _popupEmployerName;
@@ -86,7 +88,6 @@ namespace View_WPF.ModelView_WPF
         public DateTime PopupStartDate { get => _popupStartDate; set { _popupStartDate = value; OnPropertyChanged(); } }
         public DateTime PopupEndDate { get => _popupEndDate; set { _popupEndDate = value; OnPropertyChanged(); } }
 
-        // --- Collections & Selection ---
         public ObservableCollection<DocumentModel> Documents { get; set; } = new ObservableCollection<DocumentModel>();
 
         private DocumentModel _selectedDocument;
@@ -97,11 +98,29 @@ namespace View_WPF.ModelView_WPF
             {
                 _selectedDocument = value;
                 OnPropertyChanged();
-                if (_selectedDocument != null) SelectedDocumentPath = _selectedDocument.Path;
+                if (_selectedDocument != null)
+                {
+                    SelectedDocumentPath = _selectedDocument.Path;
+                    if (_selectedDocument.PreviewSource == null)
+                    {
+                        if (string.IsNullOrEmpty(_selectedDocument.Path))
+                        {
+                            MessageBox.Show("Error: Selected document path is empty or null.", "Preview Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
+                        else if (!File.Exists(_selectedDocument.Path))
+                        {
+                            MessageBox.Show($"Error: File does not exist at path: {_selectedDocument.Path}", "Preview Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
+                        else
+                        {
+                            string ext = System.IO.Path.GetExtension(_selectedDocument.Path).ToLower();
+                            MessageBox.Show($"Error: Unsupported file extension '{ext}' for preview.", "Preview Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
+                    }
+                }
             }
         }
 
-        // --- Commands ---
         public ICommand SaveCommand { get; }
         public ICommand AddCommand { get; }
         public ICommand LogoutCommand { get; }
@@ -114,7 +133,6 @@ namespace View_WPF.ModelView_WPF
 
         public UserDocInfoViewModel()
         {
-            // Setup HttpClient with SSL certificate bypass handler and ApiSettings BaseAddress
             var handler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
@@ -127,11 +145,11 @@ namespace View_WPF.ModelView_WPF
             SaveCommand = new RelayCommand(async (obj) => await ExecuteSave());
 
             AddCommand = new RelayCommand(async (obj) => {
-                string docType = obj as string ?? SelectedDocType; // টাইপ না থাকলে সিলেক্টেড টাইপ নিবে
+                string docType = obj as string ?? SelectedDocType;
                 if (string.IsNullOrEmpty(UID)) { MessageBox.Show("Please enter or select a UID first!"); return; }
                 if (string.IsNullOrEmpty(docType)) { MessageBox.Show("Please select a Document Type!"); return; }
 
-                OpenFileDialog openFileDialog = new OpenFileDialog { Filter = "Images|*.png;*.jpg;*.jpeg;*.pdf" };
+                OpenFileDialog openFileDialog = new OpenFileDialog { Filter = "All Files|*.*|Images|*.png;*.jpg;*.jpeg;*.pdf|Word Documents|*.docx;*.doc" };
                 if (openFileDialog.ShowDialog() == true)
                 {
                     AddDocumentToGrid(docType, openFileDialog.FileName);
@@ -151,7 +169,6 @@ namespace View_WPF.ModelView_WPF
                 PopupTitle = obj as string ?? SelectedDocType;
                 IsPopupVisible = true;
 
-                // পপআপ খোলার সময়ও ডেট সেট করে দেওয়া
                 PopupStartDate = this.StartDate;
                 PopupEndDate = this.EndDate;
             });
@@ -162,7 +179,7 @@ namespace View_WPF.ModelView_WPF
             });
 
             UploadInPopupCommand = new RelayCommand((obj) => {
-                OpenFileDialog openFileDialog = new OpenFileDialog { Filter = "Images|*.png;*.jpg;*.jpeg;*.pdf" };
+                OpenFileDialog openFileDialog = new OpenFileDialog { Filter = "All Files|*.*|Images|*.png;*.jpg;*.jpeg;*.pdf|Word Documents|*.docx;*.doc" };
                 if (openFileDialog.ShowDialog() == true)
                 {
                     _popupDocPath = openFileDialog.FileName;
@@ -195,8 +212,12 @@ namespace View_WPF.ModelView_WPF
                 ClearPopupFields();
             });
 
-            DownloadCommand = new RelayCommand((obj) => {
-                if (SelectedDocument != null)
+            DownloadCommand = new RelayCommand(async (obj) => {
+                if (SelectedDocument != null && !string.IsNullOrEmpty(UID) && !string.IsNullOrEmpty(SelectedDocument.Type))
+                {
+                    await DownloadFileFromServerAsync(UID, SelectedDocument.Type);
+                }
+                else if (SelectedDocument != null)
                 {
                     DownloadFile(SelectedDocument.Path);
                 }
@@ -214,34 +235,149 @@ namespace View_WPF.ModelView_WPF
             });
         }
 
-        // --- তারিখ ক্যালকুলেশন লজিক ---
+        private async Task DownloadFileFromServerAsync(string uid, string docType)
+        {
+            try
+            {
+                string downloadUrl = $"{ApiSettings.BaseUrl}/api/Data/DownloadFileByUidAndType/{uid}/{docType}";
+                var response = await _httpClient.GetAsync(downloadUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string fileName = $"{uid}_{docType}.docx";
+                    if (response.Content.Headers.ContentDisposition != null && !string.IsNullOrEmpty(response.Content.Headers.ContentDisposition.FileName))
+                    {
+                        fileName = response.Content.Headers.ContentDisposition.FileName.Trim('"');
+                    }
+
+                    SaveFileDialog saveFileDialog = new SaveFileDialog
+                    {
+                        FileName = fileName,
+                        Filter = "All Files|*.*"
+                    };
+
+                    if (saveFileDialog.ShowDialog() == true)
+                    {
+                        var bytes = await response.Content.ReadAsByteArrayAsync();
+                        await File.WriteAllBytesAsync(saveFileDialog.FileName, bytes);
+                        MessageBox.Show("File Downloaded/Saved Successfully!");
+                    }
+                }
+                else
+                {
+                    if (SelectedDocument != null && !string.IsNullOrEmpty(SelectedDocument.Path))
+                    {
+                        DownloadFile(SelectedDocument.Path);
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Download failed from server: {response.StatusCode}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (SelectedDocument != null && !string.IsNullOrEmpty(SelectedDocument.Path))
+                {
+                    DownloadFile(SelectedDocument.Path);
+                }
+                else
+                {
+                    MessageBox.Show("Download failed: " + ex.Message);
+                }
+            }
+        }
+
         private void SetDatesByDocumentType(string docType)
         {
             if (string.IsNullOrEmpty(docType)) return;
 
-            StartDate = DateTime.Now; // এন্ট্রি ডেট বা আজ থেকেই শুরু
+            StartDate = DateTime.Now;
 
             switch (docType)
             {
                 case "Passport":
-                    EndDate = StartDate.AddYears(10); // সাধারণত ১০ বছর
+                    EndDate = StartDate.AddYears(10);
                     break;
                 case "Driving Licence":
-                    EndDate = StartDate.AddYears(5); // সাধারণত ৫ বছর
+                    EndDate = StartDate.AddYears(5);
                     break;
                 case "I-20":
                 case "EAD":
                 case "I-983":
-                    EndDate = StartDate.AddYears(1); // ১ বছর মেয়াদ
+                    EndDate = StartDate.AddYears(1);
                     break;
                 case "Resume":
                 case "Picture":
                 case "Certificate":
-                    EndDate = StartDate.AddYears(1); // এইগুলোর ফিক্সড মেয়াদ না থাকলেও ডিফল্ট ১ বছর
+                case "Offer Letter":
+                    EndDate = StartDate.AddYears(1);
                     break;
                 default:
                     EndDate = StartDate.AddYears(1);
                     break;
+            }
+        }
+
+        private void FilterDocumentsByType()
+        {
+            if (string.IsNullOrEmpty(SelectedDocType))
+            {
+                Documents.Clear();
+                return;
+            }
+
+            var filteredList = _allDocuments
+                .Where(x => x.Uid == UID && !string.IsNullOrEmpty(x.Path))
+                .Where(x =>
+                {
+                    string fileName = System.IO.Path.GetFileName(x.Path).ToLower();
+                    string docType = (x.Type ?? "").ToLower();
+                    string selectedType = SelectedDocType.Trim().ToLower();
+
+                    if (selectedType == "offer letter")
+                    {
+                        return fileName.Contains("opt") ||
+                               fileName.Contains("stem") ||
+                               fileName.Contains("cpt") ||
+                               fileName.Contains("offer") ||
+                               docType.Contains("opt") ||
+                               docType.Contains("stem") ||
+                               docType.Contains("cpt") ||
+                               docType.Contains("offer");
+                    }
+
+                    return docType.Equals(selectedType, StringComparison.OrdinalIgnoreCase) ||
+                           docType.Contains(selectedType, StringComparison.OrdinalIgnoreCase) ||
+                           fileName.Contains(selectedType, StringComparison.OrdinalIgnoreCase);
+                })
+                .ToList();
+
+            Documents.Clear();
+            foreach (var doc in filteredList)
+            {
+                Documents.Add(doc);
+            }
+        }
+
+        public async Task InitializeAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/Data/GetUserDocs");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var responseList = JsonConvert.DeserializeObject<List<DocumentModel>>(json);
+                    if (responseList != null)
+                    {
+                        _allDocuments = responseList;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ServerStatus = "Error loading documents: " + ex.Message;
             }
         }
 
@@ -275,7 +411,8 @@ namespace View_WPF.ModelView_WPF
                 Path = path,
                 Action = "View",
                 CustomStartDate = this.StartDate,
-                CustomEndDate = this.EndDate
+                CustomEndDate = this.EndDate,
+                EntryDate = DateTime.Now
             };
             Documents.Add(newDoc);
             SelectedDocument = newDoc;
@@ -343,7 +480,8 @@ namespace View_WPF.ModelView_WPF
                     EmployerName = d.EmployerName,
                     JobTitle = d.JobTitle,
                     CustomStartDate = d.CustomStartDate?.ToString("yyyy-MM-dd"),
-                    CustomEndDate = d.CustomEndDate?.ToString("yyyy-MM-dd")
+                    CustomEndDate = d.CustomEndDate?.ToString("yyyy-MM-dd"),
+                    EntryDate = d.EntryDate?.ToString("yyyy-MM-dd")
                 }).ToList()
             };
 
@@ -373,14 +511,81 @@ namespace View_WPF.ModelView_WPF
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
-    public class DocumentModel
+    public class DocumentModel : INotifyPropertyChanged
     {
-        public string Type { get; set; }
-        public string Path { get; set; }
-        public string Action { get; set; }
-        public string EmployerName { get; set; }
-        public string JobTitle { get; set; }
-        public DateTime? CustomStartDate { get; set; }
-        public DateTime? CustomEndDate { get; set; }
+        private string _uid;
+        private string _type;
+        private string _path;
+        private string _action;
+        private string _employerName;
+        private string _jobTitle;
+        private DateTime? _entryDate;
+        private DateTime? _customStartDate;
+        private DateTime? _customEndDate;
+
+        [JsonProperty("uid")]
+        public string Uid { get => _uid; set { _uid = value; OnPropertyChanged(); } }
+
+        [JsonProperty("docType")]
+        public string Type { get => _type; set { _type = value; OnPropertyChanged(); } }
+
+        [JsonProperty("docPath")]
+        public string Path
+        {
+            get => _path;
+            set
+            {
+                _path = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(PreviewSource));
+            }
+        }
+
+        [JsonProperty("action")]
+        public string Action { get => _action; set { _action = value; OnPropertyChanged(); } }
+
+        [JsonProperty("employerName")]
+        public string EmployerName { get => _employerName; set { _employerName = value; OnPropertyChanged(); } }
+
+        [JsonProperty("jobTitle")]
+        public string JobTitle { get => _jobTitle; set { _jobTitle = value; OnPropertyChanged(); } }
+
+        [JsonProperty("entryDate")]
+        public DateTime? EntryDate { get => _entryDate; set { _entryDate = value; OnPropertyChanged(); } }
+
+        [JsonProperty("startDate")]
+        public DateTime? CustomStartDate { get => _customStartDate; set { _customStartDate = value; OnPropertyChanged(); } }
+
+        [JsonProperty("endDate")]
+        public DateTime? CustomEndDate { get => _customEndDate; set { _customEndDate = value; OnPropertyChanged(); } }
+
+        public object PreviewSource
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_path)) return null;
+
+                try
+                {
+                    string ext = System.IO.Path.GetExtension(_path).ToLower();
+                    if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".gif" || ext == ".tiff")
+                    {
+                        return _path;
+                    }
+                    else
+                    {
+                        return new Uri(_path, UriKind.Absolute).AbsoluteUri;
+                    }
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string name = null) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

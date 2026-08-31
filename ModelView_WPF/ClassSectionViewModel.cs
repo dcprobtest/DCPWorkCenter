@@ -1,20 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Collections.Generic;
-using System.Linq;
 using Model_WPF;
 using ModelView_WPF.Helpers;
 
 namespace ModelView_WPF
 {
-    // Model class
     public class ClassSection
     {
         public string SectionId { get; set; } = string.Empty;
@@ -28,7 +27,14 @@ namespace ModelView_WPF
         public string? Activate { get; set; }
     }
 
-    // ViewModel class
+    public class SubjectCodeModel
+    {
+        public string SubjectCode { get; set; } = string.Empty;
+        public string SubjectDesc { get; set; } = string.Empty;
+
+        public string DisplayText => string.IsNullOrWhiteSpace(SubjectCode) ? SubjectDesc : $"{SubjectCode} - {SubjectDesc}";
+    }
+
     public class ClassSectionViewModel : INotifyPropertyChanged
     {
         private readonly HttpClient _httpClient;
@@ -40,8 +46,65 @@ namespace ModelView_WPF
             set { _classSection = value; OnPropertyChanged(); }
         }
 
+        private bool _isAddButtonVisible;
+        public bool IsAddButtonVisible
+        {
+            get => _isAddButtonVisible;
+            set { _isAddButtonVisible = value; OnPropertyChanged(); }
+        }
+
+        private bool _isFormVisible;
+        public bool IsFormVisible
+        {
+            get => _isFormVisible;
+            set { _isFormVisible = value; OnPropertyChanged(); }
+        }
+
+        private bool _isFieldsEditable;
+        public bool IsFieldsEditable
+        {
+            get => _isFieldsEditable;
+            set { _isFieldsEditable = value; OnPropertyChanged(); }
+        }
+
         public ObservableCollection<object> CourseList { get; set; } = new ObservableCollection<object>();
         public ObservableCollection<ClassSection> ClassSectionList { get; set; } = new ObservableCollection<ClassSection>();
+        public ObservableCollection<SubjectCodeModel> SubjectCodeList { get; set; } = new ObservableCollection<SubjectCodeModel>();
+
+        private SubjectCodeModel _selectedSubjectCode;
+        public SubjectCodeModel SubjectCodeModel
+        {
+            get => _selectedSubjectCode;
+            set
+            {
+                _selectedSubjectCode = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsSubjectSelected));
+
+                if (_selectedSubjectCode != null)
+                {
+                    IsAddButtonVisible = true;
+                    IsFormVisible = false;
+                    IsFieldsEditable = false;
+                    ClassSection.SubjectCode = _selectedSubjectCode.SubjectCode;
+                    _ = LoadSectionsForSubject(_selectedSubjectCode.SubjectCode);
+                }
+                else
+                {
+                    IsAddButtonVisible = false;
+                    IsFormVisible = false;
+                    IsFieldsEditable = false;
+                }
+            }
+        }
+
+        public SubjectCodeModel SelectedSubjectCode
+        {
+            get => _selectedSubjectCode;
+            set => SubjectCodeModel = value;
+        }
+
+        public bool IsSubjectSelected => SelectedSubjectCode != null;
 
         private ClassSection _selectedClassSection;
         public ClassSection SelectedClassSection
@@ -54,7 +117,9 @@ namespace ModelView_WPF
 
                 if (_selectedClassSection != null)
                 {
-                    // Cloning data when selected from the list to avoid affecting the original list before saving
+                    IsFieldsEditable = false;
+                    string currentUid = ClassSection.EntryByUid;
+
                     ClassSection = new ClassSection
                     {
                         SectionId = _selectedClassSection.SectionId,
@@ -63,7 +128,7 @@ namespace ModelView_WPF
                         EntryDate = _selectedClassSection.EntryDate,
                         StartDate = _selectedClassSection.StartDate,
                         EndDate = _selectedClassSection.EndDate,
-                        EntryByUid = _selectedClassSection.EntryByUid,
+                        EntryByUid = !string.IsNullOrEmpty(_selectedClassSection.EntryByUid) ? _selectedClassSection.EntryByUid : currentUid,
                         LastUpdate = _selectedClassSection.LastUpdate,
                         Activate = _selectedClassSection.Activate
                     };
@@ -78,25 +143,21 @@ namespace ModelView_WPF
         public ICommand EditCommand { get; }
         public ICommand ExitCommand { get; }
 
-        // Default constructor added to remove XAML errors
-        public ClassSectionViewModel() : this(null)
+        public ClassSectionViewModel() : this(string.Empty)
         {
         }
 
-        // Constructor updated to receive UID
         public ClassSectionViewModel(string uid)
         {
-            // Localhost self-signed SSL certificate error bypass handler setup
             var handler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
             };
 
-            // HttpClient configuration updated with ApiSettings.BaseUrl
             _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
-            // Setting EntryByUid from the passed parameter
-            ClassSection.EntryByUid = uid;
+            ClassSection = new ClassSection { EntryByUid = uid };
+            IsFieldsEditable = false;
 
             AddCommand = new RelayCommand(obj => OnAdd());
             SaveCommand = new RelayCommand(async obj => await OnSave());
@@ -104,48 +165,122 @@ namespace ModelView_WPF
             DeleteCommand = new RelayCommand(async obj => await OnDelete());
             EditCommand = new RelayCommand(obj => OnEdit());
             ExitCommand = new RelayCommand(obj => OnExit());
-
-            _ = LoadInitialData();
         }
 
-        private async Task LoadInitialData()
+        public async Task LoadInitialDataAsync()
         {
             try
             {
-                // 1. Load Course List using ApiSettings endpoint
-                var courses = await _httpClient.GetFromJsonAsync<List<object>>(ApiSettings.GetClassSectionCoursesUrl());
+                _httpClient.Timeout = TimeSpan.FromSeconds(5);
+
+                var courses = await _httpClient.GetFromJsonAsync<List<object>>(ApiSettings.GetClassSectionCoursesUrl()).ConfigureAwait(false);
                 if (courses != null)
                 {
-                    CourseList.Clear();
-                    foreach (var c in courses) CourseList.Add(c);
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        CourseList.Clear();
+                        foreach (var c in courses) CourseList.Add(c);
+                    });
                 }
 
-                // 2. Load Section List using ApiSettings endpoint
-                var sections = await _httpClient.GetFromJsonAsync<List<ClassSection>>(ApiSettings.GetClassSectionsUrl());
-                if (sections != null)
+                var subjectCodes = await _httpClient.GetFromJsonAsync<List<ClassSubject>>("api/Data/GetSubjects").ConfigureAwait(false);
+                if (subjectCodes != null)
                 {
-                    ClassSectionList.Clear();
-                    foreach (var s in sections) ClassSectionList.Add(s);
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        SubjectCodeList.Clear();
+                        foreach (var sc in subjectCodes)
+                        {
+                            SubjectCodeList.Add(new SubjectCodeModel
+                            {
+                                SubjectCode = sc.SubjectCode,
+                                SubjectDesc = sc.SubjectDesc
+                            });
+                        }
+                    });
                 }
             }
             catch (Exception ex)
             {
-                // Helpful error message if data loading fails
-                Console.WriteLine($"Error loading data: {ex.Message}");
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    MessageBox.Show($"API Connection Failed: {ex.Message}");
+                });
             }
+        }
+
+        private async Task LoadSectionsForSubject(string subjectCode)
+        {
+            try
+            {
+                var sections = await _httpClient.GetFromJsonAsync<List<ClassSection>>(ApiSettings.GetClassSectionsUrl()).ConfigureAwait(false);
+                if (sections != null)
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        ClassSectionList.Clear();
+                        foreach (var s in sections.Where(x => x.SubjectCode == subjectCode))
+                        {
+                            ClassSectionList.Add(s);
+                        }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading sections: {ex.Message}");
+            }
+        }
+
+        private void GenerateNewSectionId()
+        {
+            if (SelectedSubjectCode == null || string.IsNullOrEmpty(SelectedSubjectCode.SubjectCode))
+                return;
+
+            string subjectPrefix = SelectedSubjectCode.SubjectCode;
+
+            var existingSectionsForSubject = ClassSectionList?
+                .Where(s => s.SectionId != null && s.SectionId.StartsWith(subjectPrefix))
+                .ToList();
+
+            if (existingSectionsForSubject == null || !existingSectionsForSubject.Any())
+            {
+                ClassSection.SectionId = subjectPrefix + "01";
+            }
+            else
+            {
+                int maxSequence = existingSectionsForSubject
+                    .Select(s => {
+                        string suffix = s.SectionId.Substring(Math.Max(0, s.SectionId.Length - 2));
+                        return int.TryParse(suffix, out int val) ? val : 0;
+                    })
+                    .Max();
+
+                int nextSequence = maxSequence + 1;
+                ClassSection.SectionId = subjectPrefix + nextSequence.ToString("00");
+            }
+
+            OnPropertyChanged(nameof(ClassSection));
         }
 
         private void OnAdd()
         {
-            // Preserving previous EntryByUid while creating a new object
-            string currentUid = ClassSection.EntryByUid;
-            ClassSection = new ClassSection();
-            ClassSection.EntryByUid = currentUid;
+            IsFieldsEditable = true;
+            string currentUid = ClassSection?.EntryByUid;
+            string currentSubject = SelectedSubjectCode?.SubjectCode;
 
-            ClassSection.EntryDate = DateTime.Now;
-            ClassSection.StartDate = DateTime.Now;
-            ClassSection.Activate = "0";
-            MessageBox.Show("Ready to enter a new class section.");
+            ClassSection = new ClassSection
+            {
+                EntryByUid = currentUid,
+                SubjectCode = currentSubject,
+                EntryDate = DateTime.Now,
+                StartDate = DateTime.Now,
+                Activate = "0"
+            };
+
+            GenerateNewSectionId();
+
+            IsFormVisible = true;
         }
 
         private void OnActive()
@@ -154,7 +289,6 @@ namespace ModelView_WPF
             {
                 ClassSection.EndDate = DateTime.Now;
                 ClassSection.Activate = "1";
-                // Since inner properties of ClassSection changed, notify update for the whole object
                 OnPropertyChanged(nameof(ClassSection));
                 MessageBox.Show("Section has been set as Active.");
             }
@@ -168,7 +302,8 @@ namespace ModelView_WPF
                 return;
             }
 
-            // Copying selected section values to active editable object
+            IsFieldsEditable = true;
+
             ClassSection = new ClassSection
             {
                 SectionId = SelectedClassSection.SectionId,
@@ -177,12 +312,10 @@ namespace ModelView_WPF
                 EntryDate = SelectedClassSection.EntryDate,
                 StartDate = SelectedClassSection.StartDate,
                 EndDate = SelectedClassSection.EndDate,
-                EntryByUid = SelectedClassSection.EntryByUid,
+                EntryByUid = !string.IsNullOrEmpty(SelectedClassSection.EntryByUid) ? SelectedClassSection.EntryByUid : ClassSection.EntryByUid,
                 LastUpdate = SelectedClassSection.LastUpdate,
                 Activate = SelectedClassSection.Activate
             };
-
-            MessageBox.Show("Section is now in Edit mode.");
         }
 
         private async Task OnSave()
@@ -193,16 +326,24 @@ namespace ModelView_WPF
                 return;
             }
 
+            if (SelectedSubjectCode != null && string.IsNullOrEmpty(ClassSection.SubjectCode))
+            {
+                ClassSection.SubjectCode = SelectedSubjectCode.SubjectCode;
+            }
+
             ClassSection.LastUpdate = DateTime.Now;
             try
             {
-                // Calling API Controller's SaveSection method using ApiSettings endpoint
                 var response = await _httpClient.PostAsJsonAsync(ApiSettings.SaveClassSectionUrl(), ClassSection);
 
                 if (response.IsSuccessStatusCode)
                 {
                     MessageBox.Show("Successfully saved to database!");
-                    await LoadInitialData(); // Reload to update the list
+                    IsFieldsEditable = false;
+                    if (SelectedSubjectCode != null)
+                    {
+                        await LoadSectionsForSubject(SelectedSubjectCode.SubjectCode);
+                    }
                 }
                 else
                 {
@@ -229,13 +370,18 @@ namespace ModelView_WPF
             {
                 try
                 {
-                    // Calling API Controller's DeleteSection method using ApiSettings endpoint
                     var response = await _httpClient.DeleteAsync(ApiSettings.DeleteClassSectionUrl(SelectedClassSection.SectionId));
                     if (response.IsSuccessStatusCode)
                     {
+                        string currentUid = ClassSection.EntryByUid;
                         MessageBox.Show("Successfully deleted.");
-                        await LoadInitialData();
-                        ClassSection = new ClassSection(); // Clear input fields
+                        IsFieldsEditable = false;
+                        if (SelectedSubjectCode != null)
+                        {
+                            await LoadNamesOrSections();
+                            await LoadSectionsForSubject(SelectedSubjectCode.SubjectCode);
+                        }
+                        ClassSection = new ClassSection { EntryByUid = currentUid };
                     }
                     else
                     {
@@ -245,6 +391,8 @@ namespace ModelView_WPF
                 catch (Exception ex) { MessageBox.Show($"Error: {ex.Message}"); }
             }
         }
+
+        private Task LoadNamesOrSections() => Task.CompletedTask;
 
         private void OnExit()
         {

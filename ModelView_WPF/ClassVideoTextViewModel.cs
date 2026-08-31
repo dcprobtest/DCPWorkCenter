@@ -23,6 +23,8 @@ namespace View_WPF.ModelView_WPF
     {
         private readonly HttpClient _httpClient;
 
+        private List<ClassSection> _allSections = new List<ClassSection>();
+
         private ClassVideoTextModel _classVideo;
         private bool _isActive;
         private string _selectedFileSourcePath;
@@ -39,9 +41,14 @@ namespace View_WPF.ModelView_WPF
             get => _selectedSubject;
             set
             {
-                _selectedSubject = value;
-                OnPropertyChanged();
-                if (value != null) { LoadSections(); }
+                if (_selectedSubject != value)
+                {
+                    _selectedSubject = value;
+                    OnPropertyChanged();
+
+                    SelectedSection = null;
+                    LoadSections();
+                }
             }
         }
 
@@ -194,13 +201,26 @@ namespace View_WPF.ModelView_WPF
         {
             try
             {
-                var response = await _httpClient.GetAsync(ApiSettings.GetClassSectionsUrl());
-                if (response.IsSuccessStatusCode)
+                if (_allSections == null || _allSections.Count == 0)
                 {
-                    var json = await response.Content.ReadAsStringAsync();
-                    var list = JsonConvert.DeserializeObject<List<ClassSection>>(json);
-                    SectionList.Clear();
-                    foreach (var item in list) SectionList.Add(item);
+                    var response = await _httpClient.GetAsync(ApiSettings.GetClassSectionsUrl());
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+                        _allSections = JsonConvert.DeserializeObject<List<ClassSection>>(json) ?? new List<ClassSection>();
+                    }
+                }
+
+                SectionList.Clear();
+
+                if (SelectedSubject != null)
+                {
+                    var filtered = _allSections.Where(s => !string.IsNullOrEmpty(s.SubjectCode) && s.SubjectCode == SelectedSubject.SubjectCode);
+
+                    foreach (var item in filtered)
+                    {
+                        SectionList.Add(item);
+                    }
                 }
             }
             catch (Exception ex) { MessageBox.Show("Section Load Error: " + ex.Message); }
@@ -238,7 +258,11 @@ namespace View_WPF.ModelView_WPF
 
                     formData.Add(new StringContent(ClassVideo.ClassID.ToString()), "ClassID");
                     formData.Add(new StringContent(ClassVideo.ClassContent ?? ""), "ClassContent");
-                    formData.Add(new StringContent(SelectedSection.SectionId.ToString()), "SectionId");
+
+                    string secId = SelectedSection.SectionId ?? "";
+                    if (secId.Length == 3) secId = "0" + secId;
+
+                    formData.Add(new StringContent(secId), "SectionId");
                     formData.Add(new StringContent(SelectedSubject.SubjectCode ?? ""), "SubjectCode");
                     formData.Add(new StringContent(SelectedSubject.SubjectDesc ?? ""), "SubjectDesc");
                     formData.Add(new StringContent(SelectedSection.SectionDesc ?? ""), "SectionDesc");
@@ -256,14 +280,12 @@ namespace View_WPF.ModelView_WPF
                     else
                     {
                         string errorMsg = await response.Content.ReadAsStringAsync();
-                        // ব্যাকএন্ড থেকে আসা সম্পূর্ণ আসল এরর মেসেজটি এখানে পপআপে দেখাবে
                         MessageBox.Show($"API Error: {errorMsg}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
             }
             catch (Exception ex)
             {
-                // ক্লায়েন্ট সাইডের কোনো এক্সেপশন বা নেটওয়ার্ক ফেইলিয়র হলে তার বিস্তারিত কারণ দেখাবে
                 string detailedError = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                 MessageBox.Show($"Operation Error: {detailedError}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }

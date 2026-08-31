@@ -3,17 +3,17 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:ModelView_WPF;assembly=ModelView_WPF"
         Title="Class Section Management" 
-        Height="700" Width="1000"
+        Height="780" Width="600"
         WindowStartupLocation="CenterScreen" 
-        WindowState="Maximized" 
         Background="#F4F7F9"
-        ResizeMode="CanResize">
-
-    <Window.DataContext>
-        <local:ClassSectionViewModel/>
-    </Window.DataContext>
+        AllowsTransparency="False" 
+        WindowStyle="SingleBorderWindow"
+        x:Name="WindowSectionManagement"
+        Loaded="Window_Loaded">
 
     <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
         <Style TargetType="TextBox">
             <Setter Property="Background" Value="White"/>
             <Setter Property="BorderBrush" Value="#DADCE0"/>
@@ -27,12 +27,59 @@
             </Style.Triggers>
         </Style>
 
+        <Style x:Key="ModernTextBox" TargetType="TextBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#DADCE0"/>
+            <Setter Property="Padding" Value="8,5"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Height" Value="32"/>
+            <Style.Triggers>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="#8B5CF6"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#DADCE0"/>
+            <Setter Property="Padding" Value="8,5"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="DataGrid">
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="DataGridRow">
+            <Setter Property="Height" Value="42"/>
+        </Style>
+
+        <Style TargetType="DataGridCell">
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+
         <Style x:Key="RainbowButtonStyle" TargetType="Button">
-            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Height" Value="38"/>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                </Setter.Value>
+            </Setter>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -40,15 +87,12 @@
                             <Border CornerRadius="6" Padding="2">
                                 <Border.Background>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                        <LinearGradientBrush.RelativeTransform>
-                                            <RotateTransform x:Name="BtnRotate" CenterX="0.5" CenterY="0.5" Angle="0" />
-                                        </LinearGradientBrush.RelativeTransform>
                                         <GradientStop Color="#FF0000" Offset="0.0"/>
                                         <GradientStop Color="#00FF00" Offset="0.5"/>
                                         <GradientStop Color="#0000FF" Offset="1.0"/>
                                     </LinearGradientBrush>
                                 </Border.Background>
-                                <Border Background="#6366F1" CornerRadius="5" Opacity="0.9">
+                                <Border Background="White" CornerRadius="5" Opacity="0.9">
                                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
                             </Border>
@@ -61,26 +105,47 @@
                                     </Setter.Value>
                                 </Setter>
                             </Trigger>
-                            <EventTrigger RoutedEvent="Loaded">
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="BtnRotate" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:4" RepeatBehavior="Forever" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX="1.04" ScaleY="1.04"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
         </Style>
     </Window.Resources>
 
-    <Grid>
-        <Border Margin="20" CornerRadius="15" Padding="2.5">
+    <Window.RenderTransform>
+        <TranslateTransform x:Name="WindowTransform" Y="0"/>
+    </Window.RenderTransform>
+
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="Window.Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="WindowTransform" Storyboard.TargetProperty="Y" From="800" To="0" Duration="0:0:0.8">
+                        <DoubleAnimation.EasingFunction>
+                            <CubicEase EasingMode="EaseOut"/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.5"/>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </Window.Triggers>
+
+    <Grid x:Name="MainGrid" Margin="15">
+        <Border x:Name="OuterBorder" CornerRadius="20" Padding="2.5">
             <Border.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                     <LinearGradientBrush.RelativeTransform>
-                        <RotateTransform x:Name="MainBorderRotate" CenterX="0.5" CenterY="0.5" Angle="0" />
+                        <RotateTransform x:Name="MainBorderRotate" CenterX="0.5" CenterY="0.5" />
                     </LinearGradientBrush.RelativeTransform>
                     <GradientStop Color="#FF0000" Offset="0.0"/>
                     <GradientStop Color="#00FF00" Offset="0.5"/>
@@ -91,44 +156,115 @@
                 <EventTrigger RoutedEvent="Loaded">
                     <BeginStoryboard>
                         <Storyboard>
-                            <DoubleAnimation Storyboard.TargetName="MainBorderRotate" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:10" RepeatBehavior="Forever" />
+                            <DoubleAnimation Storyboard.TargetName="MainBorderRotate" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:15" RepeatBehavior="Forever" />
                         </Storyboard>
                     </BeginStoryboard>
                 </EventTrigger>
             </Border.Triggers>
 
-            <Border Background="White" CornerRadius="13" Padding="25">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1.8*"/>
-                        <ColumnDefinition Width="1*"/>
-                    </Grid.ColumnDefinitions>
+            <Border x:Name="ContentBorder" Background="White" CornerRadius="18" Padding="20">
+                <Grid x:Name="InternalLayout">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                    <Grid Grid.Column="0" Margin="0,0,25,0">
+                    <TextBlock Grid.Row="0" Text="Class Section Directory" FontSize="22" FontWeight="Bold" Foreground="#1F2937" Margin="0,0,0,10"/>
+
+                    <UniformGrid Grid.Row="1" Columns="2" Margin="0,0,0,15">
+                        <Expander x:Name="expSubjectCode" Header="Subject Code" Foreground="#8B5CF6" FontWeight="SemiBold" IsExpanded="False" Margin="0,0,5,0">
+                            <Border Background="White" CornerRadius="8" Padding="15" Margin="0,10,0,10" BorderBrush="#E2E8F0" BorderThickness="1">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Text="Select Subject Code" FontSize="11" Foreground="#64748B" Margin="0,0,0,2"/>
+                                    <ComboBox Grid.Row="1" 
+                                              ItemsSource="{Binding SubjectCodeList}" 
+                                              SelectedItem="{Binding SelectedSubjectCode, UpdateSourceTrigger=PropertyChanged}"
+                                              SelectedValuePath="SubjectCode"
+                                              SelectedValue="{Binding ClassSection.SubjectCode, UpdateSourceTrigger=PropertyChanged}"
+                                              DisplayMemberPath="DisplayText"
+                                              Height="32" Margin="0,0,50,0"/>
+                                </Grid>
+                            </Border>
+                        </Expander>
+
+                        <Expander x:Name="expTimeline" Header="Others info" Foreground="#8B5CF6" FontWeight="SemiBold" IsExpanded="False" Margin="5,0,0,0">
+                            <Border Background="White" CornerRadius="8" Padding="15" Margin="0,10,0,10" BorderBrush="#E2E8F0" BorderThickness="1">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0" Text="User ID (Entry By)" FontSize="11" Foreground="#64748B" Margin="0,0,0,2"/>
+                                    <TextBox Grid.Row="1" Style="{StaticResource ModernTextBox}" FontWeight="Bold" Margin="0,0,112,10"
+                                             IsReadOnly="True" Background="#F5F5F5"
+                                             Text="{Binding ClassSection.EntryByUid}"/>
+
+                                    <TextBlock Grid.Row="2" Text="Entry Date" FontSize="11" Foreground="#64748B" Margin="0,0,0,2"/>
+                                    <TextBox Grid.Row="3" Style="{StaticResource ModernTextBox}" IsReadOnly="True" Background="#F8FAFC" Margin="0,0,0,10"
+                                             Text="{Binding ClassSection.EntryDate, StringFormat='dd-MMM-yyyy'}"/>
+
+                                    <TextBlock Grid.Row="4" Text="Last Update" FontSize="11" Foreground="#64748B" Margin="0,0,0,2"/>
+                                    <TextBox Grid.Row="5" Style="{StaticResource ModernTextBox}" IsReadOnly="True" Background="#F8FAFC"
+                                             Text="{Binding ClassSection.LastUpdate, StringFormat='dd-MMM-yyyy'}"/>
+                                </Grid>
+                            </Border>
+                        </Expander>
+                    </UniformGrid>
+
+                    <!-- Main Content Area: Always Visible -->
+                    <Grid Grid.Row="2">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
+                        <!-- DataGrid -->
                         <DataGrid Grid.Row="0" 
                                   ItemsSource="{Binding ClassSectionList}" 
-                                  SelectedItem="{Binding SelectedClassSection}"
+                                  SelectedItem="{Binding SelectedClassSection, UpdateSourceTrigger=PropertyChanged}"
                                   AutoGenerateColumns="False" 
                                   IsReadOnly="True"
                                   Background="White"
                                   BorderBrush="#E0E0E0"
-                                  RowHeight="35"
                                   GridLinesVisibility="Horizontal"
                                   HorizontalGridLinesBrush="#F1F1F1"
-                                  HeadersVisibility="Column">
+                                  HeadersVisibility="Column"
+                                  Margin="0,0,0,15">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Section ID" Binding="{Binding SectionId}" Width="100" FontWeight="Bold"/>
-                                <DataGridTextColumn Header="Section Description" Binding="{Binding SectionDesc}" Width="*"/>
+                                <DataGridTextColumn Header="Section ID" Binding="{Binding SectionId}" Width="120">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                            <Setter Property="FontWeight" Value="Bold"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Header="Section Description" Binding="{Binding SectionDesc}" Width="*">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            <Setter Property="VerticalAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
                             </DataGrid.Columns>
                         </DataGrid>
 
-                        <Grid Grid.Row="1" Margin="0,20,0,20">
+                        <!-- Input Form Fields -->
+                        <Grid Grid.Row="1" Margin="0,0,0,15" IsEnabled="{Binding IsFieldsEditable}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="120"/>
                                 <ColumnDefinition Width="*"/>
@@ -138,82 +274,27 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <TextBlock Text="Section ID" Margin="0,0,0,5" Foreground="#666" FontSize="11"/>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Section ID" Foreground="#6B7280" FontSize="11" Margin="0,0,0,5"/>
                             <TextBox Grid.Row="1" Grid.Column="0" 
                                      Text="{Binding ClassSection.SectionId, UpdateSourceTrigger=PropertyChanged}" 
-                                     HorizontalContentAlignment="Center" Height="40"/>
+                                     HorizontalContentAlignment="Center" Height="40" FontWeight="Bold" Margin="0,0,10,0"
+                                     IsReadOnly="True" Background="#F5F5F5"/>
 
-                            <TextBlock Grid.Column="1" Text="Section Description" Margin="10,0,0,5" Foreground="#666" FontSize="11"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="Section Description" Foreground="#6B7280" FontSize="11" Margin="0,0,0,5"/>
                             <TextBox Grid.Row="1" Grid.Column="1" 
                                      Text="{Binding ClassSection.SectionDesc, UpdateSourceTrigger=PropertyChanged}" 
-                                     Margin="10,0,0,0" Height="40"/>
+                                     Height="40" HorizontalContentAlignment="Center" Margin="0,0,150,0"/>
                         </Grid>
-
-                        <UniformGrid Grid.Row="2" Columns="5">
-                            <Button Content="ADD" Style="{StaticResource RainbowButtonStyle}" Margin="2" Command="{Binding AddCommand}"/>
-                            <Button Content="SAVE" Style="{StaticResource RainbowButtonStyle}" Margin="2" Command="{Binding SaveCommand}"/>
-                            <Button Content="DELETE" Style="{StaticResource RainbowButtonStyle}" Margin="2" Command="{Binding DeleteCommand}"/>
-                            <Button Content="EDIT" Style="{StaticResource RainbowButtonStyle}" Margin="2" Command="{Binding EditCommand}"/>
-                            <Button Content="EXIT" Style="{StaticResource RainbowButtonStyle}" Margin="2" Command="{Binding ExitCommand}"/>
-                        </UniformGrid>
                     </Grid>
 
-                    <Border Grid.Column="1" Background="#FAFAFA" CornerRadius="12" Padding="20">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-
-                            <Grid Grid.Row="0" Margin="0,0,0,20">
-                                <TextBlock Text="User ID (Entry By)" Foreground="#666" FontSize="11" VerticalAlignment="Top"/>
-                                <TextBox Text="{Binding ClassSection.EntryByUid, UpdateSourceTrigger=PropertyChanged}" Margin="0,18,0,0" Height="35"/>
-                            </Grid>
-
-                            <Grid Grid.Row="1" Margin="0,0,0,20">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <CheckBox IsChecked="{Binding ClassSection.Activate}" VerticalAlignment="Center" Margin="0,0,15,0">
-                                    <TextBlock Text="Is Active" Foreground="#333" FontWeight="SemiBold"/>
-                                </CheckBox>
-                                <Button Grid.Column="1" Content="Active Now" 
-                                        Style="{StaticResource RainbowButtonStyle}" 
-                                        Command="{Binding ActiveClickCommand}" Height="35"/>
-                            </Grid>
-
-                            <Expander Grid.Row="2" Header="View Timeline (Dates)" Foreground="#8B5CF6" FontWeight="SemiBold" IsExpanded="True" VerticalAlignment="Top">
-                                <Border Background="White" CornerRadius="8" Padding="15" Margin="0,10,0,0" BorderBrush="#E0E0E0" BorderThickness="1">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-
-                                        <TextBlock Grid.Row="0" Text="Entry Date" FontSize="10" Foreground="Gray"/>
-                                        <TextBox Grid.Row="1" Text="{Binding ClassSection.EntryDate, StringFormat='dd-MMM-yyyy'}" Margin="0,2,0,10" IsReadOnly="True" Background="#F5F5F5"/>
-
-                                        <TextBlock Grid.Row="2" Text="Start Date" FontSize="10" Foreground="Gray"/>
-                                        <TextBox Grid.Row="3" Text="{Binding ClassSection.StartDate, StringFormat='dd-MMM-yyyy'}" Margin="0,2,0,10" IsReadOnly="True" Background="#F5F5F5"/>
-
-                                        <TextBlock Grid.Row="4" Text="End Date" FontSize="10" Foreground="Gray"/>
-                                        <TextBox Grid.Row="5" Text="{Binding ClassSection.EndDate, StringFormat='dd-MMM-yyyy'}" Margin="0,2,0,10" IsReadOnly="True" Background="#F5F5F5"/>
-
-                                        <TextBlock Grid.Row="6" Text="Last Update" FontSize="10" Foreground="Gray"/>
-                                        <TextBox Grid.Row="7" Text="{Binding ClassSection.LastUpdate, StringFormat='dd-MMM-yyyy'}" Margin="0,2,0,0" IsReadOnly="True" Background="#F5F5F5"/>
-                                    </Grid>
-                                </Border>
-                            </Expander>
-                        </Grid>
-                    </Border>
+                    <!-- Buttons Panel -->
+                    <UniformGrid Grid.Row="4" Columns="5" Height="45" Margin="0,5,0,0">
+                        <Button Content="ADD" Style="{StaticResource RainbowButtonStyle}" Margin="2,0" Command="{Binding AddCommand}" Visibility="{Binding IsAddButtonVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <Button Content="SAVE" Style="{StaticResource RainbowButtonStyle}" Margin="2,0" Command="{Binding SaveCommand}"/>
+                        <Button Content="DELETE" Style="{StaticResource RainbowButtonStyle}" Margin="2,0" Command="{Binding DeleteCommand}"/>
+                        <Button Content="EDIT" Style="{StaticResource RainbowButtonStyle}" Margin="2,0" Command="{Binding EditCommand}"/>
+                        <Button Content="EXIT" Style="{StaticResource RainbowButtonStyle}" Margin="2,0" Command="{Binding ExitCommand}"/>
+                    </UniformGrid>
                 </Grid>
             </Border>
         </Border>

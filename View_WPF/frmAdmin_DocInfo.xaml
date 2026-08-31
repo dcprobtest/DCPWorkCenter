@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:View_WPF.ModelView_WPF;assembly=ModelView_WPF" 
+        xmlns:local="clr-namespace:View_WPF"
         mc:Ignorable="d"
         Title="DCP Document Manager" Height="650" Width="1050" 
         Background="White" 
@@ -202,25 +203,63 @@
                 </Grid.ColumnDefinitions>
 
                 <Border Grid.Column="0" BorderBrush="#BDC3C7" BorderThickness="1" Background="White">
-                    <DataGrid ItemsSource="{Binding Documents}" 
+                    <ListView ItemsSource="{Binding Documents}" 
                               SelectedItem="{Binding SelectedDocument, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                              AutoGenerateColumns="False" 
-                              CanUserAddRows="False" GridLinesVisibility="All" HorizontalGridLinesBrush="#DCDDE1" 
-                              VerticalGridLinesBrush="#DCDDE1" BorderThickness="0">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="100"/>
-                            <DataGridTextColumn Header="EntryDate" Binding="{Binding EntryDate, StringFormat='dd-MM-yyyy'}" Width="*"/>
-                            <DataGridTextColumn Header="StartDate" Binding="{Binding CustomStartDate, StringFormat='dd-MM-yyyy'}" Width="*"/>
-                            <DataGridTextColumn Header="EndDate" Binding="{Binding CustomEndDate, StringFormat='dd-MM-yyyy'}" Width="*"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
+                              BorderThickness="0"
+                              HorizontalContentAlignment="Stretch"
+                              ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="Margin" Value="0,4"/>
+                                <Setter Property="Cursor" Value="Hand"/>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="#F8F9F9" BorderBrush="#DCDDE1" BorderThickness="1" CornerRadius="4" Padding="10">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Column="0" Text="{Binding Type}" FontWeight="Bold" Foreground="#2C3E50" VerticalAlignment="Center"/>
+
+                                        <Grid Grid.Column="1" HorizontalAlignment="Right">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Grid.Row="0" Text="{Binding EntryDate, StringFormat=Entry: {0:dd-MM-yyyy}}" FontSize="11" Foreground="#7F8C8D" HorizontalAlignment="Right"/>
+                                            <TextBlock Grid.Row="1" Text="{Binding CustomEndDate, StringFormat=End: {0:dd-MM-yyyy}}" FontSize="11" Foreground="#E74C3C" HorizontalAlignment="Right"/>
+                                        </Grid>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
                 </Border>
 
                 <Border Grid.Column="1" Background="#EAECEE" Margin="15,0,0,0" BorderBrush="#BDC3C7" BorderThickness="1">
-                    <Grid>
-                        <Image Source="{Binding SelectedDocument.Path}" Margin="5" Stretch="Uniform"/>
-                        <WebBrowser x:Name="docPreview" Margin="2" Visibility="Collapsed"/>
-                    </Grid>
+                    <ContentControl Content="{Binding SelectedDocument.Path}">
+                        <ContentControl.ContentTemplateSelector>
+                            <local:DocumentTemplateSelector>
+                                <local:DocumentTemplateSelector.ImageTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{Binding}" Stretch="Uniform" Margin="5"/>
+                                    </DataTemplate>
+                                </local:DocumentTemplateSelector.ImageTemplate>
+
+                                <local:DocumentTemplateSelector.BrowserTemplate>
+                                    <DataTemplate>
+                                        <WebBrowser local:BrowserBehavior.Html="{Binding}" />
+                                    </DataTemplate>
+                                </local:DocumentTemplateSelector.BrowserTemplate>
+                            </local:DocumentTemplateSelector>
+                        </ContentControl.ContentTemplateSelector>
+                    </ContentControl>
                 </Border>
             </Grid>
 
@@ -295,8 +334,8 @@
                     <TextBlock Grid.Row="1" Text="Employer Name" Margin="0,5" FontWeight="SemiBold" Foreground="#34495E"/>
 
                     <TextBox Grid.Row="2" Height="38" VerticalContentAlignment="Center" Margin="0,0,0,20" Padding="5,0"
-                               Text="{Binding PopupEmployerName, UpdateSourceTrigger=PropertyChanged}"
-                               IsReadOnly="True" Background="#F0F0F0"/>
+                             Text="{Binding PopupEmployerName, UpdateSourceTrigger=PropertyChanged}"
+                             IsReadOnly="True" Background="#F0F0F0"/>
 
                     <Grid Grid.Row="3" Margin="0,0,0,20">
                         <Grid.ColumnDefinitions>
