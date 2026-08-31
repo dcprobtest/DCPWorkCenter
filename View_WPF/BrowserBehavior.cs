@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using Spire.Doc;
 
@@ -17,7 +18,7 @@ namespace View_WPF
         public static string GetHtml(DependencyObject obj) => (string)obj.GetValue(HtmlProperty);
         public static void SetHtml(DependencyObject obj, string value) => obj.SetValue(HtmlProperty, value);
 
-        private static void OnHtmlChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static async void OnHtmlChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is System.Windows.Controls.WebBrowser browser)
             {
@@ -35,10 +36,13 @@ namespace View_WPF
 
                     if (extension == ".docx" || extension == ".doc")
                     {
-                        string pdfPath = ConvertWordToPdfUsingSpire(filePath);
-                        if (!string.IsNullOrEmpty(pdfPath) && File.Exists(pdfPath))
+                        browser.NavigateToString("<html><body style='font-family:Segoe UI; text-align:center; padding-top:50px;'><h3>Loading document preview, please wait...</h3></body></html>");
+
+                        string htmlContent = await Task.Run(() => ConvertWordToHtmlUsingSpire(filePath));
+
+                        if (!string.IsNullOrEmpty(htmlContent))
                         {
-                            browser.Navigate(pdfPath);
+                            browser.NavigateToString(htmlContent);
                             return;
                         }
                     }
@@ -52,29 +56,31 @@ namespace View_WPF
             }
         }
 
-        private static string ConvertWordToPdfUsingSpire(string wordFilePath)
+        private static string ConvertWordToHtmlUsingSpire(string wordFilePath)
         {
             try
             {
-                string tempDir = Path.GetTempPath();
-                string fileNameWithoutExt = Path.GetFileNameWithoutExtension(wordFilePath);
-                string pdfPath = Path.Combine(tempDir, $"{fileNameWithoutExt}_preview.pdf");
-
-                if (File.Exists(pdfPath))
+                using (Document document = new Document())
                 {
-                    try { File.Delete(pdfPath); } catch { }
+                    document.LoadFromFile(wordFilePath);
+
+                    using (MemoryStream stream = new MemoryStream())
+                    {
+                        document.SaveToStream(stream, FileFormat.Html);
+                        stream.Position = 0;
+                        using (StreamReader reader = new StreamReader(stream))
+                        {
+                            return reader.ReadToEnd();
+                        }
+                    }
                 }
-
-                Document document = new Document();
-                document.LoadFromFile(wordFilePath);
-                document.SaveToFile(pdfPath, FileFormat.PDF);
-                document.Close();
-
-                return pdfPath;
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show("Conversion Error: " + ex.Message);
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    System.Windows.MessageBox.Show("Conversion Error: " + ex.Message);
+                });
                 return null;
             }
         }
