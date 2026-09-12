@@ -1,16 +1,17 @@
-﻿using System;
+﻿using Model_WPF;
+using ModelView_WPF.Helpers;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using Model_WPF;
-using ModelView_WPF.Helpers;
 
 namespace ModelView_WPF
 {
@@ -223,6 +224,24 @@ namespace ModelView_WPF
             {
                 MessageBox.Show("Please enter Subject Code.");
                 return;
+            }
+
+            CurrentSubject.SubjectCode = CurrentSubject.SubjectCode.Trim();
+
+            if (!string.IsNullOrWhiteSpace(CurrentSubject.SubjectDesc))
+            {
+                try
+                {
+                    string targetFolder = Path.Combine(@"C:\DCP_Videos", CurrentSubject.SubjectDesc.Trim());
+                    if (!Directory.Exists(targetFolder))
+                    {
+                        Directory.CreateDirectory(targetFolder);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Warning: Could not create Subject directory. {ex.Message}");
+                }
             }
 
             CurrentSubject.LastUpdate = DateTime.Now;

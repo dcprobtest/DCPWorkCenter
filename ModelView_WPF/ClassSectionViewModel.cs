@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -329,6 +330,23 @@ namespace ModelView_WPF
             if (SelectedSubjectCode != null && string.IsNullOrEmpty(ClassSection.SubjectCode))
             {
                 ClassSection.SubjectCode = SelectedSubjectCode.SubjectCode;
+            }
+
+            // Folder Creation Logic for C:\DCP_Videos\[SubjectDesc]\[SectionDesc]
+            if (SelectedSubjectCode != null && !string.IsNullOrWhiteSpace(SelectedSubjectCode.SubjectDesc) && !string.IsNullOrWhiteSpace(ClassSection.SectionDesc))
+            {
+                try
+                {
+                    string targetFolder = Path.Combine(@"C:\DCP_Videos", SelectedSubjectCode.SubjectDesc, ClassSection.SectionDesc);
+                    if (!Directory.Exists(targetFolder))
+                    {
+                        Directory.CreateDirectory(targetFolder);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Warning: Could not create section folder. {ex.Message}");
+                }
             }
 
             ClassSection.LastUpdate = DateTime.Now;

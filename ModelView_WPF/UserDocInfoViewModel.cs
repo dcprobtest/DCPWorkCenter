@@ -101,23 +101,39 @@ namespace View_WPF.ModelView_WPF
                 if (_selectedDocument != null)
                 {
                     SelectedDocumentPath = _selectedDocument.Path;
-                    if (_selectedDocument.PreviewSource == null)
+                    _ = CheckAndLoadDocumentPreview(_selectedDocument);
+                }
+            }
+        }
+
+        private async Task CheckAndLoadDocumentPreview(DocumentModel doc)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(doc.Path) || !File.Exists(doc.Path))
+                {
+                    if (!string.IsNullOrEmpty(UID) && !string.IsNullOrEmpty(doc.Type))
                     {
-                        if (string.IsNullOrEmpty(_selectedDocument.Path))
+                        string tempDir = Path.GetTempPath();
+                        string tempFilePath = Path.Combine(tempDir, $"{UID}_{doc.Type}_preview.docx");
+
+                        string downloadUrl = $"{ApiSettings.BaseUrl}/api/Data/DownloadFileByUidAndType/{UID}/{doc.Type}";
+                        var response = await _httpClient.GetAsync(downloadUrl);
+
+                        if (response.IsSuccessStatusCode)
                         {
-                            MessageBox.Show("Error: Selected document path is empty or null.", "Preview Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        }
-                        else if (!File.Exists(_selectedDocument.Path))
-                        {
-                            MessageBox.Show($"Error: File does not exist at path: {_selectedDocument.Path}", "Preview Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        }
-                        else
-                        {
-                            string ext = System.IO.Path.GetExtension(_selectedDocument.Path).ToLower();
-                            MessageBox.Show($"Error: Unsupported file extension '{ext}' for preview.", "Preview Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            var bytes = await response.Content.ReadAsByteArrayAsync();
+                            await File.WriteAllBytesAsync(tempFilePath, bytes);
+
+                            doc.Path = tempFilePath;
+                            SelectedDocumentPath = tempFilePath;
                         }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Auto-preview load failed: " + ex.Message);
             }
         }
 

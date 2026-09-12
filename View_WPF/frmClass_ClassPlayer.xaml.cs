@@ -51,6 +51,14 @@ namespace View_WPF
             };
             _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
 
+            Player.MediaFailed += (s, e) => {
+                System.Windows.MessageBox.Show("Media Failed Reason: " + e.ErrorException?.Message, "Video Playback Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            };
+
+            Player.MediaOpened += (s, e) => {
+                System.Diagnostics.Debug.WriteLine("Video opened and ready to play!");
+            };
+
             SetupTimer();
             _ = LoadDataFromApi();
 
@@ -62,7 +70,6 @@ namespace View_WPF
         {
             try
             {
-                // SectionID যদি না থাকে বা নাল হয়, তবে API কল এড়িয়ে যাওয়া হবে যেন ভ্যালিডেশন এরর না আসে
                 if (string.IsNullOrEmpty(_currentSectionId))
                 {
                     return;
@@ -105,30 +112,50 @@ namespace View_WPF
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonString = await response.Content.ReadAsStringAsync();
-                    var apiVideos = JsonSerializer.Deserialize<List<ApiVideoResponse>>(jsonString, new JsonSerializerOptions
+                    var apiSubjects = JsonSerializer.Deserialize<List<ApiSubjectResponse>>(jsonString, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     });
 
-                    if (apiVideos != null && apiVideos.Count > 0)
+                    if (apiSubjects != null && apiSubjects.Count > 0)
                     {
-                        var subject = new SubjectViewModel { SubjectDesc = "My Enrolled Courses" };
-                        var section = new SectionViewModel { SectionDesc = "Assigned Lessons" };
-
-                        foreach (var v in apiVideos)
+                        foreach (var sub in apiSubjects)
                         {
-                            var videoItem = new VideoTreeItem
+                            var subjectViewModel = new SubjectViewModel
                             {
-                                SectionID = v.SectionID,
-                                VideoTitle = v.ClassContent,
-                                FilePath = v.ClassPath
+                                SubjectCode = sub.SubjectCode,
+                                SubjectDesc = sub.SubjectDesc
                             };
-                            section.Videos.Add(videoItem);
-                            _allVideosList.Add(videoItem);
-                        }
 
-                        subject.Sections.Add(section);
-                        CourseContent.Add(subject);
+                            if (sub.Sections != null)
+                            {
+                                foreach (var sec in sub.Sections)
+                                {
+                                    var sectionViewModel = new SectionViewModel
+                                    {
+                                        SectionID = sec.SectionCode,
+                                        SectionDesc = sec.SectionDesc
+                                    };
+
+                                    if (sec.Videos != null)
+                                    {
+                                        foreach (var v in sec.Videos)
+                                        {
+                                            var videoItem = new VideoTreeItem
+                                            {
+                                                SectionID = v.SectionId ?? sec.SectionCode,
+                                                VideoTitle = !string.IsNullOrEmpty(v.ClassContent) ? v.ClassContent : Path.GetFileName(v.ClassPath),
+                                                FilePath = v.ClassPath
+                                            };
+                                            sectionViewModel.Videos.Add(videoItem);
+                                            _allVideosList.Add(videoItem);
+                                        }
+                                    }
+                                    subjectViewModel.Sections.Add(sectionViewModel);
+                                }
+                            }
+                            CourseContent.Add(subjectViewModel);
+                        }
                     }
                 }
             }
@@ -217,15 +244,43 @@ namespace View_WPF
 
         private async Task PlaySelectedVideo(VideoTreeItem video)
         {
-            if (video != null && !string.IsNullOrEmpty(video.FilePath) && File.Exists(video.FilePath))
+            if (video != null && !string.IsNullOrEmpty(video.FilePath))
             {
                 _currentSectionId = video.SectionID;
 
-                Player.Source = new Uri(video.FilePath);
-                Player.Play();
-                _timer.Start();
-                BtnPlay.Content = "⏸";
-                await LogActivity("4");
+                string videoUrl = video.FilePath.Trim();
+
+                if (videoUrl.Contains("DCP_Videos", StringComparison.OrdinalIgnoreCase))
+                {
+                    int index = videoUrl.IndexOf("DCP_Videos", StringComparison.OrdinalIgnoreCase);
+                    videoUrl = videoUrl.Substring(index + "DCP_Videos".Length);
+                }
+
+                videoUrl = videoUrl.Replace('\\', '/').TrimStart('/');
+
+                var segments = videoUrl.Split('/');
+                var encodedSegments = segments.Select(s => Uri.EscapeDataString(s));
+                string relativePath = string.Join("/", encodedSegments);
+
+                if (!videoUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                {
+                    videoUrl = ApiSettings.BaseUrl.TrimEnd('/') + "/Videos/" + relativePath;
+                }
+
+                System.Diagnostics.Debug.WriteLine("Final Video URL: " + videoUrl);
+
+                try
+                {
+                    Player.Source = new Uri(videoUrl);
+                    Player.Play();
+                    _timer.Start();
+                    BtnPlay.Content = "⏸";
+                    await LogActivity("4");
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.MessageBox.Show("Video play error: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
@@ -315,9 +370,24 @@ namespace View_WPF
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
+    public class ApiSubjectResponse
+    {
+        public string SubjectCode { get; set; }
+        public string SubjectDesc { get; set; }
+        public List<ApiSectionResponse> Sections { get; set; }
+    }
+
+    public class ApiSectionResponse
+    {
+        public string SectionCode { get; set; }
+        public string SectionDesc { get; set; }
+        public List<ApiVideoResponse> Videos { get; set; }
+    }
+
     public class ApiVideoResponse
     {
-        public string SectionID { get; set; }
+        public int ClassID { get; set; }
+        public string SectionId { get; set; }
         public string ClassContent { get; set; }
         public string ClassPath { get; set; }
     }
