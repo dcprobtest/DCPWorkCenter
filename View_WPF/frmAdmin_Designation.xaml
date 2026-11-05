@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:ModelView_WPF;assembly=ModelView_WPF"
-        Title="Designation Management" Height="580" Width="720"
+        Title="Designation Management" Height="680" Width="1040"
         WindowStartupLocation="CenterScreen" Background="#FFF7F7F7"
         ResizeMode="NoResize">
 
@@ -15,19 +15,24 @@
             <Setter Property="Background" Value="White"/>
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="BorderBrush" Value="#CCC"/>
-            <Setter Property="Padding" Value="6,4"/>
-            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="FontSize" Value="13"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Height" Value="32"/>
             <Setter Property="CaretBrush" Value="Black"/>
         </Style>
 
         <Style TargetType="DatePicker">
-            <Setter Property="FontSize" Value="11"/>
-            <Setter Property="Padding" Value="2"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="#CCC"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
 
         <Style x:Key="RainbowButtonStyle" TargetType="Button">
-            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
@@ -40,13 +45,15 @@
                                         <LinearGradientBrush.RelativeTransform>
                                             <RotateTransform x:Name="BtnRotate" CenterX="0.5" CenterY="0.5" Angle="0" />
                                         </LinearGradientBrush.RelativeTransform>
-                                        <GradientStop Color="#00FF00" Offset="0.0"/>
-                                        <GradientStop Color="#00FFFF" Offset="0.3"/>
-                                        <GradientStop Color="#0000FF" Offset="0.6"/>
+                                        <GradientStop Color="#FF0000" Offset="0.0"/>
+                                        <GradientStop Color="#FFFF00" Offset="0.2"/>
+                                        <GradientStop Color="#00FF00" Offset="0.4"/>
+                                        <GradientStop Color="#00FFFF" Offset="0.6"/>
+                                        <GradientStop Color="#0000FF" Offset="0.8"/>
                                         <GradientStop Color="#FF00FF" Offset="1.0"/>
                                     </LinearGradientBrush>
                                 </Border.Background>
-                                <Border Background="#0B0B0D" CornerRadius="6">
+                                <Border Background="White" CornerRadius="6">
                                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
                             </Border>
@@ -68,25 +75,25 @@
 
     <Grid>
         <!-- Background Blur Effect -->
-        <Ellipse IsHitTestVisible="False" Fill="#1500FF95" Width="500" Height="450" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="-150,0,0,-60">
+        <Ellipse IsHitTestVisible="False" Fill="#156200EE" Width="500" Height="450" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,-80,-60">
             <Ellipse.Effect>
                 <BlurEffect Radius="100"/>
             </Ellipse.Effect>
         </Ellipse>
 
-        <Grid Margin="20">
+        <Grid Margin="40,40,60,40">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <!-- Title -->
-            <TextBlock Text="Designation Setup" FontSize="22" Foreground="#222" Margin="0,0,0,15" HorizontalAlignment="Center" FontWeight="Bold"/>
+            <TextBlock Text="Designation Management" FontSize="32" FontWeight="Bold" Foreground="#FF1A1A1C" Margin="0,0,0,30" HorizontalAlignment="Center"/>
 
             <!-- Main Rainbow Border -->
-            <Border Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top" CornerRadius="14" Padding="2">
+            <Border Grid.Row="1" Width="920" HorizontalAlignment="Center" VerticalAlignment="Top" CornerRadius="25" Padding="2">
                 <Border.Background>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <LinearGradientBrush x:Name="MainGradient" StartPoint="0,0" EndPoint="1,1">
                         <LinearGradientBrush.RelativeTransform>
                             <RotateTransform x:Name="MainBorderRotate" CenterX="0.5" CenterY="0.5" Angle="0" />
                         </LinearGradientBrush.RelativeTransform>
@@ -103,123 +110,97 @@
                     <EventTrigger RoutedEvent="Loaded">
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetName="MainBorderRotate" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:6" RepeatBehavior="Forever" />
+                                <DoubleAnimation Storyboard.TargetName="MainBorderRotate" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:10" RepeatBehavior="Forever" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
                 </Border.Triggers>
 
                 <!-- Inner Card Form Area -->
-                <Border Background="#FFEBEAE9" CornerRadius="12" Padding="25">
+                <Border Background="#FFEBEAE9" CornerRadius="23" Padding="25">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
-                            <!-- Row 0: Code & Name -->
                             <RowDefinition Height="Auto"/>
-                            <!-- Row 1: 3 Dates -->
                             <RowDefinition Height="Auto"/>
-                            <!-- Row 2: Responsibility -->
                             <RowDefinition Height="Auto"/>
-                            <!-- Row 3: Description -->
                             <RowDefinition Height="Auto"/>
-                            <!-- Row 4: Active Checkbox -->
                             <RowDefinition Height="Auto"/>
-                            <!-- Row 5: Save Button -->
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="220"/>
-                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="400"/>
                         </Grid.ColumnDefinitions>
 
                         <!-- Row 0: Designation Code & Designation Name -->
-                        <Grid Grid.Row="0" Grid.Column="0" Margin="0,0,10,12">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <TextBlock Text="Designation Code" Foreground="#1C1B1B" FontSize="12" Margin="0,0,0,4"/>
-                            <TextBox x:Name="txtDesigCode" Grid.Row="1" Height="30" Text="{Binding Designation.DesigCode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MaxLength="10"/>
-                        </Grid>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Designation Code" Foreground="#666" Margin="10,0,10,3"/>
+                        <TextBox x:Name="txtDesigCode" Text="{Binding Designation.DesigCode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" IsEnabled="{Binding IsEditing}" Grid.Row="1" Grid.Column="0" Width="105" HorizontalAlignment="Left" Margin="10,3,0,16" MaxLength="10"/>
 
-                        <Grid Grid.Row="0" Grid.Column="1" Margin="10,0,0,12">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <TextBlock Text="Designation Name" Foreground="#1C1B1B" FontSize="12" Margin="0,0,0,4"/>
-                            <TextBox x:Name="txtDesigName" Grid.Row="1" Height="30" Text="{Binding Designation.DesigName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                        </Grid>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="Designation Name" Foreground="#666" Margin="146,0,0,3" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+                        <TextBox x:Name="txtDesigName" Text="{Binding Designation.DesigName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" IsEnabled="{Binding IsEditing}" Grid.Row="1" Width="188" HorizontalAlignment="Left" Margin="144,3,0,16" Grid.ColumnSpan="2"/>
 
-                        <!-- Row 1: 3 Date Pickers (Entry Date, Start Date, End Date) -->
-                        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,12">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
+                        <!-- Row 1: Entry Date, Start Date, End Date -->
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Entry Date" Foreground="#666" Margin="10,0,10,3"/>
+                        <DatePicker SelectedDate="{Binding Designation.EntryDate, Mode=TwoWay}" IsEnabled="{Binding IsEditing}" Grid.Row="3" Grid.Column="0" Width="105" HorizontalAlignment="Left" Margin="10,3,0,15"/>
 
-                            <Grid Grid.Column="0" Margin="0,0,8,0">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-                                <TextBlock Text="Entry Date" Foreground="#1C1B1B" FontSize="12" Margin="0,0,0,4"/>
-                                <DatePicker Grid.Row="1" Height="30" VerticalContentAlignment="Center" SelectedDate="{Binding Designation.EntryDate, Mode=TwoWay}"/>
-                            </Grid>
+                        <TextBlock Grid.Row="1" Text="Start Date" Foreground="#666" Margin="141,71,0,3" HorizontalAlignment="Left" Grid.RowSpan="2" Width="66" Grid.ColumnSpan="2"/>
+                        <DatePicker SelectedDate="{Binding Designation.StartDate, Mode=TwoWay}" IsEnabled="{Binding IsEditing}" Grid.Row="3" Width="112" HorizontalAlignment="Left" Margin="138,3,0,15" Grid.ColumnSpan="2"/>
 
-                            <Grid Grid.Column="1" Margin="4,0,4,0">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-                                <TextBlock Text="Start Date" Foreground="#1C1B1B" FontSize="12" Margin="0,0,0,4"/>
-                                <DatePicker Grid.Row="1" Height="30" VerticalContentAlignment="Center" SelectedDate="{Binding Designation.StartDate, Mode=TwoWay}"/>
-                            </Grid>
-
-                            <Grid Grid.Column="2" Margin="8,0,0,0">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-                                <TextBlock Text="End Date" Foreground="#1C1B1B" FontSize="12" Margin="0,0,0,4"/>
-                                <DatePicker Grid.Row="1" Height="30" VerticalContentAlignment="Center" SelectedDate="{Binding Designation.EndDate, Mode=TwoWay}"/>
-                            </Grid>
-                        </Grid>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="End Date" Foreground="#666" Margin="76,71,0,3" HorizontalAlignment="Left" Grid.RowSpan="2" Width="130" Grid.ColumnSpan="2"/>
+                        <DatePicker SelectedDate="{Binding Designation.EndDate, Mode=TwoWay}" IsEnabled="{Binding IsEditing}" Grid.Row="3" Grid.Column="1" Width="117" HorizontalAlignment="Left" Margin="75,3,0,15" Grid.ColumnSpan="2"/>
 
                         <!-- Row 2: Responsibility -->
-                        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,12">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <TextBlock Text="Responsibility" Foreground="#1C1B1B" FontSize="12" Margin="0,0,0,4"/>
-                            <TextBox x:Name="txtResponsibility" Grid.Row="1" Height="30" Text="{Binding Designation.Responsiblity, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                        </Grid>
+                        <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Text="Responsibility" Foreground="#666" Margin="10,0,10,3"/>
+                        <TextBox x:Name="txtResponsibility" Text="{Binding Designation.Responsiblity, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" IsEnabled="{Binding IsEditing}" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Width="386" HorizontalAlignment="Left" Margin="10,0,0,12"/>
 
                         <!-- Row 3: Description -->
-                        <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,12">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <TextBlock Text="Description" Foreground="#1C1B1B" FontSize="12" Margin="0,0,0,4"/>
-                            <TextBox x:Name="txtDescription" Grid.Row="1" Height="55" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" 
-                                     Text="{Binding Designation.Description, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                        </Grid>
+                        <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Text="Description" Foreground="#666" FontSize="12" Margin="10,0,10,3"/>
+                        <TextBox x:Name="txtDescription" Text="{Binding Designation.Description, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" IsEnabled="{Binding IsEditing}" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="3" Width="386" Height="50" HorizontalAlignment="Left" Margin="10,0,0,10" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"/>
 
-                        <!-- Row 4: Active Status Checkbox -->
-                        <CheckBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,4,0,20" VerticalAlignment="Center" IsChecked="{Binding IsActiveChecked, Mode=TwoWay}">
-                            <TextBlock Text="Mark as Active" Foreground="Black" FontSize="13" Margin="4,0,0,0"/>
+                        <!-- Row 3 right side: Active Status Checkbox -->
+                        <CheckBox Grid.Row="8" Grid.Column="2" Margin="54,0,0,12" IsChecked="{Binding IsActiveChecked, Mode=TwoWay}" IsEnabled="{Binding IsEditing}" HorizontalAlignment="Left" Width="140" Height="16" VerticalAlignment="Bottom" Grid.ColumnSpan="2">
+                            <TextBlock Text="Active Status" Foreground="Black" FontSize="13"/>
                         </CheckBox>
 
-                        <!-- Row 5: Save Button -->
-                        <Button x:Name="btnSaveDesignation" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" 
-                                Height="38" Width="180" 
-                                Content="SAVE DESIGNATION" 
-                                Style="{StaticResource RainbowButtonStyle}" 
-                                HorizontalAlignment="Center" 
-                                Command="{Binding SaveCommand}"/>
+                        <!-- ListView with fixed Height and ScrollViewer -->
+                        <ScrollViewer Grid.Column="2" Grid.Row="1" Grid.RowSpan="5" Grid.ColumnSpan="2" 
+                                      VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
+                                      Height="205" Margin="75,0,85,0">
+                            <ListView ItemsSource="{Binding DesignationList}" 
+                                      SelectedItem="{Binding SelectedDesignation}" 
+                                      BorderBrush="Transparent" Background="Transparent">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Desig Code" DisplayMemberBinding="{Binding DesigCode}" Width="85"/>
+                                        <GridViewColumn Header="Desig Name" DisplayMemberBinding="{Binding DesigName}" Width="110"/>
+                                        <GridViewColumn Header="Entry Date" DisplayMemberBinding="{Binding EntryDate, StringFormat={}{0:yyyy-MM-dd}}" Width="80"/>
+                                        <GridViewColumn Header="Active" DisplayMemberBinding="{Binding Activate}" Width="50"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </ScrollViewer>
+
+                        <!-- Action Buttons -->
+                        <Button Command="{Binding AddCommand}" Grid.Row="8" Grid.Column="0" Height="32" Width="65" 
+                                Content="ADD" Style="{StaticResource RainbowButtonStyle}" HorizontalAlignment="Left" Margin="10,5,0,0"/>
+
+                        <Button x:Name="btnSaveDesignation" Command="{Binding SaveCommand}" Grid.Row="8" Grid.Column="0" Height="32" Width="65" 
+                                Content="SAVE" Style="{StaticResource RainbowButtonStyle}" HorizontalAlignment="Left" Margin="82,5,0,0"/>
+
+                        <Button Command="{Binding EditCommand}" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Height="32" Width="65" 
+                                Content="EDIT" Style="{StaticResource RainbowButtonStyle}" HorizontalAlignment="Left" Margin="154,5,0,0"/>
+
+                        <Button Command="{Binding DeleteCommand}" Grid.Row="8" Grid.Column="1" Height="32" Width="72" 
+                                Content="DELETE" Style="{StaticResource RainbowButtonStyle}" HorizontalAlignment="Left" Margin="26,5,0,0"/>
+
+                        <Button Command="{Binding ExitCommand}" Grid.Row="8" Grid.Column="1" Height="32" Width="72" 
+                                Content="EXIT" Style="{StaticResource RainbowButtonStyle}" HorizontalAlignment="Left" Margin="107,5,0,0" Grid.ColumnSpan="2"/>
                     </Grid>
                 </Border>
             </Border>

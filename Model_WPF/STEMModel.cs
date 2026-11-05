@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-// Primary Key সেট করার জন্য নিচের namespace টি প্রয়োজন
 using System.ComponentModel.DataAnnotations;
 
 namespace Model_WPF
@@ -11,7 +10,7 @@ namespace Model_WPF
     public class STEMModel
     {
         // TransID (varchar(11))
-        [Key] // এটি যোগ করা হয়েছে কারণ TransID এখন Primary Key
+        [Key] 
         public string TransID { get; set; }
 
         // AdminUID (varchar(6))
@@ -27,7 +26,6 @@ namespace Model_WPF
         public string dMonth { get; set; }
 
         // PayDate (date) 
-        // Allow Nulls চেক করা আছে বলে DateTime? (Nullable) ব্যবহার করা হয়েছে
         public DateTime? PayDate { get; set; }
 
         // Hours (varchar(3))

@@ -10,8 +10,28 @@
             <Setter Property="Background" Value="White"/>
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="BorderBrush" Value="#CCC"/>
-            <Setter Property="Padding" Value="10,8"/>
-            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Height" Value="32"/>
+        </Style>
+
+        <Style TargetType="DatePicker">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="#CCC"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="#CCC"/>
+            <Setter Property="Padding" Value="6,2"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Height" Value="32"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
 
@@ -23,7 +43,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Grid x:Name="BtnRoot">
-                            <Border CornerRadius="10" Padding="2">
+                            <Border CornerRadius="8" Padding="2">
                                 <Border.Background>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                                         <LinearGradientBrush.RelativeTransform>
@@ -34,7 +54,7 @@
                                         <GradientStop Color="#0000FF" Offset="1.0"/>
                                     </LinearGradientBrush>
                                 </Border.Background>
-                                <Border Background="White" CornerRadius="8">
+                                <Border Background="White" CornerRadius="6">
                                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
                             </Border>
@@ -61,7 +81,7 @@
             </Ellipse.Effect>
         </Ellipse>
 
-        <Grid Margin="40">
+        <Grid Margin="40,40,60,40">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -94,10 +114,9 @@
                     </EventTrigger>
                 </Border.Triggers>
 
-                <Border Background="#FFEBEAE9" CornerRadius="23" Padding="30">
+                <Border Background="#FFEBEAE9" CornerRadius="23" Padding="25">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
@@ -110,62 +129,76 @@
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="200"/>
-                            <ColumnDefinition Width="130"/>
-                            <ColumnDefinition Width="70"/>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="150"/>
                             <ColumnDefinition Width="400"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="User ID (UID)" Foreground="#666" Margin="10,0,10,5"/>
-                        <TextBox Text="{Binding UID}" Grid.Row="1" Grid.Column="0" Margin="10,0,10,15"/>
+                        <!-- User ID & Password -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="User ID (UID)" Foreground="#666" Margin="10,0,10,3"/>
+                        <TextBox Text="{Binding UID}" IsEnabled="{Binding IsEditing}" Grid.Row="1" Grid.Column="0" Width="180" HorizontalAlignment="Left" Margin="10,0,0,12"/>
 
-                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Password" Foreground="#666" Margin="10,0,10,5"/>
-                        <TextBox Text="{Binding Password}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="10,0,10,15"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Password" Foreground="#666" Margin="10,0,10,3"/>
+                        <TextBox Text="{Binding Password}" IsEnabled="{Binding IsEditing}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Width="186" HorizontalAlignment="Left" Margin="10,0,0,12"/>
 
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Phone Number" Foreground="#666" Margin="10,0,1,5"/>
-                        <TextBox Text="{Binding Phone}" Grid.Row="3" Grid.Column="0" Margin="10,0,10,15"/>
+                        <!-- Phone Number & Entry Date -->
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Phone Number" Foreground="#666" Margin="10,0,10,3"/>
+                        <TextBox Text="{Binding Phone}" IsEnabled="{Binding IsEditing}" Grid.Row="3" Grid.Column="0" Width="180" HorizontalAlignment="Left" Margin="10,0,10,12"/>
 
-                        <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Text="Entry Date" Foreground="#666" Margin="10,0,10,5"/>
-                        <DatePicker SelectedDate="{Binding EntryDate}" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="10,0,10,25"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Text="Entry Date" Foreground="#666" Margin="10,0,10,3"/>
+                        <DatePicker SelectedDate="{Binding EntryDate}" IsEnabled="{Binding IsEditing}" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Width="186" HorizontalAlignment="Left" Margin="10,0,0,12"/>
 
-                        <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Text="Email Address" Foreground="#666" Margin="10,0,10,5"/>
-                        <TextBox Text="{Binding Email}" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Margin="10,0,10,15"/>
+                        <!-- Email Address -->
+                        <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Text="Email Address" Foreground="#666" Margin="10,0,10,3"/>
+                        <TextBox Text="{Binding Email}" IsEnabled="{Binding IsEditing}" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Width="386" HorizontalAlignment="Left" Margin="10,0,0,12"/>
 
-                        <TextBlock Grid.Row="6" Grid.Column="0" Text="Start Date" Foreground="#666" FontSize="12" Margin="10,5,10,2"/>
-                        <DatePicker SelectedDate="{Binding StartDate}" Grid.Row="7" Grid.Column="0" Margin="10,0,10,15"/>
+                        <!-- Start Date, End Date, Active -->
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="Start Date" Foreground="#666" FontSize="12" Margin="10,0,10,3"/>
+                        <DatePicker SelectedDate="{Binding StartDate}" IsEnabled="{Binding IsEditing}" Grid.Row="7" Grid.Column="0" Width="180" HorizontalAlignment="Left" Margin="10,0,10,10"/>
 
-                        <TextBlock Grid.Row="6" Grid.Column="1" Text="End Date" Foreground="#666" FontSize="12" Margin="10,5,10,2"/>
-                        <DatePicker SelectedDate="{Binding EndDate}" Grid.Row="7" Grid.Column="1" Margin="10,0,10,15"/>
+                        <TextBlock Grid.Row="6" Grid.Column="1" Text="End Date" Foreground="#666" FontSize="12" Margin="10,0,10,3"/>
+                        <DatePicker SelectedDate="{Binding EndDate}" IsEnabled="{Binding IsEditing}" Grid.Row="7" Grid.Column="1" Width="130" HorizontalAlignment="Left" Margin="10,0,10,10"/>
 
-                        <TextBlock Grid.Row="6" Grid.Column="2" Text="Active" Foreground="#666" FontSize="12" Margin="10,5,10,2"/>
-                        <TextBox Text="{Binding IsActive}" Grid.Row="7" Grid.Column="2" MaxLength="1" Margin="10,0,10,15"/>
+                        <TextBlock Grid.Row="6" Grid.Column="2" Text="Active" Foreground="#666" FontSize="12" Margin="10,0,10,3"/>
+                        <ComboBox SelectedValue="{Binding SelectedRole}" SelectedValuePath="Content" IsEnabled="{Binding IsEditing}" Grid.Row="7" Grid.Column="2" Width="130" HorizontalAlignment="Center" Margin="0,2,0,8">
+                            <ComboBoxItem Content="Administrator"/>
+                            <ComboBoxItem Content="Students"/>
+                        </ComboBox>
 
-                        <ListView Grid.Row="1" Grid.Column="3" Grid.RowSpan="8" 
-                                  ItemsSource="{Binding UserList}" 
-                                  SelectedItem="{Binding SelectedUser}" 
-                                  Height="250" 
-                                  Margin="10">
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn Header="User ID (UID)" DisplayMemberBinding="{Binding UID}" Width="120"/>
-                                    <GridViewColumn Header="Phone Number" DisplayMemberBinding="{Binding Phone}" Width="130"/>
-                                    <GridViewColumn Header="Email Address" DisplayMemberBinding="{Binding Email}" Width="150"/>
-                                    <GridViewColumn Header="Entry Date" DisplayMemberBinding="{Binding EntryDate, StringFormat={}{0:yyyy-MM-dd}}" Width="110"/>
-                                    <GridViewColumn Header="Active" DisplayMemberBinding="{Binding IsActive}" Width="70"/>
-                                </GridView>
-                            </ListView.View>
-                        </ListView>
+                        <!-- ListView with fixed Height and ScrollViewer to prevent interface stretching -->
+                        <ScrollViewer Grid.Column="2" Grid.Row="1" Grid.RowSpan="5" Grid.ColumnSpan="2" 
+                                      VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" 
+                                      Height="205" Margin="75,0,85,0">
+                            <ListView ItemsSource="{Binding UserList}" 
+                                      SelectedItem="{Binding SelectedUser}" 
+                                      BorderBrush="Transparent" Background="Transparent">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="User ID (UID)" DisplayMemberBinding="{Binding UID}" Width="85"/>
+                                        <GridViewColumn Header="Phone Number" DisplayMemberBinding="{Binding Phone}" Width="95"/>
+                                        <GridViewColumn Header="Email Address" DisplayMemberBinding="{Binding Email}" Width="110"/>
+                                        <GridViewColumn Header="Entry Date" DisplayMemberBinding="{Binding EntryDate, StringFormat={}{0:yyyy-MM-dd}}" Width="80"/>
+                                        <GridViewColumn Header="Active" DisplayMemberBinding="{Binding IsActive}" Width="50"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </ScrollViewer>
 
-                        <Button Command="{Binding SaveCommand}" Grid.Row="9" Grid.Column="0" Height="35" Width="70" 
-                                Content="SAVE" Style="{StaticResource RainbowButtonStyle}" HorizontalAlignment="Left" Margin="10,0,0,0"/>
+                        <!-- Action Buttons (Grid Row & Column Placement without StackPanel) -->
+                        <Button Command="{Binding AddCommand}" Grid.Row="8" Grid.Column="0" Height="32" Width="65" 
+                                Content="ADD" Style="{StaticResource RainbowButtonStyle}" HorizontalAlignment="Left" Margin="10,5,0,0"/>
 
-                        <Button Command="{Binding EditCommand}" Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" Height="35" Width="70" 
-                                Content="EDIT" Style="{StaticResource RainbowButtonStyle}" HorizontalAlignment="Left" Margin="90,0,0,0"/>
+                        <Button Command="{Binding SaveCommand}" Grid.Row="8" Grid.Column="0" Height="32" Width="65" 
+                                Content="SAVE" Style="{StaticResource RainbowButtonStyle}" HorizontalAlignment="Left" Margin="82,5,0,0"/>
 
-                        <Button Command="{Binding DeleteCommand}" Grid.Row="7" Height="35" Width="68" 
-                                Content="DELETE" Style="{StaticResource RainbowButtonStyle}" HorizontalAlignment="Left" Margin="174,51,0,0" Grid.ColumnSpan="2" Grid.RowSpan="3"/>
+                        <Button Command="{Binding EditCommand}" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Height="32" Width="65" 
+                                Content="EDIT" Style="{StaticResource RainbowButtonStyle}" HorizontalAlignment="Left" Margin="154,5,0,0"/>
 
-                        <Button Command="{Binding ExitCommand}" Grid.Row="7" Grid.Column="1" Height="35" Width="74" 
-                                Content="EXIT" Style="{StaticResource RainbowButtonStyle}" HorizontalAlignment="Left" Margin="56,51,0,0" Grid.RowSpan="3"/>
+                        <Button Command="{Binding DeleteCommand}" Grid.Row="8" Grid.Column="1" Height="32" Width="72" 
+                                Content="DELETE" Style="{StaticResource RainbowButtonStyle}" HorizontalAlignment="Left" Margin="26,5,0,0"/>
+
+                        <Button Command="{Binding ExitCommand}" Grid.Row="8" Grid.Column="1" Height="32" Width="72" 
+                                Content="EXIT" Style="{StaticResource RainbowButtonStyle}" HorizontalAlignment="Left" Margin="107,5,0,0" Grid.ColumnSpan="2"/>
                     </Grid>
                 </Border>
             </Border>

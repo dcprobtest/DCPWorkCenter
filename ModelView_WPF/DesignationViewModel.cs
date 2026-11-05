@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +17,7 @@ namespace ModelView_WPF
     {
         private readonly HttpClient _httpClient;
         private readonly string _loggedInUserId;
+        private readonly string _getDesignationsUrl;
 
         private DesignationModel _designation = new DesignationModel();
         public DesignationModel Designation
@@ -36,82 +39,242 @@ namespace ModelView_WPF
                 _isActiveChecked = value;
                 if (Designation != null)
                 {
-                    // Set 'Y' or 'N' according to API logic
                     Designation.Activate = value ? "Y" : "N";
                 }
                 OnPropertyChanged(nameof(IsActiveChecked));
             }
         }
 
-        public ICommand SaveCommand { get; }
+        private bool _isEditing = false;
+        public bool IsEditing
+        {
+            get => _isEditing;
+            set { _isEditing = value; OnPropertyChanged(nameof(IsEditing)); }
+        }
 
-        // Default constructor (fallback for design-time or direct instantiation)
+        private ObservableCollection<DesignationModel> _designationList;
+        public ObservableCollection<DesignationModel> DesignationList
+        {
+            get => _designationList;
+            set { _designationList = value; OnPropertyChanged(nameof(DesignationList)); }
+        }
+
+        private DesignationModel _selectedDesignation;
+        public DesignationModel SelectedDesignation
+        {
+            get => _selectedDesignation;
+            set
+            {
+                _selectedDesignation = value;
+                OnPropertyChanged(nameof(SelectedDesignation));
+                if (_selectedDesignation != null)
+                {
+                    Designation = new DesignationModel
+                    {
+                        DesigCode = _selectedDesignation.DesigCode,
+                        DesigName = _selectedDesignation.DesigName,
+                        EntryDate = _selectedDesignation.EntryDate ?? DateTime.Now,
+                        StartDate = _selectedDesignation.StartDate ?? DateTime.Now,
+                        EndDate = _selectedDesignation.EndDate,
+                        Responsiblity = _selectedDesignation.Responsiblity,
+                        Description = _selectedDesignation.Description,
+                        Activate = _selectedDesignation.Activate,
+                        EntryByUid = _selectedDesignation.EntryByUid,
+                        LastUpdate = _selectedDesignation.LastUpdate
+                    };
+                    IsActiveChecked = (_selectedDesignation.Activate == "Y" || _selectedDesignation.Activate == "1");
+                    IsEditing = false;
+                }
+            }
+        }
+
+        public ICommand SaveCommand { get; }
+        public ICommand AddCommand { get; }
+        public ICommand EditCommand { get; }
+        public ICommand DeleteCommand { get; }
+        public ICommand ExitCommand { get; }
+
         public DesignationViewModel() : this("Admin")
         {
         }
 
-        // Parameterized constructor to receive UID from Main_Adminfrm or other forms
         public DesignationViewModel(string userId)
         {
             _loggedInUserId = string.IsNullOrWhiteSpace(userId) ? "Admin" : userId;
 
-            // Localhost self-signed SSL certificate error bypass handler setup
             var handler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
             };
 
-            // HttpClient configuration updated with ApiSettings.BaseUrl
             _httpClient = new HttpClient(handler) { BaseAddress = new Uri(ApiSettings.BaseUrl) };
+            _getDesignationsUrl = ApiSettings.GetDesignationsUrl; // Ensure this property exists in your ApiSettings
+
+            DesignationList = new ObservableCollection<DesignationModel>();
 
             ResetForm();
-            // Bind Save logic using RelayCommand
             SaveCommand = new RelayCommand(async (obj) => await SaveDesignation());
+            AddCommand = new RelayCommand((obj) => ExecuteAdd());
+            EditCommand = new RelayCommand((obj) => ExecuteEdit());
+            DeleteCommand = new RelayCommand(async (obj) => await ExecuteDelete());
+            ExitCommand = new RelayCommand((obj) => ExecuteExit(obj));
+
+            IsEditing = false;
+            _ = Task.Run(async () => await LoadDesignationsAsync());
+        }
+
+        private async Task LoadDesignationsAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync(_getDesignationsUrl);
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var designations = JsonConvert.DeserializeObject<List<DesignationModel>>(json);
+                    if (designations != null)
+                    {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            DesignationList.Clear();
+                            foreach (var desig in designations)
+                            {
+                                DesignationList.Add(desig);
+                            }
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    MessageBox.Show($"Failed to load data: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                });
+            }
         }
 
         private async Task SaveDesignation()
         {
-            // Validation: Cannot save without DesigCode
-            if (string.IsNullOrWhiteSpace(Designation.DesigCode))
+            if (Designation == null || string.IsNullOrWhiteSpace(Designation.DesigCode))
             {
-                MessageBox.Show("Please enter a Designation Code.");
+                MessageBox.Show("Please enter a Designation Code.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             try
             {
-                // Update LastUpdate to match API model requirements
                 Designation.LastUpdate = DateTime.Now;
+                if (!string.IsNullOrEmpty(_loggedInUserId))
+                {
+                    Designation.EntryByUid = _loggedInUserId;
+                }
 
                 var json = JsonConvert.SerializeObject(Designation);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                // Send data to API using ApiSettings endpoint
                 var response = await _httpClient.PostAsync(ApiSettings.SaveDesignationUrl(), content);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    MessageBox.Show("Designation Saved Successfully!");
-                    ResetForm();
+                    MessageBox.Show("Designation Saved Successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    IsEditing = false;
+                    await LoadDesignationsAsync();
                 }
                 else
                 {
                     string errorMsg = await response.Content.ReadAsStringAsync();
-                    MessageBox.Show($"Error: {response.StatusCode}\nDetails: {errorMsg}");
+                    MessageBox.Show($"Error: {response.StatusCode}\nDetails: {errorMsg}", "API Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Could not connect to API.\nException: {ex.Message}");
+                MessageBox.Show($"Could not connect to API.\nException: {ex.Message}", "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ExecuteAdd()
+        {
+            ResetForm();
+            SelectedDesignation = null;
+            IsEditing = true;
+        }
+
+        private void ExecuteEdit()
+        {
+            if (SelectedDesignation == null && (Designation == null || string.IsNullOrEmpty(Designation.DesigCode)))
+            {
+                MessageBox.Show("Please select a designation from the list first to edit.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            IsEditing = true;
+        }
+
+        private async Task ExecuteDelete()
+        {
+            if (Designation == null || string.IsNullOrEmpty(Designation.DesigCode))
+            {
+                MessageBox.Show("Please select a designation to delete.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var result = MessageBox.Show($"Are you sure you want to delete designation {Designation.DesigCode}?", "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    var response = await _httpClient.DeleteAsync($"api/Data/DeleteDesignation/{Designation.DesigCode}");
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show("Designation Deleted Successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        ExecuteAdd();
+                        await LoadDesignationsAsync();
+                    }
+                    else
+                    {
+                        var errorMsg = await response.Content.ReadAsStringAsync();
+                        MessageBox.Show($"Error: {response.StatusCode}\nDetails: {errorMsg}", "API Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Connection Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private void ExecuteExit(object parameter)
+        {
+            if (parameter is Window window)
+            {
+                window.Close();
+            }
+            else
+            {
+                foreach (Window win in Application.Current.Windows)
+                {
+                    if (win.DataContext == this)
+                    {
+                        win.Close();
+                        return;
+                    }
+                }
+
+                if (Application.Current.MainWindow != null && Application.Current.MainWindow != Application.Current.Windows[0])
+                {
+                    Application.Current.MainWindow.Close();
+                }
             }
         }
 
         private void ResetForm()
         {
-            // Reset form for a new entry and assign received user ID to EntryByUid
             Designation = new DesignationModel
             {
                 DesigCode = string.Empty,
+                DesigName = string.Empty,
                 Description = string.Empty,
                 Responsiblity = string.Empty,
                 EntryDate = DateTime.Now,

@@ -13,7 +13,7 @@ namespace View_WPF.Models
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
 
-        [JsonProperty("Activate")] // ডেটাবেজের কলাম নামের সাথে নিখুঁতভাবে ম্যাপ করার জন্য এটি জরুরি
+        [JsonProperty("Activate")] 
         public string IsActive { get; set; }
     }
 }

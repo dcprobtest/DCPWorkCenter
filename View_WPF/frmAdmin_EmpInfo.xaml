@@ -189,7 +189,7 @@
                             <TextBox Grid.Row="5" Grid.Column="4" Text="{Binding Emp.Zip, UpdateSourceTrigger=PropertyChanged}"/>
 
                             <TextBlock Grid.Row="4" Grid.Column="6" Text="Country" Style="{StaticResource FieldLabel}"/>
-                            <TextBox Grid.Row="5" Grid.Column="6" Text="{Binding Emp.Country, UpdateSourceTrigger=PropertyChanged}"/>
+                            <ComboBox Grid.Row="5" Grid.Column="6" ItemsSource="{Binding Countries}" DisplayMemberPath="CountryName" SelectedValuePath="CountryCode" SelectedValue="{Binding SelectedCountryCode, UpdateSourceTrigger=PropertyChanged}"/>
 
                             <!-- ================= ROW 6 & 7: Phone, Email, Dept, Desig ================= -->
                             <TextBlock Grid.Row="6" Grid.Column="0" Text="Phone" Style="{StaticResource FieldLabel}"/>
