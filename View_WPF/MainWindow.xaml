@@ -211,7 +211,7 @@
             </StackPanel>
 
             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Style="{StaticResource OptionCardStyle}" ToolTip="You don't have permission to access">
+                <Button x:Name="btnRemoteAccess" Style="{StaticResource OptionCardStyle}" Click="btnRemoteAccess_Click">
                     <Button.RenderTransform>
                         <TranslateTransform x:Name="Card4Move" Y="100"/>
                     </Button.RenderTransform>

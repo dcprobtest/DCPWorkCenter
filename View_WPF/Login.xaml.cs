@@ -108,7 +108,7 @@ namespace View_WPF
                         {
                             MessageBox.Show("Your account is deactivated (Status 0). Please contact the Administrator.", "Access Denied", MessageBoxButton.OK, MessageBoxImage.Stop);
                         }
-                        else if (activateStatus == 1 || activateStatus == 3)
+                        else if (activateStatus == 1 || activateStatus == 3 || activateStatus == 4)
                         {
                             // New Logic: Record Login Session
                             try
@@ -141,7 +141,7 @@ namespace View_WPF
                         }
                         else
                         {
-                            MessageBox.Show("You do not have permission to access this system. Only Status 1 and 3 are allowed.", "Access Denied", MessageBoxButton.OK, MessageBoxImage.Stop);
+                            MessageBox.Show("You do not have permission to access this system. Only Status 1, 3 and 4 are allowed.", "Access Denied", MessageBoxButton.OK, MessageBoxImage.Stop);
                         }
                     }
                     else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)

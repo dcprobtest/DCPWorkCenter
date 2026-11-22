@@ -21,6 +21,13 @@ namespace View_WPF.ModelView_WPF
         private readonly string _apiUrl;
         private readonly string _getUsersUrl;
 
+        private bool _isEditing = false;
+        public bool IsEditing
+        {
+            get => _isEditing;
+            set { _isEditing = value; OnPropertyChanged(); }
+        }
+
         private string _uid;
         public string UID
         {
@@ -74,7 +81,46 @@ namespace View_WPF.ModelView_WPF
         public string IsActive
         {
             get => _isActive;
-            set { _isActive = value; OnPropertyChanged(); }
+            set
+            {
+                if (_isActive != value)
+                {
+                    _isActive = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(SelectedRole));
+                }
+            }
+        }
+
+        public string SelectedRole
+        {
+            get
+            {
+                if (_isActive == "1") return "Administrator";
+                if (_isActive == "3") return "Students";
+                if (_isActive == "4") return "Agent";
+                return _isActive;
+            }
+            set
+            {
+                if (value == "Administrator")
+                {
+                    IsActive = "1";
+                }
+                else if (value == "Students")
+                {
+                    IsActive = "3";
+                }
+                else if (value == "Agent")
+                {
+                    IsActive = "4";
+                }
+                else
+                {
+                    IsActive = value;
+                }
+                OnPropertyChanged();
+            }
         }
 
         private ObservableCollection<UserModel> _userList;
@@ -102,6 +148,8 @@ namespace View_WPF.ModelView_WPF
                     EndDate = _selectedUser.EndDate ?? DateTime.Now;
                     EntryDate = _selectedUser.EntryDate ?? DateTime.Now;
                     IsActive = _selectedUser.IsActive;
+
+                    IsEditing = false;
                 }
             }
         }
@@ -131,6 +179,7 @@ namespace View_WPF.ModelView_WPF
             DeleteCommand = new RelayCommand(async (obj) => await ExecuteDelete());
             ExitCommand = new RelayCommand((obj) => ExecuteExit(obj));
 
+            IsEditing = false;
             _ = Task.Run(async () => await LoadUsersAsync());
         }
 
@@ -189,6 +238,7 @@ namespace View_WPF.ModelView_WPF
                 if (response.IsSuccessStatusCode)
                 {
                     MessageBox.Show("User Information Saved Successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    IsEditing = false;
                     await LoadUsersAsync();
                 }
                 else
@@ -214,11 +264,18 @@ namespace View_WPF.ModelView_WPF
             EndDate = DateTime.Now;
             IsActive = "1";
             SelectedUser = null;
+            IsEditing = true;
         }
 
         private void ExecuteEdit()
         {
-            MessageBox.Show("Edit functionality will be added later.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            if (SelectedUser == null && string.IsNullOrEmpty(UID))
+            {
+                MessageBox.Show("Please select a user from the list first to edit.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            IsEditing = true;
         }
 
         private async Task ExecuteDelete()

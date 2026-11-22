@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,10 +16,17 @@ using Newtonsoft.Json.Serialization;
 
 namespace View_WPF.ModelView_WPF
 {
+    public class CountryModel
+    {
+        public string CountryCode { get; set; }
+        public string CountryName { get; set; }
+    }
+
     public class StateModel
     {
         public string Code { get; set; }
         public string DisplayName { get; set; }
+        public string CountryCode { get; set; }
     }
 
     public class DepartmentDropdownModel
@@ -39,59 +47,115 @@ namespace View_WPF.ModelView_WPF
     {
         private readonly HttpClient _httpClient;
 
-        public List<StateModel> States { get; set; } = new List<StateModel>
+        public List<CountryModel> Countries { get; set; } = new List<CountryModel>
         {
-            new StateModel { Code = "AL", DisplayName = "AL – Alabama" },
-            new StateModel { Code = "AK", DisplayName = "AK – Alaska" },
-            new StateModel { Code = "AZ", DisplayName = "AZ – Arizona" },
-            new StateModel { Code = "AR", DisplayName = "AR – Arkansas" },
-            new StateModel { Code = "CA", DisplayName = "CA – California" },
-            new StateModel { Code = "CO", DisplayName = "CO – Colorado" },
-            new StateModel { Code = "CT", DisplayName = "CT – Connecticut" },
-            new StateModel { Code = "DE", DisplayName = "DE – Delaware" },
-            new StateModel { Code = "FL", DisplayName = "FL – Florida" },
-            new StateModel { Code = "GA", DisplayName = "GA – Georgia" },
-            new StateModel { Code = "HI", DisplayName = "HI – Hawaii" },
-            new StateModel { Code = "ID", DisplayName = "ID – Idaho" },
-            new StateModel { Code = "IL", DisplayName = "IL – Illinois" },
-            new StateModel { Code = "IN", DisplayName = "IN – Indiana" },
-            new StateModel { Code = "IA", DisplayName = "IA – Iowa" },
-            new StateModel { Code = "KS", DisplayName = "KS – Kansas" },
-            new StateModel { Code = "KY", DisplayName = "KY – Kentucky" },
-            new StateModel { Code = "LA", DisplayName = "LA – Louisiana" },
-            new StateModel { Code = "ME", DisplayName = "ME – Maine" },
-            new StateModel { Code = "MD", DisplayName = "MD – Maryland" },
-            new StateModel { Code = "MA", DisplayName = "MA – Massachusetts" },
-            new StateModel { Code = "MI", DisplayName = "MI – Michigan" },
-            new StateModel { Code = "MN", DisplayName = "MN – Minnesota" },
-            new StateModel { Code = "MS", DisplayName = "MS – Mississippi" },
-            new StateModel { Code = "MO", DisplayName = "MO – Missouri" },
-            new StateModel { Code = "MT", DisplayName = "MT – Montana" },
-            new StateModel { Code = "NE", DisplayName = "NE – Nebraska" },
-            new StateModel { Code = "NV", DisplayName = "NV – Nevada" },
-            new StateModel { Code = "NH", DisplayName = "NH – New Hampshire" },
-            new StateModel { Code = "NJ", DisplayName = "NJ – New Jersey" },
-            new StateModel { Code = "NM", DisplayName = "NM – New Mexico" },
-            new StateModel { Code = "NY", DisplayName = "NY – New York" },
-            new StateModel { Code = "NC", DisplayName = "NC – North Carolina" },
-            new StateModel { Code = "ND", DisplayName = "ND – North Dakota" },
-            new StateModel { Code = "OH", DisplayName = "OH – Ohio" },
-            new StateModel { Code = "OK", DisplayName = "OK – Oklahoma" },
-            new StateModel { Code = "OR", DisplayName = "OR – Oregon" },
-            new StateModel { Code = "PA", DisplayName = "PA – Pennsylvania" },
-            new StateModel { Code = "RI", DisplayName = "RI – Rhode Island" },
-            new StateModel { Code = "SC", DisplayName = "SC – South Carolina" },
-            new StateModel { Code = "SD", DisplayName = "SD – South Dakota" },
-            new StateModel { Code = "TN", DisplayName = "TN – Tennessee" },
-            new StateModel { Code = "TX", DisplayName = "TX – Texas" },
-            new StateModel { Code = "UT", DisplayName = "UT – Utah" },
-            new StateModel { Code = "VT", DisplayName = "VT – Vermont" },
-            new StateModel { Code = "VA", DisplayName = "VA – Virginia" },
-            new StateModel { Code = "WA", DisplayName = "WA – Washington" },
-            new StateModel { Code = "WV", DisplayName = "WV – West Virginia" },
-            new StateModel { Code = "WI", DisplayName = "WI – Wisconsin" },
-            new StateModel { Code = "WY", DisplayName = "WY – Wyoming" }
+            new CountryModel { CountryCode = "USA", CountryName = "USA" },
+            new CountryModel { CountryCode = "BAN", CountryName = "Bangladesh" },
+            new CountryModel { CountryCode = "IND", CountryName = "India" },
+            new CountryModel { CountryCode = "PAK", CountryName = "Pakistan" }
         };
+
+        private List<StateModel> _allStates = new List<StateModel>
+        {
+            new StateModel { Code = "AL", DisplayName = "AL – Alabama", CountryCode = "USA" },
+            new StateModel { Code = "AK", DisplayName = "AK – Alaska", CountryCode = "USA" },
+            new StateModel { Code = "AZ", DisplayName = "AZ – Arizona", CountryCode = "USA" },
+            new StateModel { Code = "AR", DisplayName = "AR – Arkansas", CountryCode = "USA" },
+            new StateModel { Code = "CA", DisplayName = "CA – California", CountryCode = "USA" },
+            new StateModel { Code = "CO", DisplayName = "CO – Colorado", CountryCode = "USA" },
+            new StateModel { Code = "CT", DisplayName = "CT – Connecticut", CountryCode = "USA" },
+            new StateModel { Code = "DE", DisplayName = "DE – Delaware", CountryCode = "USA" },
+            new StateModel { Code = "FL", DisplayName = "FL – Florida", CountryCode = "USA" },
+            new StateModel { Code = "GA", DisplayName = "GA – Georgia", CountryCode = "USA" },
+            new StateModel { Code = "HI", DisplayName = "HI – Hawaii", CountryCode = "USA" },
+            new StateModel { Code = "ID", DisplayName = "ID – Idaho", CountryCode = "USA" },
+            new StateModel { Code = "IL", DisplayName = "IL – Illinois", CountryCode = "USA" },
+            new StateModel { Code = "IN", DisplayName = "IN – Indiana", CountryCode = "USA" },
+            new StateModel { Code = "IA", DisplayName = "IA – Iowa", CountryCode = "USA" },
+            new StateModel { Code = "KS", DisplayName = "KS – Kansas", CountryCode = "USA" },
+            new StateModel { Code = "KY", DisplayName = "KY – Kentucky", CountryCode = "USA" },
+            new StateModel { Code = "LA", DisplayName = "LA – Louisiana", CountryCode = "USA" },
+            new StateModel { Code = "ME", DisplayName = "ME – Maine", CountryCode = "USA" },
+            new StateModel { Code = "MD", DisplayName = "MD – Maryland", CountryCode = "USA" },
+            new StateModel { Code = "MA", DisplayName = "MA – Massachusetts", CountryCode = "USA" },
+            new StateModel { Code = "MI", DisplayName = "MI – Michigan", CountryCode = "USA" },
+            new StateModel { Code = "MN", DisplayName = "MN – Minnesota", CountryCode = "USA" },
+            new StateModel { Code = "MS", DisplayName = "MS – Mississippi", CountryCode = "USA" },
+            new StateModel { Code = "MO", DisplayName = "MO – Missouri", CountryCode = "USA" },
+            new StateModel { Code = "MT", DisplayName = "MT – Montana", CountryCode = "USA" },
+            new StateModel { Code = "NE", DisplayName = "NE – Nebraska", CountryCode = "USA" },
+            new StateModel { Code = "NV", DisplayName = "NV – Nevada", CountryCode = "USA" },
+            new StateModel { Code = "NH", DisplayName = "NH – New Hampshire", CountryCode = "USA" },
+            new StateModel { Code = "NJ", DisplayName = "NJ – New Jersey", CountryCode = "USA" },
+            new StateModel { Code = "NM", DisplayName = "NM – New Mexico", CountryCode = "USA" },
+            new StateModel { Code = "NY", DisplayName = "NY – New York", CountryCode = "USA" },
+            new StateModel { Code = "NC", DisplayName = "NC – North Carolina", CountryCode = "USA" },
+            new StateModel { Code = "ND", DisplayName = "ND – North Dakota", CountryCode = "USA" },
+            new StateModel { Code = "OH", DisplayName = "OH – Ohio", CountryCode = "USA" },
+            new StateModel { Code = "OK", DisplayName = "OK – Oklahoma", CountryCode = "USA" },
+            new StateModel { Code = "OR", DisplayName = "OR – Oregon", CountryCode = "USA" },
+            new StateModel { Code = "PA", DisplayName = "PA – Pennsylvania", CountryCode = "USA" },
+            new StateModel { Code = "RI", DisplayName = "RI – Rhode Island", CountryCode = "USA" },
+            new StateModel { Code = "SC", DisplayName = "SC – South Carolina", CountryCode = "USA" },
+            new StateModel { Code = "SD", DisplayName = "SD – South Dakota", CountryCode = "USA" },
+            new StateModel { Code = "TN", DisplayName = "TN – Tennessee", CountryCode = "USA" },
+            new StateModel { Code = "TX", DisplayName = "TX – Texas", CountryCode = "USA" },
+            new StateModel { Code = "UT", DisplayName = "UT – Utah", CountryCode = "USA" },
+            new StateModel { Code = "VT", DisplayName = "VT – Vermont", CountryCode = "USA" },
+            new StateModel { Code = "VA", DisplayName = "VA – Virginia", CountryCode = "USA" },
+            new StateModel { Code = "WA", DisplayName = "WA – Washington", CountryCode = "USA" },
+            new StateModel { Code = "WV", DisplayName = "WV – West Virginia", CountryCode = "USA" },
+            new StateModel { Code = "WI", DisplayName = "WI – Wisconsin", CountryCode = "USA" },
+            new StateModel { Code = "WY", DisplayName = "WY – Wyoming", CountryCode = "USA" },
+
+            new StateModel { Code = "DHA", DisplayName = "DHA – Dhaka", CountryCode = "BAN" },
+            new StateModel { Code = "CTG", DisplayName = "CTG – Chittagong", CountryCode = "BAN" },
+            new StateModel { Code = "SYL", DisplayName = "SYL – Sylhet", CountryCode = "BAN" },
+            new StateModel { Code = "RAJ", DisplayName = "RAJ – Rajshahi", CountryCode = "BAN" },
+            new StateModel { Code = "KHU", DisplayName = "KHU – Khulna", CountryCode = "BAN" },
+            new StateModel { Code = "BAR", DisplayName = "BAR – Barisal", CountryCode = "BAN" },
+            new StateModel { Code = "RAN", DisplayName = "RAN – Rangpur", CountryCode = "BAN" },
+            new StateModel { Code = "MYM", DisplayName = "MYM – Mymensingh", CountryCode = "BAN" },
+
+            new StateModel { Code = "DL", DisplayName = "DL – Delhi", CountryCode = "IND" },
+            new StateModel { Code = "MH", DisplayName = "MH – Maharashtra", CountryCode = "IND" },
+            new StateModel { Code = "KA", DisplayName = "KA – Karnataka", CountryCode = "IND" },
+            new StateModel { Code = "TN_IN", DisplayName = "TN – Tamil Nadu", CountryCode = "IND" },
+            new StateModel { Code = "WB", DisplayName = "WB – West Bengal", CountryCode = "IND" },
+
+            new StateModel { Code = "PB", DisplayName = "PB – Punjab", CountryCode = "PAK" },
+            new StateModel { Code = "SD_PK", DisplayName = "SD – Sindh", CountryCode = "PAK" },
+            new StateModel { Code = "KP", DisplayName = "KP – Khyber Pakhtunkhwa", CountryCode = "PAK" },
+            new StateModel { Code = "BA", DisplayName = "BA – Balochistan", CountryCode = "PAK" }
+        };
+
+        private ObservableCollection<StateModel> _states = new ObservableCollection<StateModel>();
+        public ObservableCollection<StateModel> States
+        {
+            get => _states;
+            set { _states = value; OnPropertyChanged(nameof(States)); }
+        }
+
+        private string _selectedCountryCode;
+        public string SelectedCountryCode
+        {
+            get => _selectedCountryCode;
+            set
+            {
+                _selectedCountryCode = value;
+                OnPropertyChanged(nameof(SelectedCountryCode));
+                if (!string.IsNullOrEmpty(_selectedCountryCode))
+                {
+                    Emp.Country = _selectedCountryCode;
+                    LoadStates(_selectedCountryCode);
+                }
+                else
+                {
+                    Emp.Country = null;
+                    States.Clear();
+                }
+            }
+        }
 
         private ObservableCollection<DepartmentDropdownModel> _departments = new ObservableCollection<DepartmentDropdownModel>();
         public ObservableCollection<DepartmentDropdownModel> Departments
@@ -225,6 +289,17 @@ namespace View_WPF.ModelView_WPF
             _ = LoadDropdownDataAsync();
         }
 
+        private void LoadStates(string countryCode)
+        {
+            States.Clear();
+            var filteredStates = _allStates.Where(s => s.CountryCode == countryCode).ToList();
+            foreach (var state in filteredStates)
+            {
+                States.Add(state);
+            }
+            SelectedStateString = null;
+        }
+
         private async Task LoadDropdownDataAsync()
         {
             try
@@ -325,6 +400,7 @@ namespace View_WPF.ModelView_WPF
             Emp.StartDate = DateTime.Now;
             Emp.EndDate = DateTime.Now;
             Emp.DOB = DateTime.Now;
+            SelectedCountryCode = null;
             SelectedStateString = null;
             SelectedDeptCode = null;
             SelectedDesigCode = null;

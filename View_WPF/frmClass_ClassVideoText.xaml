@@ -66,26 +66,6 @@
             </Setter>
         </Style>
 
-        <Style x:Key="BtnAdd" TargetType="Button" BasedOn="{StaticResource BaseBtn}">
-            <Setter Property="Background" Value="#10B981"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderThickness" Value="0"/>
-        </Style>
-        <Style x:Key="BtnSave" TargetType="Button" BasedOn="{StaticResource BaseBtn}">
-            <Setter Property="Background" Value="#3B82F6"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderThickness" Value="0"/>
-        </Style>
-        <Style x:Key="BtnEdit" TargetType="Button" BasedOn="{StaticResource BaseBtn}">
-            <Setter Property="Background" Value="#F59E0B"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderThickness" Value="0"/>
-        </Style>
-        <Style x:Key="BtnExit" TargetType="Button" BasedOn="{StaticResource BaseBtn}">
-            <Setter Property="Background" Value="#64748B"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderThickness" Value="0"/>
-        </Style>
         <Style x:Key="BtnNeutral" TargetType="Button" BasedOn="{StaticResource BaseBtn}">
             <Setter Property="Background" Value="White"/>
             <Setter Property="Foreground" Value="#475569"/>
@@ -93,25 +73,46 @@
             <Setter Property="BorderThickness" Value="1"/>
         </Style>
 
-        <Style x:Key="ToggleSwitchStyle" TargetType="RadioButton">
+        <Style x:Key="RainbowButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Height" Value="35"/>
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="RadioButton">
-                        <Border x:Name="SwitchBorder" Width="45" Height="22" Background="White" BorderBrush="#166534" BorderThickness="1.5" CornerRadius="11">
-                            <Ellipse x:Name="dot" Fill="#CBD5E1" Width="14" Height="14" HorizontalAlignment="Left" Margin="4,0">
-                                <Ellipse.RenderTransform>
-                                    <TranslateTransform X="0"/>
-                                </Ellipse.RenderTransform>
-                            </Ellipse>
-                        </Border>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="BtnRoot">
+                            <Border CornerRadius="8" Padding="2">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <LinearGradientBrush.RelativeTransform>
+                                            <RotateTransform x:Name="BtnRotate" CenterX="0.5" CenterY="0.5" Angle="0" />
+                                        </LinearGradientBrush.RelativeTransform>
+                                        <GradientStop Color="#FF0000" Offset="0.0"/>
+                                        <GradientStop Color="#FFFF00" Offset="0.2"/>
+                                        <GradientStop Color="#00FF00" Offset="0.4"/>
+                                        <GradientStop Color="#00FFFF" Offset="0.6"/>
+                                        <GradientStop Color="#0000FF" Offset="0.8"/>
+                                        <GradientStop Color="#FF00FF" Offset="1.0"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Border Background="White" CornerRadius="6">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </Border>
+                        </Grid>
                         <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="dot" Property="HorizontalAlignment" Value="Right"/>
-                                <Setter TargetName="dot" Property="Margin" Value="0,0,4,0"/>
-                                <Setter TargetName="dot" Property="Fill" Value="#991B1B"/>
-                                <Setter TargetName="SwitchBorder" Property="BorderBrush" Value="#991B1B"/>
-                            </Trigger>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="BtnRotate"
+                                                         Storyboard.TargetProperty="Angle"
+                                                         From="0" To="360"
+                                                         Duration="0:0:5"
+                                                         RepeatBehavior="Forever"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
@@ -142,16 +143,16 @@
                 </Grid.ColumnDefinitions>
 
                 <ComboBox x:Name="cmbSubject" Grid.Column="0" Height="35" Margin="0,0,10,0" 
-                          ItemsSource="{Binding SubjectList}" 
-                          DisplayMemberPath="SubjectDesc" 
-                          SelectedItem="{Binding SelectedSubject, Mode=TwoWay}"
-                          Text="Subject" IsEditable="True" IsReadOnly="True"/>
+                        ItemsSource="{Binding SubjectList}" 
+                        DisplayMemberPath="SubjectDesc" 
+                        SelectedItem="{Binding SelectedSubject, Mode=TwoWay}"
+                        Text="Subject" IsEditable="True" IsReadOnly="True"/>
 
                 <ComboBox x:Name="cmbSection" Grid.Column="1" Height="35" Margin="0,0,10,0" 
-                          ItemsSource="{Binding SectionList}" 
-                          DisplayMemberPath="SectionDesc"
-                          SelectedItem="{Binding SelectedSection, Mode=TwoWay}"
-                          Text="Select Section" IsEditable="True" IsReadOnly="True"/>
+                        ItemsSource="{Binding SectionList}" 
+                        DisplayMemberPath="SectionDesc"
+                        SelectedItem="{Binding SelectedSection, Mode=TwoWay}"
+                        Text="Select Section" IsEditable="True" IsReadOnly="True"/>
 
                 <TextBox x:Name="txtDisplaySectionID" Grid.Column="2" 
                          Style="{StaticResource ModernTextBox}" 
@@ -174,7 +175,7 @@
                 </ListView>
             </Border>
 
-            <Grid Grid.Row="2" Margin="0,15,0,10">
+            <Grid Grid.Row="2" Margin="0,15,0,10" Visibility="{Binding BottomFormVisibility}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="100"/>
                     <ColumnDefinition Width="*"/>
@@ -189,7 +190,7 @@
                          Text="{Binding ClassVideo.ClassContent, UpdateSourceTrigger=PropertyChanged}"/>
             </Grid>
 
-            <Grid Grid.Row="3" Margin="0,0,0,20">
+            <Grid Grid.Row="3" Margin="0,0,0,20" Visibility="{Binding BottomFormVisibility}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
@@ -210,7 +211,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Expander x:Name="expTimeline" Grid.Row="0" Header="View Timeline (Dates)" Foreground="#8B5CF6" FontWeight="SemiBold" IsExpanded="True">
+            <Expander x:Name="expTimeline" Grid.Row="0" Header="View Timeline (Dates)" Foreground="#8B5CF6" FontWeight="SemiBold" IsExpanded="True" Visibility="{Binding GridSelectionPanelVisibility}">
                 <Border Background="White" CornerRadius="8" Padding="15" Margin="0,10,0,20" BorderBrush="#E2E8F0" BorderThickness="1">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -250,49 +251,25 @@
                 </Border>
             </Expander>
 
-            <Grid Grid.Row="1" Margin="0,0,0,15">
+            <Grid Grid.Row="1" Margin="0,0,0,15" Visibility="{Binding GridSelectionPanelVisibility}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="45"/>
                     <RowDefinition Height="10"/>
                     <RowDefinition Height="45"/>
-                    <RowDefinition Height="10"/>
-                    <RowDefinition Height="45"/>
                 </Grid.RowDefinitions>
-                <Button x:Name="btnUploadVideo" Grid.Row="0" Content="Browse &amp; Prepare Video" 
-                        Background="#F0FDF4" Foreground="#166534" BorderBrush="#BBF7D0" BorderThickness="1" 
-                        Style="{StaticResource BaseBtn}" Command="{Binding BrowseCommand}"/>
-
-                <Button x:Name="btnDownloadVideo" Grid.Row="2" Content="Download" 
+                <Button x:Name="btnDownloadVideo" Grid.Row="0" Content="Download" 
                         Background="#EFF6FF" Foreground="#1E40AF" BorderBrush="#BFDBFE" BorderThickness="1" 
-                        Style="{StaticResource BaseBtn}" Command="{Binding DownloadCommand}"/>
+                        Style="{StaticResource RainbowButtonStyle}" Command="{Binding DownloadCommand}"/>
 
-                <Button x:Name="btnDeleteFile" Grid.Row="4" Content="Delete File" 
+                <Button x:Name="btnDeleteFile" Grid.Row="2" Content="Delete File" 
                         Background="#FEF2F2" Foreground="#991B1B" BorderBrush="#FECACA" BorderThickness="1" 
-                        Style="{StaticResource BaseBtn}" Command="{Binding DeleteFileCommand}"/>
+                        Style="{StaticResource RainbowButtonStyle}" Command="{Binding DeleteFileCommand}"/>
             </Grid>
 
-            <Grid Grid.Row="2" Margin="0,0,0,20">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-
-                <CheckBox x:Name="chkActivate" Grid.Row="0" Grid.Column="0" Content="Active" 
-                          VerticalAlignment="Center" FontWeight="SemiBold" FontSize="14" Margin="0,0,0,15"
+            <Grid Grid.Row="2" Margin="0,0,0,20" Visibility="{Binding GridSelectionPanelVisibility}">
+                <CheckBox x:Name="chkActivate" Content="Active" 
+                          VerticalAlignment="Center" FontWeight="SemiBold" FontSize="14"
                           IsChecked="{Binding IsActive, Mode=TwoWay}"/>
-
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Inactive Video" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="13" Foreground="#475569"/>
-                <RadioButton x:Name="rbInactiveVideo" Grid.Row="1" Grid.Column="1" GroupName="StatusToggles" 
-                             Style="{StaticResource ToggleSwitchStyle}" Margin="0,0,0,10"/>
-
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Delete Video" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="13" Foreground="#991B1B"/>
-                <RadioButton x:Name="rbDeleteVideo" Grid.Row="2" Grid.Column="1" GroupName="StatusToggles" 
-                             Style="{StaticResource ToggleSwitchStyle}"/>
             </Grid>
 
             <Grid Grid.Row="3">
@@ -307,17 +284,17 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Button x:Name="btnAdd" Grid.Row="0" Grid.Column="0" Content="ADD" 
-                        Style="{StaticResource BtnAdd}" Command="{Binding AddCommand}"/>
+                <Button x:Name="btnAdd" Grid.Row="0" Grid.Column="0" Content="Add Video" 
+                        Style="{StaticResource RainbowButtonStyle}" Command="{Binding AddCommand}" Visibility="{Binding AddVideoButtonVisibility}"/>
 
                 <Button x:Name="btnSave" Grid.Row="0" Grid.Column="2" Content="Save" 
-                        Style="{StaticResource BtnSave}" Command="{Binding SaveCommand}"/>
+                        Style="{StaticResource RainbowButtonStyle}" Command="{Binding SaveCommand}" Visibility="{Binding SaveButtonVisibility}"/>
 
                 <Button x:Name="btnEdit" Grid.Row="2" Grid.Column="0" Content="Edit" 
-                        Style="{StaticResource BtnEdit}" Command="{Binding EditCommand}"/>
+                        Style="{StaticResource RainbowButtonStyle}" Command="{Binding EditCommand}" Visibility="{Binding EditButtonVisibility}"/>
 
                 <Button x:Name="btnExit" Grid.Row="2" Grid.Column="2" Content="Exit" 
-                        Style="{StaticResource BtnExit}" 
+                        Style="{StaticResource RainbowButtonStyle}" 
                         Command="{Binding ExitCommand}"
                         CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
             </Grid>

@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace Model_WPF
 {
-    // ১. প্রথমে VideoTreeItem ক্লাসটি ডিফাইন করতে হবে (এটিই আপনি মিস করেছিলেন)
+    // 1. First, define the VideoTreeItem class (this was missing)
     public class VideoTreeItem : INotifyPropertyChanged
     {
         private string _videoTitle = string.Empty;
@@ -31,7 +31,7 @@ namespace Model_WPF
     }
 
     /// <summary>
-    /// DCP EduTrack ভিডিও প্লেয়ারের ট্রি-ভিউ এবং ডাটা ম্যানেজমেন্টের মূল মডেল।
+    /// Core model for tree-view and data management of the DCP EduTrack video player.
     /// </summary>
     public class ClassPlayerModel : INotifyPropertyChanged
     {
@@ -42,7 +42,7 @@ namespace Model_WPF
             set { _subjects = value; OnPropertyChanged(); }
         }
 
-        // এখন এই VideoTreeItem প্রোপার্টিটি এরর দেখাবে না
+
         private VideoTreeItem? _selectedVideo;
         public VideoTreeItem? SelectedVideo
         {

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations; // Key এট্রিবিউট এর জন্য
+using System.ComponentModel.DataAnnotations; // For Key attribute
 
 namespace DCPWorkCenter_Api.Models;
 
 public partial class SourseAssign
 {
-    [Key] // এটি কোর্স এসাইন আইডিকে প্রাইমারি কি হিসেবে ডিফাইন করবে
-    public string CourseAssignId { get; set; } = null!; // null! মানে এটি রিকোয়ার্ড
+    [Key] // Defines CourseAssignId as primary key
+    public string CourseAssignId { get; set; } = null!; // null! means it is required
 
     public string? Uid { get; set; }
 
@@ -17,10 +17,10 @@ public partial class SourseAssign
 
     public DateTime? LastUpdate { get; set; }
 
-    // ডাটাবেসে যদি এটি bit বা boolean হয় তবে bool ব্যবহার করুন
-    // অন্যথায় string হলে আপনার আগের কোডই ঠিক আছে
+    // Use bool if this is bit or boolean in database;
+    // otherwise, if string, your previous code is fine
     public string? Activate { get; set; }
 
-    // নতুন যোগ করা প্রপার্টি যা ভিডিওর লোকেশন API-তে বহন করবে
+    // Newly added property to carry video location in the API
     public string? VideoPath { get; set; }
 }

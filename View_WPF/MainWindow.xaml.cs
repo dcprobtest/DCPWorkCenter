@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.ComponentModel;
+using ModelView_WPF.Helpers;
 
 // Using aliases to resolve potential naming conflicts
 using MessageBox = System.Windows.MessageBox;
@@ -23,14 +24,12 @@ namespace View_WPF
         private string _loggedInName = string.Empty;
         private int _userRole;
 
-        // Base URL for API
-        private readonly string apiBaseUrl = "https://localhost:7073/";
-
         private frmClass_ClassPlayer classPlayerWindow = null;
         private frmAdmin_DocInfo docManagerWindow = null;
         private Main_Adminfrm adminFormsWindow = null;
         private Main_Classfrm classFormsWindow = null;
         private Main_ScrumWindow scrumWindow = null;
+        private RemoteAccessWindow remoteAccessWindow = null;
 
         public MainWindow()
         {
@@ -46,7 +45,6 @@ namespace View_WPF
             this.Title = $"Main Window - Welcome {name} (ID: {uid})";
         }
 
-        // Added logic to handle EndDate update on Window close
         protected override async void OnClosing(CancelEventArgs e)
         {
             base.OnClosing(e);
@@ -57,14 +55,19 @@ namespace View_WPF
 
                 try
                 {
-                    using (HttpClient client = new HttpClient())
+                    var handler = new HttpClientHandler
+                    {
+                        ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+                    };
+
+                    using (HttpClient client = new HttpClient(handler))
                     {
                         var updateData = new
                         {
                             EndDate = DateTime.Now
                         };
 
-                        await client.PutAsJsonAsync($"{apiBaseUrl}api/LoginSessionInfo/{sessionId}", updateData);
+                        await client.PutAsJsonAsync($"{ApiSettings.LoginSessionInfoUrl()}/{sessionId}", updateData);
                     }
                 }
                 catch (Exception ex)
@@ -74,15 +77,12 @@ namespace View_WPF
             }
         }
 
-        // Updated Message button click event
         private void btnMessage_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                // Open ChatBox
                 ChatBox chatWindow = new ChatBox(_loggedInUID);
 
-                // Set position of the ChatBox
                 chatWindow.WindowStartupLocation = WindowStartupLocation.Manual;
                 chatWindow.Left = this.Left + this.Width - 400;
                 chatWindow.Top = this.Top + 50;
@@ -129,6 +129,12 @@ namespace View_WPF
 
         private void btnFileManager_Click(object sender, RoutedEventArgs e)
         {
+            if (_userRole == 4)
+            {
+                MessageBox.Show("Your account status does not allow access to File Manager.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             try
             {
                 if (docManagerWindow == null || !IsWindowOpen(docManagerWindow))
@@ -161,7 +167,7 @@ namespace View_WPF
 
         private void btnAdminForms_Click(object sender, RoutedEventArgs e)
         {
-            if (_userRole == 2)
+            if (_userRole == 2 || _userRole == 4)
             {
                 MessageBox.Show("You do not have permission to access Admin Forms.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -209,7 +215,7 @@ namespace View_WPF
             {
                 if (classFormsWindow == null || !IsWindowOpen(classFormsWindow))
                 {
-                    classFormsWindow = new Main_Classfrm(_loggedInUID);
+                    classFormsWindow = new Main_Classfrm(_loggedInUID, _userRole);
                     classFormsWindow.Closed += (s, args) =>
                     {
                         classFormsWindow = null;
@@ -237,7 +243,7 @@ namespace View_WPF
 
         private void btnAccounts_Click(object sender, RoutedEventArgs e)
         {
-            if (_userRole == 3)
+            if (_userRole == 3 || _userRole == 4)
             {
                 MessageBox.Show("Your account status does not allow access to Accounts.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -260,7 +266,7 @@ namespace View_WPF
 
         private void btnUSAccounts_Click(object sender, RoutedEventArgs e)
         {
-            if (_userRole == 3)
+            if (_userRole == 3 || _userRole == 4)
             {
                 MessageBox.Show("Your account status does not allow access to US Accounts.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -338,6 +344,46 @@ namespace View_WPF
             catch (Exception ex)
             {
                 MessageBox.Show("Error opening Scrum Window: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                this.Show();
+            }
+        }
+
+        private void btnRemoteAccess_Click(object sender, RoutedEventArgs e)
+        {
+            if (_userRole != 1 && _userRole != 3 && _userRole != 4)
+            {
+                MessageBox.Show("You do not have permission to access Remote Access.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                int userId = int.TryParse(_loggedInUID, out int parsedId) ? parsedId : 101;
+
+                if (remoteAccessWindow == null || !IsWindowOpen(remoteAccessWindow))
+                {
+                    remoteAccessWindow = new RemoteAccessWindow(userId);
+                    remoteAccessWindow.Closed += (s, args) =>
+                    {
+                        remoteAccessWindow = null;
+                        this.Show();
+                    };
+                    this.Hide();
+                    remoteAccessWindow.Show();
+                }
+                else
+                {
+                    if (remoteAccessWindow.WindowState == WindowState.Minimized)
+                    {
+                        remoteAccessWindow.WindowState = WindowState.Normal;
+                    }
+                    remoteAccessWindow.Show();
+                    remoteAccessWindow.Activate();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error opening Remote Access: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 this.Show();
             }
         }

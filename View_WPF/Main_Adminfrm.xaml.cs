@@ -12,7 +12,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-// Alias added to resolve potential naming conflicts
 using MessageBox = System.Windows.MessageBox;
 
 namespace View_WPF
@@ -22,27 +21,25 @@ namespace View_WPF
     /// </summary>
     public partial class Main_Adminfrm : Window
     {
-        // Private variables to hold logged-in user ID and name
         private string _uid;
         private string _userName;
         private int _userRole;
 
-        // Form references to prevent opening duplicate windows and handle minimization
         private frmAdmin_Department deptWin = null;
         private frmAdmin_Designation desigWin = null;
         private frm_STEM stemWin = null;
         private frmAdmin_EmpInfo empWin = null;
         private frmAdmin_User userWin = null;
         private frm_createdocx docxWin = null;
+        private frm_ClassFocusMonitor classFocusMonitorWin = null;
+        private frm_ScreenShotViewer screenshotWin = null;
         private ChatBox chatWin = null;
 
-        // Default constructor
         public Main_Adminfrm()
         {
             InitializeComponent();
         }
 
-        // Constructor to receive UID and Name from MainWindow
         public Main_Adminfrm(string uid, string name)
         {
             InitializeComponent();
@@ -50,7 +47,6 @@ namespace View_WPF
             _userName = name;
         }
 
-        // Overloaded constructor to receive role as well
         public Main_Adminfrm(string uid, string name, int role)
         {
             InitializeComponent();
@@ -83,7 +79,6 @@ namespace View_WPF
             return System.Windows.Application.Current.Windows.Cast<Window>().Any(w => w == window);
         }
 
-        // Department button click event
         private void BtnDepartment_Click(object sender, RoutedEventArgs e)
         {
             if (_userRole != 1)
@@ -116,7 +111,6 @@ namespace View_WPF
             }
         }
 
-        // Designation button click event
         private void BtnDesignation_Click(object sender, RoutedEventArgs e)
         {
             if (_userRole != 1)
@@ -149,7 +143,6 @@ namespace View_WPF
             }
         }
 
-        // STEM button click event
         private void BtnSTEM_Click(object sender, RoutedEventArgs e)
         {
             if (_userRole != 1)
@@ -182,7 +175,38 @@ namespace View_WPF
             }
         }
 
-        // Employee Info button click event
+        private void BtnScreenshotViewer_Click(object sender, RoutedEventArgs e)
+        {
+            if (_userRole != 1)
+            {
+                MessageBox.Show("Your account status does not allow access to Screenshot Viewer.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                if (screenshotWin == null || !IsWindowOpen(screenshotWin))
+                {
+                    screenshotWin = new frm_ScreenShotViewer();
+                    screenshotWin.Closed += (s, args) => { screenshotWin = null; };
+                    screenshotWin.Show();
+                }
+                else
+                {
+                    if (screenshotWin.WindowState == WindowState.Minimized)
+                    {
+                        screenshotWin.WindowState = WindowState.Normal;
+                    }
+                    screenshotWin.Show();
+                    screenshotWin.Activate();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error opening Screenshot Viewer: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private void BtnEmployeeInfo_Click(object sender, RoutedEventArgs e)
         {
             if (_userRole != 1 && _userRole != 3)
@@ -215,7 +239,6 @@ namespace View_WPF
             }
         }
 
-        // User Table button click event
         private void BtnUserTable_Click(object sender, RoutedEventArgs e)
         {
             if (_userRole != 1)
@@ -248,7 +271,6 @@ namespace View_WPF
             }
         }
 
-        // Create Docx button click event
         private void BtnCreateDocx_Click(object sender, RoutedEventArgs e)
         {
             if (_userRole != 1)
@@ -281,7 +303,38 @@ namespace View_WPF
             }
         }
 
-        // Message button click event to open chatBox
+        private void BtnClassFocusMonitor_Click(object sender, RoutedEventArgs e)
+        {
+            if (_userRole != 1)
+            {
+                MessageBox.Show("Your account status does not allow access to Class Focus Monitor.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                if (classFocusMonitorWin == null || !IsWindowOpen(classFocusMonitorWin))
+                {
+                    classFocusMonitorWin = new frm_ClassFocusMonitor();
+                    classFocusMonitorWin.Closed += (s, args) => { classFocusMonitorWin = null; };
+                    classFocusMonitorWin.Show();
+                }
+                else
+                {
+                    if (classFocusMonitorWin.WindowState == WindowState.Minimized)
+                    {
+                        classFocusMonitorWin.WindowState = WindowState.Normal;
+                    }
+                    classFocusMonitorWin.Show();
+                    classFocusMonitorWin.Activate();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error opening Class Focus Monitor: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private void BtnMessage_Click(object sender, RoutedEventArgs e)
         {
             try
