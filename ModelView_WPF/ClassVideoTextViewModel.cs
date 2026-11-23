@@ -22,13 +22,57 @@ namespace View_WPF.ModelView_WPF
     public class ClassVideoTextViewModel : INotifyPropertyChanged
     {
         private readonly HttpClient _httpClient;
+        private readonly string _loggedUserUID;
 
         private List<ClassSection> _allSections = new List<ClassSection>();
+        private List<ClassVideoTextModel> _allVideos = new List<ClassVideoTextModel>();
 
         private ClassVideoTextModel _classVideo;
         private bool _isActive;
         private string _selectedFileSourcePath;
         private ClassVideoTextModel _selectedItemInGrid;
+
+        private Visibility _bottomFormVisibility = Visibility.Collapsed;
+        public Visibility BottomFormVisibility
+        {
+            get => _bottomFormVisibility;
+            set { _bottomFormVisibility = value; OnPropertyChanged(); }
+        }
+
+        private Visibility _rightPanelVisibility = Visibility.Collapsed;
+        public Visibility RightPanelVisibility
+        {
+            get => _rightPanelVisibility;
+            set { _rightPanelVisibility = value; OnPropertyChanged(); }
+        }
+
+        private Visibility _addVideoButtonVisibility = Visibility.Collapsed;
+        public Visibility AddVideoButtonVisibility
+        {
+            get => _addVideoButtonVisibility;
+            set { _addVideoButtonVisibility = value; OnPropertyChanged(); }
+        }
+
+        private Visibility _saveButtonVisibility = Visibility.Collapsed;
+        public Visibility SaveButtonVisibility
+        {
+            get => _saveButtonVisibility;
+            set { _saveButtonVisibility = value; OnPropertyChanged(); }
+        }
+
+        private Visibility _editButtonVisibility = Visibility.Collapsed;
+        public Visibility EditButtonVisibility
+        {
+            get => _editButtonVisibility;
+            set { _editButtonVisibility = value; OnPropertyChanged(); }
+        }
+
+        private Visibility _gridSelectionPanelVisibility = Visibility.Collapsed;
+        public Visibility GridSelectionPanelVisibility
+        {
+            get => _gridSelectionPanelVisibility;
+            set { _gridSelectionPanelVisibility = value; OnPropertyChanged(); }
+        }
 
         public ObservableCollection<ClassSubject> SubjectList { get; set; } = new ObservableCollection<ClassSubject>();
         public ObservableCollection<ClassSection> SectionList { get; set; } = new ObservableCollection<ClassSection>();
@@ -47,6 +91,11 @@ namespace View_WPF.ModelView_WPF
                     OnPropertyChanged();
 
                     SelectedSection = null;
+                    ClassVideoList.Clear();
+                    AddVideoButtonVisibility = Visibility.Collapsed;
+                    BottomFormVisibility = Visibility.Collapsed;
+                    RightPanelVisibility = Visibility.Collapsed;
+                    GridSelectionPanelVisibility = Visibility.Collapsed;
                     LoadSections();
                 }
             }
@@ -58,20 +107,59 @@ namespace View_WPF.ModelView_WPF
             get => _selectedSection;
             set
             {
-                _selectedSection = value;
-                OnPropertyChanged();
-                if (value != null && ClassVideo != null) { ClassVideo.SectionID = value.SectionId; }
+                if (_selectedSection != value)
+                {
+                    _selectedSection = value;
+                    OnPropertyChanged();
+                    if (value != null && ClassVideo != null) { ClassVideo.SectionID = value.SectionId; }
+
+                    if (value != null)
+                    {
+                        AddVideoButtonVisibility = Visibility.Visible;
+                        FilterVideosBySection(value.SectionId);
+                    }
+                    else
+                    {
+                        AddVideoButtonVisibility = Visibility.Collapsed;
+                        BottomFormVisibility = Visibility.Collapsed;
+                        RightPanelVisibility = Visibility.Collapsed;
+                        GridSelectionPanelVisibility = Visibility.Collapsed;
+                        ClassVideoList.Clear();
+                    }
+                }
             }
         }
 
         public ClassVideoTextModel SelectedItemInGrid
         {
             get => _selectedItemInGrid;
-            set { _selectedItemInGrid = value; OnPropertyChanged(); }
+            set
+            {
+                if (_selectedItemInGrid != value)
+                {
+                    _selectedItemInGrid = value;
+                    OnPropertyChanged();
+
+                    if (_selectedItemInGrid != null)
+                    {
+                        GridSelectionPanelVisibility = Visibility.Visible;
+                        BottomFormVisibility = Visibility.Collapsed;
+                        AddVideoButtonVisibility = Visibility.Collapsed;
+                        SaveButtonVisibility = Visibility.Collapsed;
+                        EditButtonVisibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        GridSelectionPanelVisibility = Visibility.Collapsed;
+                    }
+                }
+            }
         }
 
         public ClassVideoTextViewModel(string uid)
         {
+            _loggedUserUID = uid;
+
             var handler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
@@ -84,7 +172,7 @@ namespace View_WPF.ModelView_WPF
 
             if (ClassVideo != null)
             {
-                ClassVideo.EntryByUID = uid;
+                ClassVideo.EntryByUID = _loggedUserUID;
             }
 
             LoadSubjects();
@@ -93,7 +181,7 @@ namespace View_WPF.ModelView_WPF
             SaveCommand = new RelayCommand(async (obj) => await ExecuteSave());
             BrowseCommand = new RelayCommand((obj) => ExecuteBrowse());
 
-            AddCommand = new RelayCommand((obj) => ResetForm());
+            AddCommand = new RelayCommand((obj) => ExecuteAddVideo());
             EditCommand = new RelayCommand((obj) => ExecuteEdit());
             DeleteFileCommand = new RelayCommand(async (obj) => await ExecuteDelete());
             DownloadCommand = new RelayCommand((obj) => ExecuteDownload());
@@ -139,15 +227,26 @@ namespace View_WPF.ModelView_WPF
                     var json = await response.Content.ReadAsStringAsync();
                     var list = JsonConvert.DeserializeObject<List<ClassVideoTextModel>>(json);
 
+                    _allVideos = list ?? new List<ClassVideoTextModel>();
+
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         ClassVideoList.Clear();
-                        foreach (var item in list) { ClassVideoList.Add(item); }
-                        BuildTreeView(list);
+                        BuildTreeView(_allVideos);
                     });
                 }
             }
             catch (Exception ex) { MessageBox.Show("Video List Load Error: " + ex.Message); }
+        }
+
+        private void FilterVideosBySection(string sectionId)
+        {
+            ClassVideoList.Clear();
+            var filtered = _allVideos.Where(v => v.SectionID == sectionId);
+            foreach (var item in filtered)
+            {
+                ClassVideoList.Add(item);
+            }
         }
 
         private void BuildTreeView(List<ClassVideoTextModel> allVideos)
@@ -291,11 +390,31 @@ namespace View_WPF.ModelView_WPF
             }
         }
 
+        private void ExecuteAddVideo()
+        {
+            InitializeClassVideo();
+            if (ClassVideo != null) { ClassVideo.EntryByUID = _loggedUserUID; }
+            _selectedFileSourcePath = null;
+            SelectedItemInGrid = null;
+            OnPropertyChanged(nameof(IsActive));
+
+            BottomFormVisibility = Visibility.Visible;
+            RightPanelVisibility = Visibility.Visible;
+            GridSelectionPanelVisibility = Visibility.Visible;
+            SaveButtonVisibility = Visibility.Visible;
+            EditButtonVisibility = Visibility.Collapsed;
+            AddVideoButtonVisibility = Visibility.Visible;
+        }
+
         private void ExecuteEdit()
         {
             if (SelectedItemInGrid != null)
             {
                 ClassVideo = SelectedItemInGrid;
+                if (ClassVideo != null && string.IsNullOrEmpty(ClassVideo.EntryByUID))
+                {
+                    ClassVideo.EntryByUID = _loggedUserUID;
+                }
                 IsActive = ClassVideo.Activate;
 
                 var section = SectionList.FirstOrDefault(s => s.SectionId == ClassVideo.SectionID);
@@ -304,6 +423,13 @@ namespace View_WPF.ModelView_WPF
                     SelectedSection = section;
                     SelectedSubject = SubjectList.FirstOrDefault(s => s.SubjectCode == section.SubjectCode);
                 }
+
+                BottomFormVisibility = Visibility.Visible;
+                RightPanelVisibility = Visibility.Visible;
+                GridSelectionPanelVisibility = Visibility.Visible;
+                SaveButtonVisibility = Visibility.Visible;
+                EditButtonVisibility = Visibility.Visible;
+                AddVideoButtonVisibility = Visibility.Visible;
             }
         }
 
@@ -348,20 +474,34 @@ namespace View_WPF.ModelView_WPF
 
         private void InitializeClassVideo()
         {
-            ClassVideo = new ClassVideoTextModel { ClassID = 0, EntryDate = DateTime.Now, StartDate = DateTime.Now, EndDate = DateTime.Now.AddDays(7), Activate = false };
+            ClassVideo = new ClassVideoTextModel { ClassID = 0, EntryByUID = _loggedUserUID, EntryDate = DateTime.Now, StartDate = DateTime.Now, EndDate = DateTime.Now.AddDays(7), Activate = false };
             _isActive = false;
+
+            BottomFormVisibility = Visibility.Collapsed;
+            RightPanelVisibility = Visibility.Collapsed;
+            GridSelectionPanelVisibility = Visibility.Collapsed;
+            SaveButtonVisibility = Visibility.Collapsed;
+            EditButtonVisibility = Visibility.Collapsed;
+            AddVideoButtonVisibility = Visibility.Collapsed;
         }
 
         private void ResetForm()
         {
-            string currentUID = ClassVideo?.EntryByUID;
             InitializeClassVideo();
-            if (ClassVideo != null) { ClassVideo.EntryByUID = currentUID; }
+            if (ClassVideo != null) { ClassVideo.EntryByUID = _loggedUserUID; }
             SelectedSubject = null;
             SelectedSection = null;
             _selectedFileSourcePath = null;
             SelectedItemInGrid = null;
+            ClassVideoList.Clear();
             OnPropertyChanged(nameof(IsActive));
+
+            BottomFormVisibility = Visibility.Collapsed;
+            RightPanelVisibility = Visibility.Collapsed;
+            GridSelectionPanelVisibility = Visibility.Collapsed;
+            SaveButtonVisibility = Visibility.Collapsed;
+            EditButtonVisibility = Visibility.Collapsed;
+            AddVideoButtonVisibility = Visibility.Collapsed;
         }
 
         #region INotifyPropertyChanged

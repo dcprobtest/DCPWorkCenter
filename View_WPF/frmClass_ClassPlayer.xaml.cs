@@ -26,11 +26,11 @@ namespace View_WPF
         private DispatcherTimer _screenshotTimer;
         private string _rawUID;
         private string _backendUID;
-        private string _screenshotRootPath = @"C:\DCP_UserActivity";
         private readonly HttpClient _httpClient;
 
         private int _currentSessionId = 2;
         private string _currentSectionId = null;
+        private string _currentSubjectCode = null;
 
         private List<VideoTreeItem> _allVideosList = new List<VideoTreeItem>();
         private VideoTreeItem _currentSelectedVideo = null;
@@ -62,7 +62,6 @@ namespace View_WPF
             SetupTimer();
             _ = LoadDataFromApi();
 
-            CleanupOldScreenshots();
             StartScreenshotTracking();
         }
 
@@ -75,10 +74,19 @@ namespace View_WPF
                     return;
                 }
 
+                string eventTimeDuration = "00:00:00";
+                if (Player.NaturalDuration.HasTimeSpan)
+                {
+                    eventTimeDuration = Player.NaturalDuration.TimeSpan.ToString(@"hh\:mm\:ss");
+                }
+
                 var payload = new
                 {
+                    UID = _rawUID,
+                    SubjectCode = _currentSubjectCode,
                     SectionID = _currentSectionId,
-                    EventTime = slideTime,
+                    StudyDate = DateTime.Now.ToString("yyyy-MM-dd"),
+                    EventTime = eventTimeDuration,
                     MonitorTypeID = monitorTypeId,
                     SlideBarPercent = slidePercent,
                     SlideBarTime = slideTime
@@ -143,6 +151,7 @@ namespace View_WPF
                                         {
                                             var videoItem = new VideoTreeItem
                                             {
+                                                SubjectCode = sub.SubjectCode,
                                                 SectionID = v.SectionId ?? sec.SectionCode,
                                                 VideoTitle = !string.IsNullOrEmpty(v.ClassContent) ? v.ClassContent : Path.GetFileName(v.ClassPath),
                                                 FilePath = v.ClassPath
@@ -169,17 +178,14 @@ namespace View_WPF
         {
             _screenshotTimer = new DispatcherTimer();
             _screenshotTimer.Interval = TimeSpan.FromSeconds(6);
-            _screenshotTimer.Tick += (s, e) => TakeAutoCapture();
+            _screenshotTimer.Tick += async (s, e) => await TakeAutoCaptureAndUpload();
             _screenshotTimer.Start();
         }
 
-        private void TakeAutoCapture()
+        private async Task TakeAutoCaptureAndUpload()
         {
             try
             {
-                string userFolderPath = Path.Combine(_screenshotRootPath, _backendUID);
-                if (!Directory.Exists(userFolderPath)) Directory.CreateDirectory(userFolderPath);
-                string fileName = Path.Combine(userFolderPath, $"Activity_{DateTime.Now:yyyyMMdd_HHmmss}.jpg");
                 Rectangle bounds = Screen.PrimaryScreen.Bounds;
                 using (Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height))
                 {
@@ -187,31 +193,40 @@ namespace View_WPF
                     {
                         g.CopyFromScreen(System.Drawing.Point.Empty, System.Drawing.Point.Empty, bounds.Size);
                     }
-                    ImageCodecInfo jpgEncoder = GetEncoder(ImageFormat.Jpeg);
-                    System.Drawing.Imaging.Encoder myEncoder = System.Drawing.Imaging.Encoder.Quality;
-                    EncoderParameters myEncoderParameters = new EncoderParameters(1);
-                    EncoderParameter myEncoderParameter = new EncoderParameter(myEncoder, 25L);
-                    myEncoderParameters.Param[0] = myEncoderParameter;
-                    bitmap.Save(fileName, jpgEncoder, myEncoderParameters);
-                }
-            }
-            catch { }
-        }
 
-        private void CleanupOldScreenshots()
-        {
-            try
-            {
-                if (!Directory.Exists(_screenshotRootPath)) return;
-                var threshold = DateTime.Now.AddDays(-4);
-                var files = Directory.GetFiles(_screenshotRootPath, "*.jpg", SearchOption.AllDirectories);
-                foreach (var file in files)
-                {
-                    FileInfo fi = new FileInfo(file);
-                    if (fi.CreationTime < threshold) fi.Delete();
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        ImageCodecInfo jpgEncoder = GetEncoder(ImageFormat.Jpeg);
+                        System.Drawing.Imaging.Encoder myEncoder = System.Drawing.Imaging.Encoder.Quality;
+                        EncoderParameters myEncoderParameters = new EncoderParameters(1);
+                        EncoderParameter myEncoderParameter = new EncoderParameter(myEncoder, 25L);
+                        myEncoderParameters.Param[0] = myEncoderParameter;
+
+                        bitmap.Save(ms, jpgEncoder, myEncoderParameters);
+                        byte[] imageBytes = ms.ToArray();
+
+                        using (var formData = new MultipartFormDataContent())
+                        {
+                            var byteContent = new ByteArrayContent(imageBytes);
+                            byteContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/jpeg");
+
+                            formData.Add(byteContent, "file", $"Activity_{DateTime.Now:yyyyMMdd_HHmmss}.jpg");
+                            formData.Add(new StringContent(_rawUID), "uid");
+                            formData.Add(new StringContent("Employee"), "employeeName");
+
+                            HttpResponseMessage response = await _httpClient.PostAsync(ApiSettings.UploadActivityScreenshotUrl(), formData);
+                            if (!response.IsSuccessStatusCode)
+                            {
+                                System.Diagnostics.Debug.WriteLine("Failed to upload screenshot to server.");
+                            }
+                        }
+                    }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Capture Error: " + ex.Message);
+            }
         }
 
         private ImageCodecInfo GetEncoder(ImageFormat format)
@@ -247,6 +262,7 @@ namespace View_WPF
             if (video != null && !string.IsNullOrEmpty(video.FilePath))
             {
                 _currentSectionId = video.SectionID;
+                _currentSubjectCode = video.SubjectCode;
 
                 string videoUrl = video.FilePath.Trim();
 
@@ -275,7 +291,7 @@ namespace View_WPF
                     Player.Play();
                     _timer.Start();
                     BtnPlay.Content = "⏸";
-                    await LogActivity("4");
+                    await LogActivity("4", "0", Player.Position.ToString(@"hh\:mm\:ss"));
                 }
                 catch (Exception ex)
                 {
@@ -298,19 +314,19 @@ namespace View_WPF
 
         private async void Play_Click(object sender, RoutedEventArgs e)
         {
-            if (Player.Source != null) { Player.Play(); _timer.Start(); BtnPlay.Content = "⏸"; await LogActivity("4"); }
+            if (Player.Source != null) { Player.Play(); _timer.Start(); BtnPlay.Content = "⏸"; await LogActivity("4", "0", Player.Position.ToString(@"hh\:mm\:ss")); }
         }
 
-        private async void Pause_Click(object sender, RoutedEventArgs e) { Player.Pause(); BtnPlay.Content = "⏵"; await LogActivity("5"); }
+        private async void Pause_Click(object sender, RoutedEventArgs e) { Player.Pause(); BtnPlay.Content = "⏵"; await LogActivity("5", "0", Player.Position.ToString(@"hh\:mm\:ss")); }
 
         private async void Stop_Click(object sender, RoutedEventArgs e)
         {
-            Player.Stop(); _timer.Stop(); BtnPlay.Content = "⏵"; TimelineSlider.Value = 0; await LogActivity("6");
+            Player.Stop(); _timer.Stop(); BtnPlay.Content = "⏵"; TimelineSlider.Value = 0; await LogActivity("6", "0", Player.Position.ToString(@"hh\:mm\:ss"));
         }
 
         private async void Previous_Click(object sender, RoutedEventArgs e)
         {
-            await LogActivity("3");
+            await LogActivity("3", "0", Player.Position.ToString(@"hh\:mm\:ss"));
             if (_allVideosList != null && _allVideosList.Count > 0)
             {
                 int currentIndex = _currentSelectedVideo != null ? _allVideosList.IndexOf(_currentSelectedVideo) : -1;
@@ -328,7 +344,7 @@ namespace View_WPF
 
         private async void Next_Click(object sender, RoutedEventArgs e)
         {
-            await LogActivity("7");
+            await LogActivity("7", "0", Player.Position.ToString(@"hh\:mm\:ss"));
             if (_allVideosList != null && _allVideosList.Count > 0)
             {
                 int currentIndex = _currentSelectedVideo != null ? _allVideosList.IndexOf(_currentSelectedVideo) : -1;
@@ -359,7 +375,7 @@ namespace View_WPF
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            _ = LogActivity("8");
+            _ = LogActivity("8", "0", Player.Position.ToString(@"hh\:mm\:ss"));
             _timer?.Stop();
             _screenshotTimer?.Stop();
             base.OnClosing(e);
@@ -408,6 +424,7 @@ namespace View_WPF
 
     public class VideoTreeItem
     {
+        public string SubjectCode { get; set; }
         public string SectionID { get; set; }
         public string VideoTitle { get; set; }
         public string FilePath { get; set; }

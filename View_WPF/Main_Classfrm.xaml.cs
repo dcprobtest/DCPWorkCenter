@@ -8,6 +8,7 @@ namespace View_WPF
     public partial class Main_Classfrm : Window
     {
         private string _uID;
+        private int _userRole;
 
         private frmClass_ClassSubject courseSubjectWindow = null;
         private frm_ClassSection subjectSectionWindow = null;
@@ -18,12 +19,14 @@ namespace View_WPF
         public Main_Classfrm()
         {
             InitializeComponent();
+            _userRole = 1;
         }
 
-        public Main_Classfrm(string uid)
+        public Main_Classfrm(string uid, int role = 1)
         {
             InitializeComponent();
             _uID = uid;
+            _userRole = role;
         }
 
         protected override void OnStateChanged(EventArgs e)
@@ -57,6 +60,12 @@ namespace View_WPF
 
         private void btnCourseSubject_Click(object sender, RoutedEventArgs e)
         {
+            if (_userRole == 4)
+            {
+                System.Windows.MessageBox.Show("Your account status does not allow access to Course Subject.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             try
             {
                 if (courseSubjectWindow == null || !IsWindowOpen(courseSubjectWindow))
@@ -83,6 +92,12 @@ namespace View_WPF
 
         private void btnSubjectSection_Click(object sender, RoutedEventArgs e)
         {
+            if (_userRole == 4)
+            {
+                System.Windows.MessageBox.Show("Your account status does not allow access to Subject Section.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             try
             {
                 if (subjectSectionWindow == null || !IsWindowOpen(subjectSectionWindow))
@@ -109,6 +124,12 @@ namespace View_WPF
 
         private void btnSectionAssign_Click(object sender, RoutedEventArgs e)
         {
+            if (_userRole == 4)
+            {
+                System.Windows.MessageBox.Show("Your account status does not allow access to Section Assign.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             try
             {
                 if (sectionAssignWindow == null || !IsWindowOpen(sectionAssignWindow))
@@ -161,6 +182,12 @@ namespace View_WPF
 
         private void BtnMessage_Click(object sender, RoutedEventArgs e)
         {
+            if (_userRole == 4)
+            {
+                System.Windows.MessageBox.Show("Your account status does not allow access to Messages.", "Restricted", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             try
             {
                 if (chatWin == null || !IsWindowOpen(chatWin))

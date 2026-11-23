@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 namespace Model_WPF
 {
     /// <summary>
-    /// ClassSubject টেবিলের জন্য ডাটা মডেল।
+    /// Data model for the ClassSubject table.
     /// </summary>
     public class ClassSubjectModel : INotifyPropertyChanged
     {
@@ -36,14 +36,14 @@ namespace Model_WPF
             set { _activate = value; OnPropertyChanged(); }
         }
 
-        // ট্রি-ভিউতে সেকশনগুলো দেখানোর জন্য নেস্টেড লিস্ট
+        // Nested list to display sections in the tree view
         public ObservableCollection<ClassSectionModel> Sections
         {
             get => _sections;
             set { _sections = value; OnPropertyChanged(); }
         }
 
-        // অন্যান্য ডাটাবেস কলামসমূহ
+        // Other database columns
         public DateTime? EntryDate { get; set; } = DateTime.Now;
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }

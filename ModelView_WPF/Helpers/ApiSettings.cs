@@ -85,6 +85,15 @@ namespace ModelView_WPF.Helpers
         public static string GetDepartmentsUrl => $"{BaseUrl}/api/Data/GetDepartments";
         public static string GetDesignationsUrl => $"{BaseUrl}/api/Data/GetDesignations";
         public static string ClassFocusMonitorUrl() => $"{BaseUrl}/api/ClassFocusMonitor";
+        public static string ClassFocusMonitorBaseUrl => $"{BaseUrl}/api/ClassFocusMonitor";
+        public static string ClassFocusMonitorUIDsUrl => $"{BaseUrl}/api/ClassFocusMonitor/GetUIDs";
+        public static string GetClassFocusByUidUrl(string uid) => $"{BaseUrl}/api/ClassFocusMonitor/GetByUID?uid={uid}";
+        public static string UploadActivityScreenshotUrl() => $"{BaseUrl}/api/UserActivity/UploadActivityScreenshot";
+        public static string GetActivityUIDsUrl => $"{BaseUrl}/api/UserActivity/GetActivityUIDs";
+        public static string GetScreenshotsUrl(string uid, string dateStr) => $"{BaseUrl}/api/UserActivity/GetScreenshots/{uid}/{dateStr}";
+        public static string GetScreenshotImageUrl(string uid, string fileName) => $"{BaseUrl}/api/UserActivity/GetScreenshotImage/{uid}/{fileName}";
+        public static string UpdateClassFocusUrl(int sessionId) => $"{BaseUrl}/api/ClassFocusMonitor/{sessionId}";
+        public static string DeleteClassFocusUrl(int sessionId) => $"{BaseUrl}/api/ClassFocusMonitor/{sessionId}";
         public static string UserDropdownUrl => $"{BaseUrl}/api/AssignmentScrum/GetAvailableUsers";
 
         public static string GetAssignedVideosUrl(string uid) => $"{BaseUrl}/api/Data/GetAssignedVideos/{uid}";
