@@ -6,7 +6,7 @@ namespace ModelView_WPF.Helpers
     public static class ApiSettings
     {
         public static string BaseUrl =>
-            (ConfigurationManager.AppSettings["ApiBaseUrl"] ?? "http://74.208.227.170:8050").TrimEnd('/');
+            (ConfigurationManager.AppSettings["ApiBaseUrl"] ?? "https://localhost:7073").TrimEnd('/');
 
         public static string SaveUserDocUrl() => $"{BaseUrl}/api/Data/SaveUserDoc";
         public static string DownloadFileByUidAndTypeUrl(string uid, string docType) => $"{BaseUrl}/api/Data/DownloadFileByUidAndType/{uid}/{docType}";
