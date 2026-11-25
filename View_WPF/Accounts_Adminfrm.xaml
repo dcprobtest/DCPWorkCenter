@@ -1,0 +1,229 @@
+﻿<Window x:Class="View_WPF.Accounts_Adminfrm"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Accounts Admin" 
+        Height="850" Width="1450" 
+        WindowState="Maximized" 
+        Background="White">
+
+    <Window.Resources>
+        <Style x:Key="OptionCardStyle" TargetType="Button">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="CardContainer" RenderTransformOrigin="0.5,0.5">
+                            <Grid.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                            </Grid.RenderTransform>
+                            <Border x:Name="GradientBorder" CornerRadius="25" Padding="3">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <LinearGradientBrush.RelativeTransform>
+                                            <RotateTransform x:Name="BorderRotate" CenterX="0.5" CenterY="0.5" Angle="0" />
+                                        </LinearGradientBrush.RelativeTransform>
+                                        <GradientStop Color="#FF0000" Offset="0.0"/>
+                                        <GradientStop Color="#FFFF00" Offset="0.25"/>
+                                        <GradientStop Color="#FFFFFF" Offset="0.5"/>
+                                        <GradientStop Color="#00FFFF" Offset="0.75"/>
+                                        <GradientStop Color="#FF00FF" Offset="1.0"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Border Background="White" CornerRadius="22">
+                                    <ContentPresenter />
+                                </Border>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="BorderRotate" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:4" RepeatBehavior="Forever" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="CardContainer" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.05" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="CardContainer" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.05" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="CardContainer" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1" Duration="0:0:0.2"/>
+                                            <DoubleAnimation Storyboard.TargetName="CardContainer" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1" Duration="0:0:0.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Ellipse Fill="#222196F3" Width="800" Height="800" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-100,-200,0,0">
+            <Ellipse.Effect>
+                <BlurEffect Radius="150"/>
+            </Ellipse.Effect>
+        </Ellipse>
+        <Ellipse Fill="#159C27B0" Width="1000" Height="900" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,-200,-200">
+            <Ellipse.Effect>
+                <BlurEffect Radius="150"/>
+            </Ellipse.Effect>
+        </Ellipse>
+
+        <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Accounts Admin" FontSize="50" FontWeight="Bold" Foreground="Black" HorizontalAlignment="Center" Margin="0,0,0,50">
+                <TextBlock.RenderTransform>
+                    <TranslateTransform x:Name="TitleMove" Y="40"/>
+                </TextBlock.RenderTransform>
+            </TextBlock>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition Width="250"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="200"/>
+                </Grid.RowDefinitions>
+
+                <!-- Expense Bub -->
+                <Button Grid.Column="0" Grid.Row="0" Margin="10" Style="{StaticResource OptionCardStyle}" x:Name="btnExpBub" Click="btnExpBub_Click">
+                    <Button.RenderTransform>
+                        <TranslateTransform x:Name="Card1Move" Y="100"/>
+                    </Button.RenderTransform>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="2*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Viewbox Grid.Row="0" Height="50" Width="50" VerticalAlignment="Bottom" Margin="0,0,0,10">
+                            <Path Fill="#FF5722" Data="M11,2V22C5.9,21.5 2,17.2 2,12C2,6.8 5.9,2.5 11,2M13,2C14.8,2.2 16.4,2.9 17.8,4L13,8.8V2M22,12C22,13.8 21.5,15.4 20.6,16.8L15.8,12H22M13,15.2L17.8,20C16.4,21.1 14.8,21.8 13,22V15.2Z"/>
+                        </Viewbox>
+                        <TextBlock Grid.Row="1" Text="Expense Bub" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    </Grid>
+                </Button>
+
+                <!-- Expend Head -->
+                <Button Grid.Column="1" Grid.Row="0" Margin="10" Style="{StaticResource OptionCardStyle}" x:Name="btnExpendHead" Click="btnExpendHead_Click">
+                    <Button.RenderTransform>
+                        <TranslateTransform x:Name="Card2Move" Y="100"/>
+                    </Button.RenderTransform>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="2*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Viewbox Grid.Row="0" Height="50" Width="50" VerticalAlignment="Bottom" Margin="0,0,0,10">
+                            <Path Fill="#607D8B" Data="M3,5H9V11H3V5M5,7V9H7V7H5M11,5H17V11H11V5M13,7V9H15V7H13M3,13H9V19H3V13M5,15V17H7V15H5M11,13H17V19H11V13M13,15V17H15V15H13M19,5V19H21V5H19Z"/>
+                        </Viewbox>
+                        <TextBlock Grid.Row="1" Text="Expend Head" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    </Grid>
+                </Button>
+
+                <!-- Income Head -->
+                <Button Grid.Column="2" Grid.Row="0" Margin="10" Style="{StaticResource OptionCardStyle}" x:Name="btnIncomeHead" Click="btnIncomeHead_Click">
+                    <Button.RenderTransform>
+                        <TranslateTransform x:Name="Card3Move" Y="100"/>
+                    </Button.RenderTransform>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="2*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Viewbox Grid.Row="0" Height="50" Width="50" VerticalAlignment="Bottom" Margin="0,0,0,10">
+                            <Path Fill="#3F51B5" Data="M13,3V9H19L13,3M6,2H14L20,8V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V4A2,2 0 0,1 6,2M12,18L16,14H13V10H11V14H8L12,18Z"/>
+                        </Viewbox>
+                        <TextBlock Grid.Row="1" Text="Income Head" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    </Grid>
+                </Button>
+
+                <!-- Income Sub -->
+                <Button Grid.Column="3" Grid.Row="0" Margin="10" Style="{StaticResource OptionCardStyle}" x:Name="btnIncSub" Click="btnIncSub_Click">
+                    <Button.RenderTransform>
+                        <TranslateTransform x:Name="Card4Move" Y="100"/>
+                    </Button.RenderTransform>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="2*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Viewbox Grid.Row="0" Height="50" Width="50" VerticalAlignment="Bottom" Margin="0,0,0,10">
+                            <Path Fill="#9C27B0" Data="M17,13H13V17H11V13H7V11H11V7H13V11H17M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
+                        </Viewbox>
+                        <TextBlock Grid.Row="1" Text="Income Sub" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    </Grid>
+                </Button>
+            </Grid>
+        </Grid>
+
+        <Button x:Name="BtnMessage" Width="60" Height="60" 
+                HorizontalAlignment="Right" VerticalAlignment="Bottom" 
+                Margin="0,0,40,40" Cursor="Hand">
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Grid>
+                        <Border x:Name="BtnBackground" Background="Transparent" CornerRadius="30"/>
+                        <Viewbox Width="45" Height="45" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Path Fill="#212121" Data="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.2L4 17.2V4h16v12zM7 9h10v2H7zm0-3h10v2H7zm0 6h7v2H7z"/>
+                        </Viewbox>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Opacity" Value="0.7"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
+
+        <Grid.Triggers>
+            <EventTrigger RoutedEvent="Loaded">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="TitleMove" Storyboard.TargetProperty="Y" To="0" Duration="0:0:0.8">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetName="Card1Move" Storyboard.TargetProperty="Y" To="0" BeginTime="0:0:0.1" Duration="0:0:0.8">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetName="Card2Move" Storyboard.TargetProperty="Y" To="0" BeginTime="0:0:0.2" Duration="0:0:0.8">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetName="Card3Move" Storyboard.TargetProperty="Y" To="0" BeginTime="0:0:0.3" Duration="0:0:0.8">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                        <DoubleAnimation Storyboard.TargetName="Card4Move" Storyboard.TargetProperty="Y" To="0" BeginTime="0:0:0.4" Duration="0:0:0.8">
+                            <DoubleAnimation.EasingFunction>
+                                <CubicEase EasingMode="EaseOut"/>
+                            </DoubleAnimation.EasingFunction>
+                        </DoubleAnimation>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Grid.Triggers>
+    </Grid>
+</Window>

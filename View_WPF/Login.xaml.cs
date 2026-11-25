@@ -19,6 +19,8 @@ namespace View_WPF
     /// </summary>
     public partial class Login : Window
     {
+        private readonly bool _isAccountsAdminLogin = false;
+
         public Login()
         {
             InitializeComponent();
@@ -26,6 +28,11 @@ namespace View_WPF
             // Handle Enter key press on both input fields
             txtUserId.KeyDown += Input_KeyDown;
             txtPassword.KeyDown += Input_KeyDown;
+        }
+
+        public Login(bool isAccountsAdminLogin) : this()
+        {
+            _isAccountsAdminLogin = isAccountsAdminLogin;
         }
 
         private void Input_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
@@ -78,7 +85,7 @@ namespace View_WPF
 
                         // Case-insensitive deserialization option
                         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                        var loginData = JsonSerializer.Deserialize<JsonElement>(jsonString, options);
+                        var loginData = JsonSerializerSerializerDeserialize(jsonString, options);
 
                         string authenticatedUID = txtUserId.Text.Trim();
                         string authenticatedName = "";
@@ -103,7 +110,27 @@ namespace View_WPF
                                 int.TryParse(activateProp.GetString(), out activateStatus);
                         }
 
-                        // 2. Role-Based Access Control Logic
+                        // If opened from Accounts Admin button: only Status 1 is allowed
+                        if (_isAccountsAdminLogin)
+                        {
+                            if (activateStatus == 1)
+                            {
+                                Accounts_Adminfrm adminWin = new Accounts_Adminfrm(authenticatedUID);
+                                adminWin.Show();
+                                this.Close();
+                            }
+                            else if (activateStatus == 0)
+                            {
+                                MessageBox.Show("Your account is deactivated (Status 0). Please contact the Administrator.", "Access Denied", MessageBoxButton.OK, MessageBoxImage.Stop);
+                            }
+                            else
+                            {
+                                MessageBox.Show("You do not have permission to access Accounts Admin. Only Status 1 is allowed.", "Access Denied", MessageBoxButton.OK, MessageBoxImage.Stop);
+                            }
+                            return;
+                        }
+
+                        // 2. Role-Based Access Control Logic (Normal Login)
                         if (activateStatus == 0)
                         {
                             MessageBox.Show("Your account is deactivated (Status 0). Please contact the Administrator.", "Access Denied", MessageBoxButton.OK, MessageBoxImage.Stop);
@@ -163,6 +190,11 @@ namespace View_WPF
             {
                 btnAuthenticate.IsEnabled = true;
             }
+        }
+
+        private static JsonElement JsonSerializerSerializerDeserialize(string jsonString, JsonSerializerOptions options)
+        {
+            return JsonSerializer.Deserialize<JsonElement>(jsonString, options);
         }
     }
 }

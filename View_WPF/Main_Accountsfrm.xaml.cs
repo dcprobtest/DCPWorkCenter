@@ -24,10 +24,7 @@ namespace View_WPF
         private string _userUID = string.Empty; // Initialized to clear CS8618 warning
 
         private frmAccEmpSalary salaryForm = null;
-        private frmAccExpBub expBubForm = null;
-        private frmAccExpendHead expendHeadForm = null;
-        private frmAccIncomeHead incomeHeadForm = null;
-        private frmAccIncSub incSubForm = null;
+        private Login accAdminLoginForm = null;
 
         // Default constructor (if needed)
         public Main_Accountsfrm()
@@ -119,111 +116,30 @@ namespace View_WPF
             }
         }
 
-        // Expense Bub button click logic
-        private void btnExpBub_Click(object sender, RoutedEventArgs e)
+        // Accounts Admin button click logic -> Opens existing Login window in Accounts Admin mode
+        private void btnAccAdmin_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                if (expBubForm == null || !IsWindowOpen(expBubForm))
+                if (accAdminLoginForm == null || !IsWindowOpen(accAdminLoginForm))
                 {
-                    expBubForm = new frmAccExpBub(_userUID);
-                    expBubForm.Closed += (s, args) => { expBubForm = null; };
-                    expBubForm.Show();
+                    accAdminLoginForm = new Login(true);
+                    accAdminLoginForm.Closed += (s, args) => { accAdminLoginForm = null; };
+                    accAdminLoginForm.Show();
                 }
                 else
                 {
-                    if (expBubForm.WindowState == WindowState.Minimized)
+                    if (accAdminLoginForm.WindowState == WindowState.Minimized)
                     {
-                        expBubForm.WindowState = WindowState.Normal;
+                        accAdminLoginForm.WindowState = WindowState.Normal;
                     }
-                    expBubForm.Show();
-                    expBubForm.Activate();
+                    accAdminLoginForm.Show();
+                    accAdminLoginForm.Activate();
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error opening Expense Bub: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        // Expend Head button click logic
-        private void btnExpendHead_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (expendHeadForm == null || !IsWindowOpen(expendHeadForm))
-                {
-                    expendHeadForm = new frmAccExpendHead(_userUID);
-                    expendHeadForm.Closed += (s, args) => { expendHeadForm = null; };
-                    expendHeadForm.Show();
-                }
-                else
-                {
-                    if (expendHeadForm.WindowState == WindowState.Minimized)
-                    {
-                        expendHeadForm.WindowState = WindowState.Normal;
-                    }
-                    expendHeadForm.Show();
-                    expendHeadForm.Activate();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error opening Expend Head: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        // Income Head button click logic
-        private void btnIncomeHead_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (incomeHeadForm == null || !IsWindowOpen(incomeHeadForm))
-                {
-                    incomeHeadForm = new frmAccIncomeHead(_userUID);
-                    incomeHeadForm.Closed += (s, args) => { incomeHeadForm = null; };
-                    incomeHeadForm.Show();
-                }
-                else
-                {
-                    if (incomeHeadForm.WindowState == WindowState.Minimized)
-                    {
-                        incomeHeadForm.WindowState = WindowState.Normal;
-                    }
-                    incomeHeadForm.Show();
-                    incomeHeadForm.Activate();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error opening Income Head: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        // Income Sub button click logic
-        private void btnIncSub_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (incSubForm == null || !IsWindowOpen(incSubForm))
-                {
-                    incSubForm = new frmAccIncSub(_userUID);
-                    incSubForm.Closed += (s, args) => { incSubForm = null; };
-                    incSubForm.Show();
-                }
-                else
-                {
-                    if (incSubForm.WindowState == WindowState.Minimized)
-                    {
-                        incSubForm.WindowState = WindowState.Normal;
-                    }
-                    incSubForm.Show();
-                    incSubForm.Activate();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error opening Income Sub: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Error opening Accounts Admin Login: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
